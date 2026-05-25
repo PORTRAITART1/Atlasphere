@@ -21,6 +21,10 @@ Build PiDAO - A decentralized governance platform for Pi Network Pioneers where 
 - [x] Build Crowdfunding page for approved projects
 - [x] Build Personal Dashboard (votes, proposals, contributions, reputation)
 - [x] Update App.tsx routes and run lint/build
+- [x] Create AI Proposal Assistant component using client.ai.gentxt
+- [x] Integrate AI assistant into CreateProposal page
+- [x] Add AuthCallback route for backend auth
+- [x] Run lint/build
 
 ## Progress Log
 - 2026-05-24: Plan approved, starting PiDAO development

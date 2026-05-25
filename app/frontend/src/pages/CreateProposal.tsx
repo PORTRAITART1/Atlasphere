@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
+import AIAssistant from '@/components/AIAssistant';
 import { type Category } from '@/lib/store';
 
 export default function CreateProposal() {
@@ -16,6 +17,10 @@ export default function CreateProposal() {
     teamMembers: '',
   });
   const [submitted, setSubmitted] = useState(false);
+
+  const handleApplySuggestion = (field: string, value: string) => {
+    setFormData((prev) => ({ ...prev, [field]: value }));
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -46,6 +51,18 @@ export default function CreateProposal() {
       <main className="flex-1 max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <h1 className="text-3xl font-bold text-white mb-2">Créer une Proposition</h1>
         <p className="text-gray-400 mb-8">Soumettez votre projet à la communauté pour un vote et un financement.</p>
+
+        {/* AI Assistant */}
+        <div className="mb-6">
+          <AIAssistant
+            title={formData.title}
+            description={formData.description}
+            fullDescription={formData.fullDescription}
+            category={formData.category}
+            fundingGoal={formData.fundingGoal}
+            onApplySuggestion={handleApplySuggestion}
+          />
+        </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-6 space-y-5">
