@@ -90,9 +90,19 @@
       "description": "Global projects and innovation concept - world map made of glowing connected dots with project icons (education, technology, environment, commerce) floating above different continents, deep purple space background with golden accents",
       "style": "photorealistic",
       "filename": "illustration-global-projects.jpg"
+    },
+    {
+      "status": "success",
+      "path": "https://mgx-backend-cdn.metadl.com/generate/images/317314/2026-05-24/pgli5ryaagrq/logo-pipolis-governance-pillar.png",
+      "absolute_path": "https://mgx-backend-cdn.metadl.com/generate/images/317314/2026-05-24/pgli5ryaagrq/logo-pipolis-governance-pillar.png",
+      "url": "https://mgx-backend-cdn.metadl.com/generate/images/317314/2026-05-24/pgli5ryaagrq/logo-pipolis-governance-pillar.png",
+      "message": "Image generated successfully.\n\nNote: The image is on CDN and will be displayed automatically. Just describe what you created briefly, no need to mention filenames or URLs.",
+      "description": "Modern minimalist logo for PiPolis, a decentralized governance platform for Pi Network. Features a stylized Greek column (pillar) merged with the Pi symbol (π), representing democracy and Pi cryptocurrency. Deep indigo and gold color scheme, clean geometric shapes, professional and authoritative feel, centered composition, no text",
+      "style": "minimalist",
+      "filename": "logo-pipolis-governance-pillar.png"
     }
   ],
-  "success_count": 4,
+  "success_count": 1,
   "failed_count": 0,
-  "message": "Generated 4/4 images"
+  "message": "Generated 1/1 images"
 }
