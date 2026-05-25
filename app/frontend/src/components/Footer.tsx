@@ -10,7 +10,7 @@ export default function Footer() {
               <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white font-bold text-sm">
                 π
               </div>
-              <span className="text-lg font-bold text-white">PiDAO</span>
+              <span className="text-lg font-bold text-white">PiPolis</span>
             </div>
             <p className="text-gray-400 text-sm max-w-md">
               Plateforme de gouvernance décentralisée pour les Pionniers Pi Network. 
@@ -40,7 +40,7 @@ export default function Footer() {
         </div>
 
         <div className="mt-8 pt-8 border-t border-gray-800 flex flex-col sm:flex-row justify-between items-center gap-4">
-          <p className="text-gray-500 text-sm">© 2026 PiDAO. Gouvernance par les Pionniers, pour les Pionniers.</p>
+          <p className="text-gray-500 text-sm">© 2026 PiPolis. Gouvernance par les Pionniers, pour les Pionniers.</p>
           <div className="flex items-center gap-4">
             <span className="text-xs text-gray-600">Propulsé par pionniers Pi Network</span>
           </div>

@@ -1,4 +1,4 @@
-// Pi Network SDK Simulation for PiDAO
+// Pi Network SDK Simulation for PiPolis
 export interface PiUser {
   uid: string;
   username: string;

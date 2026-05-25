@@ -38,7 +38,7 @@ export default function Navbar() {
               π
             </div>
             <span className="text-xl font-bold bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">
-              PiDAO
+              PiPolis
             </span>
           </Link>
 
