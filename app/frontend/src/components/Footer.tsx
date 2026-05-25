@@ -42,7 +42,7 @@ export default function Footer() {
         <div className="mt-8 pt-8 border-t border-gray-800 flex flex-col sm:flex-row justify-between items-center gap-4">
           <p className="text-gray-500 text-sm">© 2026 PiDAO. Gouvernance par les Pionniers, pour les Pionniers.</p>
           <div className="flex items-center gap-4">
-            <span className="text-xs text-gray-600">Propulsé par Pi Network</span>
+            <span className="text-xs text-gray-600">Propulsé par pionniers Pi Network</span>
           </div>
         </div>
       </div>
