@@ -39,7 +39,7 @@ export default function Navbar() {
               alt="PiPolis Logo"
               className="w-10 h-10 rounded-lg object-cover"
             />
-            <span className="text-xl font-bold bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">
+            <span className="text-xl font-bold bg-gradient-to-r from-amber-400 to-yellow-500 bg-clip-text text-transparent">
               PiPolis
             </span>
           </Link>
