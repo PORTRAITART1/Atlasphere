@@ -81,7 +81,7 @@ export default function Navbar() {
               <button
                 onClick={handleAuth}
                 disabled={loading}
-                className="px-4 py-2 rounded-lg bg-gradient-to-r from-indigo-600 to-purple-600 text-white text-sm font-medium hover:from-indigo-500 hover:to-purple-500 transition-all disabled:opacity-50"
+                className="px-3 py-1.5 rounded-md bg-gradient-to-r from-indigo-600 to-purple-600 text-white text-xs font-medium hover:from-indigo-500 hover:to-purple-500 transition-all disabled:opacity-50"
               >
                 {loading ? 'Connexion...' : '🔐 Connecter Pi'}
               </button>
