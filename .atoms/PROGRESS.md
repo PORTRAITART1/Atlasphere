@@ -1,25 +1,26 @@
 # Requirements & Progress
 
 ## Requirements Overview
-Build a Pi Network Marketplace prototype - a platform where Pioneers can buy/sell goods and services in Pi cryptocurrency, with subscription system.
+Build PiDAO - A decentralized governance platform for Pi Network Pioneers where they can vote on community projects, fund local initiatives, and participate in building the Pi ecosystem.
 
 ## User Stories
-- As a Pioneer, I can browse and purchase products/services using Pi
-- As a seller, I can list my products and manage my store
-- As a user, I can subscribe to premium plans for better visibility
-- As a user, I can view my profile, reputation, and transaction history
+- As a Pioneer, I can browse and vote on community proposals
+- As a Pioneer, I can submit my own project proposals for community funding
+- As a Pioneer, I can contribute Pi to approved projects (crowdfunding)
+- As a Pioneer, I can track my votes, contributions, and reputation
+- As a Pioneer, I can comment and discuss proposals
 
 ## Task Breakdown
-- [x] Homepage with Pi authentication simulation and hero section
-- [x] Marketplace grid with categories and product cards
-- [x] Product detail page with Pi payment simulation
-- [x] Seller dashboard for managing listings
-- [x] Subscription plans page (Free / Pioneer Pro / Business)
-- [x] User profile with reputation and transaction history
-- [x] Search and filter system
+- [x] Generate 4 images for the platform
+- [x] Create Pi SDK simulation and data store (pi-sdk.ts, store.ts)
+- [x] Build Navbar and Footer components
+- [x] Build Homepage with hero, stats, featured proposals
+- [x] Build Proposals listing page with filters and search
+- [x] Build Proposal Detail page with voting and comments
+- [x] Build Create Proposal form page
+- [x] Build Crowdfunding page for approved projects
+- [x] Build Personal Dashboard (votes, proposals, contributions, reputation)
+- [x] Update App.tsx routes and run lint/build
 
 ## Progress Log
-- 2026-05-18: Project initialized with frontend template
-- 2026-05-18: Generated 3/5 images (category images successful, hero/logo quota exceeded)
-- 2026-05-18: Starting full implementation
-- 2026-05-18: Full implementation complete - all 7 pages built, lint/build pass, CheckUI grade 5/5
+- 2026-05-24: Plan approved, starting PiDAO development

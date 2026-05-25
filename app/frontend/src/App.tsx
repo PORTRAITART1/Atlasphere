@@ -3,24 +3,22 @@ import { TooltipProvider } from '@/components/ui/tooltip';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Index from './pages/Index';
-import Marketplace from './pages/Marketplace';
-import ProductDetail from './pages/ProductDetail';
-import Cart from './pages/Cart';
-import Subscriptions from './pages/Subscriptions';
-import Profile from './pages/Profile';
-import Seller from './pages/Seller';
+import Proposals from './pages/Proposals';
+import ProposalDetail from './pages/ProposalDetail';
+import CreateProposal from './pages/CreateProposal';
+import Funding from './pages/Funding';
+import Dashboard from './pages/Dashboard';
 
 const queryClient = new QueryClient();
 
 const AppRoutes = () => (
   <Routes>
     <Route path="/" element={<Index />} />
-    <Route path="/marketplace" element={<Marketplace />} />
-    <Route path="/product/:id" element={<ProductDetail />} />
-    <Route path="/cart" element={<Cart />} />
-    <Route path="/subscriptions" element={<Subscriptions />} />
-    <Route path="/profile" element={<Profile />} />
-    <Route path="/seller" element={<Seller />} />
+    <Route path="/proposals" element={<Proposals />} />
+    <Route path="/proposal/:id" element={<ProposalDetail />} />
+    <Route path="/create" element={<CreateProposal />} />
+    <Route path="/funding" element={<Funding />} />
+    <Route path="/dashboard" element={<Dashboard />} />
   </Routes>
 );
 

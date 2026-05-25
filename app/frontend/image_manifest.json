@@ -1,5 +1,5 @@
 {
-  "status": "partial_success",
+  "status": "success",
   "results": [
     {
       "status": "failed",
@@ -50,9 +50,49 @@
       "description": "Pi Network inspired logo mark - circular golden Pi symbol with orbital rings and network nodes, futuristic minimal design on transparent background",
       "style": "minimalist",
       "filename": "logo-pi-marketplace.png"
+    },
+    {
+      "status": "success",
+      "path": "https://mgx-backend-cdn.metadl.com/generate/images/317314/2026-05-24/pgieaoaaagtq/hero-governance-global-community.png",
+      "absolute_path": "https://mgx-backend-cdn.metadl.com/generate/images/317314/2026-05-24/pgieaoaaagtq/hero-governance-global-community.png",
+      "url": "https://mgx-backend-cdn.metadl.com/generate/images/317314/2026-05-24/pgieaoaaagtq/hero-governance-global-community.png",
+      "message": "Image generated successfully.\n\nNote: The image is on CDN and will be displayed automatically. Just describe what you created briefly, no need to mention filenames or URLs.",
+      "description": "Futuristic decentralized governance hero banner showing a diverse group of people around a glowing holographic globe with connected nodes, purple and gold lighting, digital voting particles floating in the air, cinematic wide shot",
+      "style": "photorealistic",
+      "filename": "hero-governance-global-community.jpg"
+    },
+    {
+      "status": "success",
+      "path": "https://mgx-backend-cdn.metadl.com/generate/images/317314/2026-05-24/pgiea7aaagta/illustration-community-voting.png",
+      "absolute_path": "https://mgx-backend-cdn.metadl.com/generate/images/317314/2026-05-24/pgiea7aaagta/illustration-community-voting.png",
+      "url": "https://mgx-backend-cdn.metadl.com/generate/images/317314/2026-05-24/pgiea7aaagta/illustration-community-voting.png",
+      "message": "Image generated successfully.\n\nNote: The image is on CDN and will be displayed automatically. Just describe what you created briefly, no need to mention filenames or URLs.",
+      "description": "Abstract illustration of community voting concept - raised hands with glowing Pi symbols, purple gradient background with golden light rays, digital blockchain nodes connecting the hands, modern and inspiring",
+      "style": "photorealistic",
+      "filename": "illustration-community-voting.jpg"
+    },
+    {
+      "status": "success",
+      "path": "https://mgx-backend-cdn.metadl.com/generate/images/317314/2026-05-24/pgid75yaagsq/illustration-crowdfunding-growth.png",
+      "absolute_path": "https://mgx-backend-cdn.metadl.com/generate/images/317314/2026-05-24/pgid75yaagsq/illustration-crowdfunding-growth.png",
+      "url": "https://mgx-backend-cdn.metadl.com/generate/images/317314/2026-05-24/pgid75yaagsq/illustration-crowdfunding-growth.png",
+      "message": "Image generated successfully.\n\nNote: The image is on CDN and will be displayed automatically. Just describe what you created briefly, no need to mention filenames or URLs.",
+      "description": "Crowdfunding and collective finance concept - golden coins flowing into a transparent digital vault with a growing tree inside, purple and indigo background with particle effects, symbolizing community investment growth",
+      "style": "photorealistic",
+      "filename": "illustration-crowdfunding-growth.jpg"
+    },
+    {
+      "status": "success",
+      "path": "https://mgx-backend-cdn.metadl.com/generate/images/317314/2026-05-24/pgiealqaagra/illustration-global-projects.png",
+      "absolute_path": "https://mgx-backend-cdn.metadl.com/generate/images/317314/2026-05-24/pgiealqaagra/illustration-global-projects.png",
+      "url": "https://mgx-backend-cdn.metadl.com/generate/images/317314/2026-05-24/pgiealqaagra/illustration-global-projects.png",
+      "message": "Image generated successfully.\n\nNote: The image is on CDN and will be displayed automatically. Just describe what you created briefly, no need to mention filenames or URLs.",
+      "description": "Global projects and innovation concept - world map made of glowing connected dots with project icons (education, technology, environment, commerce) floating above different continents, deep purple space background with golden accents",
+      "style": "photorealistic",
+      "filename": "illustration-global-projects.jpg"
     }
   ],
-  "success_count": 3,
-  "failed_count": 2,
-  "message": "Generated 3/5 images"
+  "success_count": 4,
+  "failed_count": 0,
+  "message": "Generated 4/4 images"
 }

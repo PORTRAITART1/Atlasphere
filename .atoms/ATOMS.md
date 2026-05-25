@@ -1,19 +1,23 @@
 # Project Context
 
 ## Project Overview
-Pi Network Marketplace - A decentralized marketplace prototype for the Pi Network ecosystem where Pioneers can buy/sell goods and services using Pi cryptocurrency.
+PiDAO - A decentralized governance and crowdfunding platform for Pi Network Pioneers. Pioneers can submit project proposals, vote on community initiatives, fund approved projects with Pi, and build their reputation through active participation.
 
 ## Key Decisions
 | Date | Decision | By | Rationale |
 |------|----------|-----|-----------|
-| 2026-05-18 | Use frontend-only template with simulated Pi SDK | Alex | Prototype phase, no real Pi SDK integration yet |
-| 2026-05-18 | Purple/Gold color scheme | Alex | Matches Pi Network branding |
-| 2026-05-18 | React + shadcn/ui + Tailwind | Alex | Template default, fast development |
+| 2026-05-24 | Rebuild as PiDAO governance platform | Alex | User chose option F |
+| 2026-05-24 | Purple/Gold/Indigo color scheme | Alex | Pi Network branding + governance authority feel |
+| 2026-05-24 | Frontend-only with simulated Pi SDK | Alex | Prototype phase |
+| 2026-05-24 | Reputation-weighted voting system | Alex | Fairer than token-weighted voting |
 
 ## Constraints
-- Color Palette: Deep purple (#6B21A8, #7C3AED), Gold (#F59E0B, #D97706), Dark (#1F2937), White
-- Typography: System fonts with bold headings
-- Layout: Modern card-based grid, responsive
-- Pi prices are simulated (no real blockchain integration)
-- Authentication simulates Pi Network login flow
-- All transactions are mock/prototype
+- Color Palette: Deep Indigo (#312E81, #4338CA), Purple (#7C3AED, #6D28D9), Gold (#F59E0B, #D97706), Emerald (#059669), Dark (#0F172A, #1E293B), White
+- Typography: System fonts, bold headings, clean readable body text
+- Layout: Modern card-based, responsive grid, glassmorphism effects
+- Pi prices/votes are simulated (no real blockchain)
+- Authentication simulates Pi Network login
+- Voting uses reputation-weighted system
+- All transactions and votes are mock/prototype
+- Categories: Education, Commerce, Technology, Social, Environment
+- Proposal states: Draft, Voting, Approved, Funding, Funded, Completed, Rejected
