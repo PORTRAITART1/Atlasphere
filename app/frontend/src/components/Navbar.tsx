@@ -35,9 +35,9 @@ export default function Navbar() {
         <div className="flex items-center justify-between h-16">
           <Link to="/" className="flex items-center gap-2">
             <img
-              src="https://mgx-backend-cdn.metadl.com/generate/images/317314/2026-05-24/pgli5ryaagrq/logo-pipolis-governance-pillar.png"
+              src="/assets/logo-pipolis.jpeg"
               alt="PiPolis Logo"
-              className="w-9 h-9 rounded-lg object-contain"
+              className="w-10 h-10 rounded-lg object-cover"
             />
             <span className="text-xl font-bold bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">
               PiPolis
