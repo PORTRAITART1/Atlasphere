@@ -36,6 +36,7 @@ Build PiDAO - A decentralized governance platform for Pi Network Pioneers where 
 - [x] Phase 1: PiPaymentButton component (real Pi SDK payment flow)
 - [x] Phase 1: Quests page with progress tracking and reward claiming
 - [x] Phase 1: Updated Navbar with i18n + language selector + quests link
+- [x] Rename: PiPolis → Polis (all frontend + backend references, logo file, localStorage keys)
 
 ## Progress Log
 - 2026-05-24: Plan approved, starting PiDAO development

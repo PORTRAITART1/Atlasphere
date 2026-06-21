@@ -42,7 +42,7 @@ class PaymentStatusRequest(BaseModel):
 class A2UPaymentRequest(BaseModel):
     recipient_uid: str
     amount: float
-    memo: str = "PiPolis reward"
+    memo: str = "Polis reward"
 
 
 class PaymentResponse(BaseModel):
@@ -225,7 +225,7 @@ async def create_a2u_payment(
                 json={
                     "amount": data.amount,
                     "memo": data.memo,
-                    "metadata": {"type": "reward", "app": "pipolis"},
+                    "metadata": {"type": "reward", "app": "polis"},
                     "uid": data.recipient_uid
                 }
             )

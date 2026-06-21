@@ -1,4 +1,4 @@
-// Pi Network SDK v2.0 Integration for PiPolis
+// Pi Network SDK v2.0 Integration for Polis
 // This module wraps the real Pi SDK with sandbox fallback
 
 export interface PiUser {
@@ -66,9 +66,9 @@ export function initPiSdk(): void {
       sandbox: !isProduction
     });
     piSdkInitialized = true;
-    console.log('[PiPolis] Pi SDK initialized', { sandbox: !isProduction });
+    console.log('[Polis] Pi SDK initialized', { sandbox: !isProduction });
   } else {
-    console.log('[PiPolis] Pi SDK not available - running in standalone mode');
+    console.log('[Polis] Pi SDK not available - running in standalone mode');
   }
 }
 
@@ -92,7 +92,7 @@ export function setCurrentUser(user: PiUser | null): void {
 
 // Handle incomplete payments found during authentication
 function onIncompletePaymentFound(payment: unknown) {
-  console.log('[PiPolis] Incomplete payment found:', payment);
+  console.log('[Polis] Incomplete payment found:', payment);
   // TODO: Handle incomplete payment - send to server for completion
 }
 
@@ -126,12 +126,12 @@ export async function authenticate(): Promise<PiUser> {
       };
 
       currentUser = piUser;
-      localStorage.setItem('pipolis_pi_token', auth.accessToken);
-      localStorage.setItem('pipolis_user', JSON.stringify(piUser));
+      localStorage.setItem('polis_pi_token', auth.accessToken);
+      localStorage.setItem('polis_user', JSON.stringify(piUser));
       notifyListeners();
       return piUser;
     } catch (error) {
-      console.error('[PiPolis] Pi authentication failed:', error);
+      console.error('[Polis] Pi authentication failed:', error);
       throw error;
     }
   } else {
@@ -156,7 +156,7 @@ export async function authenticate(): Promise<PiUser> {
       kycVerified: true,
       language: 'fr'
     };
-    localStorage.setItem('pipolis_user', JSON.stringify(currentUser));
+    localStorage.setItem('polis_user', JSON.stringify(currentUser));
     notifyListeners();
     return currentUser;
   }
@@ -179,16 +179,16 @@ export async function createPiPayment(
           onReadyForServerApproval: onApprove,
           onReadyForServerCompletion: onComplete,
           onCancel: (paymentId) => {
-            console.log('[PiPolis] Payment cancelled:', paymentId);
+            console.log('[Polis] Payment cancelled:', paymentId);
           },
           onError: (error) => {
-            console.error('[PiPolis] Payment error:', error);
+            console.error('[Polis] Payment error:', error);
           }
         }
       );
       return true;
     } catch (error) {
-      console.error('[PiPolis] Payment creation failed:', error);
+      console.error('[Polis] Payment creation failed:', error);
       return false;
     }
   } else {
@@ -215,8 +215,8 @@ export async function createPiPayment(
 
 export function logout() {
   currentUser = null;
-  localStorage.removeItem('pipolis_user');
-  localStorage.removeItem('pipolis_pi_token');
+  localStorage.removeItem('polis_user');
+  localStorage.removeItem('polis_pi_token');
   notifyListeners();
 }
 
@@ -224,7 +224,7 @@ export function logout() {
 export async function contributePI(amount: number): Promise<boolean> {
   return createPiPayment(
     amount,
-    'PiPolis contribution',
+    'Polis contribution',
     { type: 'donation' },
     async () => {},
     async () => {}
@@ -248,7 +248,7 @@ export async function castVote(): Promise<boolean> {
 // Restore user from localStorage on load
 export function restoreSession(): void {
   try {
-    const saved = localStorage.getItem('pipolis_user');
+    const saved = localStorage.getItem('polis_user');
     if (saved) {
       currentUser = JSON.parse(saved);
       notifyListeners();

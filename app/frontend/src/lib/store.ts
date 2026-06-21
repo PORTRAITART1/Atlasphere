@@ -1,4 +1,4 @@
-// PiPolis Data Store
+// Polis Data Store
 
 export type ProposalStatus = 'voting' | 'approved' | 'funding' | 'funded' | 'completed' | 'rejected';
 export type Category = 'education' | 'commerce' | 'technology' | 'social' | 'environment';

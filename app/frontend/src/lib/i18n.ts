@@ -1,4 +1,4 @@
-// PiPolis Internationalization (i18n) - 5 languages: FR, EN, ES, PT, ZH
+// Polis Internationalization (i18n) - 5 languages: FR, EN, ES, PT, ZH
 
 export type Locale = 'fr' | 'en' | 'es' | 'pt' | 'zh';
 
@@ -618,7 +618,7 @@ export function getLocale(): Locale {
 export function setLocale(locale: Locale): void {
   if (locales.includes(locale)) {
     currentLocale = locale;
-    localStorage.setItem('pipolis_locale', locale);
+    localStorage.setItem('polis_locale', locale);
     notifyI18nListeners();
   }
 }
@@ -629,7 +629,7 @@ export function t(key: string): string {
 
 // Detect browser language on init
 function detectLocale(): Locale {
-  const saved = localStorage.getItem('pipolis_locale') as Locale | null;
+  const saved = localStorage.getItem('polis_locale') as Locale | null;
   if (saved && locales.includes(saved)) return saved;
 
   const browserLang = navigator.language.split('-')[0] as Locale;

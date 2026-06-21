@@ -43,12 +43,12 @@ export default function Navbar() {
         <div className="flex items-center justify-between h-16">
           <Link to="/" className="flex items-center gap-2">
             <img
-              src="/assets/logo-pipolis.jpeg"
-              alt="PiPolis Logo"
+              src="/assets/logo-polis.jpeg"
+              alt="Polis Logo"
               className="w-10 h-10 rounded-lg object-cover"
             />
             <span className="text-xl font-bold bg-gradient-to-r from-amber-400 to-yellow-500 bg-clip-text text-transparent">
-              PiPolis
+              Polis
             </span>
           </Link>
 

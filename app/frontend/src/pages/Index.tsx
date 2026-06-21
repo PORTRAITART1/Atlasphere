@@ -21,7 +21,7 @@ export default function Index() {
           <div className="absolute inset-0">
             <img
               src="https://mgx-backend-cdn.metadl.com/generate/images/317314/2026-05-24/pgieaoaaagtq/hero-governance-global-community.png"
-              alt="PiPolis Governance"
+              alt="Polis Governance"
               className="w-full h-full object-cover opacity-30"
             />
             <div className="absolute inset-0 bg-gradient-to-b from-slate-950/60 via-slate-950/80 to-slate-950" />
