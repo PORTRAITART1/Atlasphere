@@ -46,5 +46,13 @@ Build PiDAO - A decentralized governance platform for Pi Network Pioneers where 
 - [x] Connect CreateProposal page to backend (POST new project)
 - [x] Add notifications system in Navbar (badge + dropdown)
 
+- [x] Improve Pi SDK auth flow - connect to backend /api/v1/pi-auth/verify after Pi.authenticate
+- [x] Improve payment flow - wire Pi SDK payments to /api/v1/pi-payments/approve and /complete
+- [x] Connect Quests page to real backend /api/v1/quests/* APIs
+- [x] Add comments/discussion system for proposals (social feature)
+
 ## Progress Log
 - 2026-05-24: Plan approved, starting PiDAO development
+- 2026-06-21: Frontend connected to backend APIs (proposals, voting, funding, dashboard, notifications)
+- 2026-06-21: Starting Phase 2 - Auth, Payments, Quests, Social features integration
+- 2026-06-21: Phase 2 complete - Pi SDK auth verified with backend, payments wired to approve/complete APIs, quests connected, comments/discussion system added to proposals

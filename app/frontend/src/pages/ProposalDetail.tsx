@@ -5,11 +5,10 @@ import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import PageTransition from '@/components/PageTransition';
 import PiPaymentButton from '@/components/PiPaymentButton';
+import Comments from '@/components/Comments';
 import {
   fetchProjectById,
   fetchAllVotes,
-  createVote,
-  createContribution,
   updateProject,
   type Project,
   type Vote,
@@ -19,7 +18,7 @@ import {
   parseMilestones,
   parseTeam,
 } from '@/lib/api';
-import { getCurrentUser, subscribe } from '@/lib/pi-sdk';
+import { getCurrentUser, subscribe, submitGovernanceVote, createPiPayment } from '@/lib/pi-sdk';
 
 export default function ProposalDetail() {
   const { id } = useParams<{ id: string }>();
@@ -69,31 +68,23 @@ export default function ProposalDetail() {
   const handleVote = async (voteType: 'for' | 'against') => {
     if (!user || !project || voted) return;
     try {
-      await createVote({
-        project_id: project.id,
-        vote_type: voteType,
-        weight: user.votingPower || 1,
-        pi_uid: user.uid,
-      });
+      const result = await submitGovernanceVote(project.id, voteType);
 
-      // Update project vote counts
-      const newVotesFor = (project.votes_for || 0) + (voteType === 'for' ? (user.votingPower || 1) : 0);
-      const newVotesAgainst = (project.votes_against || 0) + (voteType === 'against' ? (user.votingPower || 1) : 0);
-      const newVoterCount = (project.voter_count || 0) + 1;
-
-      await updateProject(project.id, {
-        votes_for: newVotesFor,
-        votes_against: newVotesAgainst,
-        voter_count: newVoterCount,
-      });
-
-      setProject({
-        ...project,
-        votes_for: newVotesFor,
-        votes_against: newVotesAgainst,
-        voter_count: newVoterCount,
-      });
-      setVoted(true);
+      if (result.success) {
+        setProject({
+          ...project,
+          votes_for: result.votesFor ?? (project.votes_for || 0),
+          votes_against: result.votesAgainst ?? (project.votes_against || 0),
+          voter_count: (project.voter_count || 0) + 1,
+        });
+        setVoted(true);
+      } else {
+        console.error('Vote failed:', result.message);
+        // If already voted, mark as voted
+        if (result.message?.includes('already voted')) {
+          setVoted(true);
+        }
+      }
     } catch (err) {
       console.error('Vote failed:', err);
     }
@@ -106,19 +97,23 @@ export default function ProposalDetail() {
 
     setContributing(true);
     try {
-      await createContribution({
-        project_id: project.id,
+      const success = await createPiPayment(
         amount,
-        pi_uid: user.uid,
-        status: 'completed',
-      });
+        `Contribution à ${project.title}`,
+        { project_id: String(project.id), type: 'contribution' }
+      );
 
-      // Update project raised amount
-      const newRaised = (project.raised || 0) + amount;
-      await updateProject(project.id, { raised: newRaised });
-
-      setProject({ ...project, raised: newRaised });
-      setContributionAmount('10');
+      if (success) {
+        // Refresh project data to get updated raised amount
+        const updatedProject = await fetchProjectById(project.id);
+        if (updatedProject) {
+          setProject(updatedProject);
+        } else {
+          // Fallback: update locally
+          setProject({ ...project, raised: (project.raised || 0) + amount });
+        }
+        setContributionAmount('10');
+      }
     } catch (err) {
       console.error('Contribution failed:', err);
     } finally {
@@ -491,6 +486,9 @@ export default function ProposalDetail() {
               </motion.div>
             </div>
           </div>
+
+          {/* Comments Section */}
+          <Comments projectId={project.id} />
         </main>
       </PageTransition>
 

@@ -1,0 +1,36 @@
+{
+    "title": "comments",
+    "type": "object",
+    "properties": {
+        "id": {
+            "type": "integer"
+        },
+        "project_id": {
+            "type": "integer"
+        },
+        "content": {
+            "type": "string"
+        },
+        "pi_uid": {
+            "type": "string"
+        },
+        "pi_username": {
+            "type": "string"
+        },
+        "parent_id": {
+            "type": "integer",
+            "default": null
+        },
+        "likes": {
+            "type": "integer",
+            "default": 0
+        }
+    },
+    "required": [
+        "id",
+        "project_id",
+        "content",
+        "pi_uid",
+        "pi_username"
+    ]
+}
