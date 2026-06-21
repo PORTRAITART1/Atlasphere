@@ -1,0 +1,46 @@
+{
+    "title": "notifications",
+    "type": "object",
+    "properties": {
+        "id": {
+            "type": "integer"
+        },
+        "pi_uid": {
+            "type": "string",
+            "description": "Pi Network UID of recipient"
+        },
+        "notification_type": {
+            "type": "string",
+            "description": "Type: vote_ended, milestone_reached, funds_released, quest_completed, project_funded"
+        },
+        "title": {
+            "type": "string",
+            "description": "Notification title"
+        },
+        "body": {
+            "type": "string",
+            "description": "Notification body text"
+        },
+        "data": {
+            "type": "string",
+            "default": "{}",
+            "description": "JSON additional data"
+        },
+        "read": {
+            "type": "boolean",
+            "default": false,
+            "description": "Whether notification has been read"
+        },
+        "user_id": {
+            "type": "string",
+            "description": "System-managed owner user ID"
+        }
+    },
+    "required": [
+        "pi_uid",
+        "notification_type",
+        "title",
+        "body",
+        "user_id"
+    ]
+}

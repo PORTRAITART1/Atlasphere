@@ -1,0 +1,98 @@
+[
+    {
+        "quest_id": "first_vote",
+        "title": "Premier Vote",
+        "description": "Votez pour la première fois sur une proposition",
+        "quest_type": "one_time",
+        "requirement_type": "vote_count",
+        "requirement_target": 1,
+        "reward_reputation": 50,
+        "reward_pi_amount": 0,
+        "reward_badge": "voter_bronze",
+        "active": true
+    },
+    {
+        "quest_id": "daily_voter",
+        "title": "Votant Quotidien",
+        "description": "Votez au moins une fois aujourd'hui",
+        "quest_type": "daily",
+        "requirement_type": "vote_count",
+        "requirement_target": 1,
+        "reward_reputation": 10,
+        "reward_pi_amount": 0,
+        "reward_badge": "",
+        "active": true
+    },
+    {
+        "quest_id": "funder_100",
+        "title": "Contributeur Argent",
+        "description": "Contribuez un total de 100 Pi aux projets",
+        "quest_type": "milestone",
+        "requirement_type": "fund_amount",
+        "requirement_target": 100,
+        "reward_reputation": 200,
+        "reward_pi_amount": 0,
+        "reward_badge": "funder_silver",
+        "active": true
+    },
+    {
+        "quest_id": "referral_3",
+        "title": "Ambassadeur",
+        "description": "Parrainez 3 nouveaux Pionniers",
+        "quest_type": "milestone",
+        "requirement_type": "referral_count",
+        "requirement_target": 3,
+        "reward_reputation": 300,
+        "reward_pi_amount": 1.0,
+        "reward_badge": "ambassador",
+        "active": true
+    },
+    {
+        "quest_id": "streak_7",
+        "title": "Semaine Active",
+        "description": "Soyez actif 7 jours consecutifs",
+        "quest_type": "weekly",
+        "requirement_type": "streak_days",
+        "requirement_target": 7,
+        "reward_reputation": 100,
+        "reward_pi_amount": 0,
+        "reward_badge": "streak_7",
+        "active": true
+    },
+    {
+        "quest_id": "first_proposal",
+        "title": "Premiere Proposition",
+        "description": "Creez votre premiere proposition de projet",
+        "quest_type": "one_time",
+        "requirement_type": "vote_count",
+        "requirement_target": 1,
+        "reward_reputation": 100,
+        "reward_pi_amount": 0,
+        "reward_badge": "proposer_bronze",
+        "active": true
+    },
+    {
+        "quest_id": "funder_10",
+        "title": "Contributeur Bronze",
+        "description": "Contribuez un total de 10 Pi aux projets",
+        "quest_type": "milestone",
+        "requirement_type": "fund_amount",
+        "requirement_target": 10,
+        "reward_reputation": 50,
+        "reward_pi_amount": 0,
+        "reward_badge": "funder_bronze",
+        "active": true
+    },
+    {
+        "quest_id": "voter_10",
+        "title": "Votant Actif",
+        "description": "Votez sur 10 propositions",
+        "quest_type": "milestone",
+        "requirement_type": "vote_count",
+        "requirement_target": 10,
+        "reward_reputation": 150,
+        "reward_pi_amount": 0,
+        "reward_badge": "voter_silver",
+        "active": true
+    }
+]

@@ -8,6 +8,7 @@ import ProposalDetail from './pages/ProposalDetail';
 import CreateProposal from './pages/CreateProposal';
 import Funding from './pages/Funding';
 import Dashboard from './pages/Dashboard';
+import Quests from './pages/Quests';
 import AuthCallback from './pages/AuthCallback';
 
 const queryClient = new QueryClient();
@@ -20,6 +21,7 @@ const AppRoutes = () => (
     <Route path="/create" element={<CreateProposal />} />
     <Route path="/funding" element={<Funding />} />
     <Route path="/dashboard" element={<Dashboard />} />
+    <Route path="/quests" element={<Quests />} />
     <Route path="/auth/callback" element={<AuthCallback />} />
   </Routes>
 );

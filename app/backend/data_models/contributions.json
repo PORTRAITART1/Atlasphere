@@ -1,0 +1,44 @@
+{
+    "title": "contributions",
+    "type": "object",
+    "properties": {
+        "id": {
+            "type": "integer"
+        },
+        "project_id": {
+            "type": "integer",
+            "description": "Reference to project"
+        },
+        "amount": {
+            "type": "number",
+            "description": "Amount contributed in Pi"
+        },
+        "transaction_id": {
+            "type": "string",
+            "description": "Pi Network transaction ID"
+        },
+        "payment_id": {
+            "type": "string",
+            "description": "Pi payment identifier"
+        },
+        "status": {
+            "type": "string",
+            "default": "pending",
+            "description": "Status: pending, approved, completed, failed"
+        },
+        "pi_uid": {
+            "type": "string",
+            "description": "Pi Network UID of contributor"
+        },
+        "user_id": {
+            "type": "string",
+            "description": "System-managed owner user ID"
+        }
+    },
+    "required": [
+        "project_id",
+        "amount",
+        "pi_uid",
+        "user_id"
+    ]
+}

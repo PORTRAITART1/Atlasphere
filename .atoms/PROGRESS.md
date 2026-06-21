@@ -25,6 +25,17 @@ Build PiDAO - A decentralized governance platform for Pi Network Pioneers where 
 - [x] Integrate AI assistant into CreateProposal page
 - [x] Add AuthCallback route for backend auth
 - [x] Run lint/build
+- [x] Phase 1: Database tables (pi_profiles, projects, votes, contributions, quests, quest_progress, notifications)
+- [x] Phase 1: Real Pi SDK v2.0 wrapper (auth, payments U2A, sandbox fallback)
+- [x] Phase 1: Backend Pi Auth API (verify token via Pi /v2/me, create/update profile)
+- [x] Phase 1: Backend Pi Payments API (approve, complete, A2U, status)
+- [x] Phase 1: Backend Governance API (vote with weighted power, finalize with quorum/threshold, reputation calc)
+- [x] Phase 1: Backend Quest System API (available quests, check-progress, claim rewards)
+- [x] Phase 1: Internationalization i18n (FR/EN/ES/PT/ZH with 100+ translation keys)
+- [x] Phase 1: LanguageSelector component with auto-detection
+- [x] Phase 1: PiPaymentButton component (real Pi SDK payment flow)
+- [x] Phase 1: Quests page with progress tracking and reward claiming
+- [x] Phase 1: Updated Navbar with i18n + language selector + quests link
 
 ## Progress Log
 - 2026-05-24: Plan approved, starting PiDAO development

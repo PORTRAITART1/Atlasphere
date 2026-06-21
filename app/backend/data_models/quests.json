@@ -1,0 +1,59 @@
+{
+    "title": "quests",
+    "type": "object",
+    "properties": {
+        "id": {
+            "type": "integer"
+        },
+        "quest_id": {
+            "type": "string",
+            "description": "Unique quest identifier"
+        },
+        "title": {
+            "type": "string",
+            "description": "Quest title"
+        },
+        "description": {
+            "type": "string",
+            "description": "Quest description"
+        },
+        "quest_type": {
+            "type": "string",
+            "description": "Type: daily, weekly, one_time, milestone"
+        },
+        "requirement_type": {
+            "type": "string",
+            "description": "Requirement: vote_count, fund_amount, referral_count, streak_days"
+        },
+        "requirement_target": {
+            "type": "integer",
+            "description": "Target value to complete quest"
+        },
+        "reward_reputation": {
+            "type": "integer",
+            "default": 0,
+            "description": "Reputation reward"
+        },
+        "reward_pi_amount": {
+            "type": "number",
+            "default": 0,
+            "description": "Pi reward amount"
+        },
+        "reward_badge": {
+            "type": "string",
+            "description": "Badge reward name"
+        },
+        "active": {
+            "type": "boolean",
+            "default": true,
+            "description": "Whether quest is active"
+        }
+    },
+    "required": [
+        "quest_id",
+        "title",
+        "quest_type",
+        "requirement_type",
+        "requirement_target"
+    ]
+}

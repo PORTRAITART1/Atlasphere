@@ -1,0 +1,74 @@
+{
+    "title": "pi_profiles",
+    "type": "object",
+    "properties": {
+        "id": {
+            "type": "integer"
+        },
+        "pi_uid": {
+            "type": "string",
+            "description": "Pi Network unique user ID"
+        },
+        "username": {
+            "type": "string",
+            "description": "Pi Network username"
+        },
+        "display_name": {
+            "type": "string",
+            "description": "Display name"
+        },
+        "reputation": {
+            "type": "integer",
+            "default": 0,
+            "description": "Reputation score"
+        },
+        "voting_power": {
+            "type": "number",
+            "default": 1.0,
+            "description": "Calculated voting power"
+        },
+        "pi_locked": {
+            "type": "number",
+            "default": 0,
+            "description": "Amount of Pi locked"
+        },
+        "streak_days": {
+            "type": "integer",
+            "default": 0,
+            "description": "Consecutive active days"
+        },
+        "kyc_verified": {
+            "type": "boolean",
+            "default": false,
+            "description": "KYC verification status"
+        },
+        "language": {
+            "type": "string",
+            "default": "fr",
+            "description": "Preferred language"
+        },
+        "badges": {
+            "type": "string",
+            "default": "[]",
+            "description": "JSON array of badge names"
+        },
+        "level": {
+            "type": "string",
+            "default": "bronze",
+            "description": "Reputation level: bronze, silver, gold, diamond, platinum"
+        },
+        "last_active": {
+            "type": "string",
+            "description": "Last activity timestamp"
+        },
+        "user_id": {
+            "type": "string",
+            "description": "System-managed owner user ID"
+        }
+    },
+    "required": [
+        "pi_uid",
+        "username",
+        "user_id"
+    ]
+}

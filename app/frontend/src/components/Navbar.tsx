@@ -1,15 +1,22 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { getCurrentUser, authenticate, logout, subscribe, type PiUser } from '@/lib/pi-sdk';
+import { t, subscribeI18n } from '@/lib/i18n';
+import LanguageSelector from '@/components/LanguageSelector';
 
 export default function Navbar() {
   const [user, setUser] = useState<PiUser | null>(getCurrentUser());
   const [loading, setLoading] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [, setLangTick] = useState(0);
   const location = useLocation();
 
   useEffect(() => {
     return subscribe(() => setUser(getCurrentUser()));
+  }, []);
+
+  useEffect(() => {
+    return subscribeI18n(() => setLangTick((n) => n + 1));
   }, []);
 
   const handleAuth = async () => {
@@ -22,11 +29,12 @@ export default function Navbar() {
   };
 
   const navLinks = [
-    { path: '/', label: 'Accueil' },
-    { path: '/proposals', label: 'Propositions' },
-    { path: '/funding', label: 'Financement' },
-    { path: '/create', label: 'Créer' },
-    { path: '/dashboard', label: 'Dashboard' },
+    { path: '/', label: t('nav.home') },
+    { path: '/proposals', label: t('nav.proposals') },
+    { path: '/funding', label: t('nav.funding') },
+    { path: '/quests', label: `🎯 ${t('nav.quests')}` },
+    { path: '/create', label: t('nav.create') },
+    { path: '/dashboard', label: t('nav.dashboard') },
   ];
 
   return (
@@ -60,9 +68,11 @@ export default function Navbar() {
             ))}
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
+            <LanguageSelector />
+
             {user ? (
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2">
                 <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-lg bg-amber-500/10 border border-amber-500/20">
                   <span className="text-amber-400 text-sm font-medium">{user.piBalance.toFixed(1)} π</span>
                 </div>
@@ -74,7 +84,7 @@ export default function Navbar() {
                   onClick={logout}
                   className="text-xs text-gray-400 hover:text-red-400 transition-colors"
                 >
-                  Déconnexion
+                  {t('nav.disconnect')}
                 </button>
               </div>
             ) : (
@@ -83,7 +93,7 @@ export default function Navbar() {
                 disabled={loading}
                 className="px-3 py-1.5 rounded-md bg-gradient-to-r from-indigo-600 to-purple-600 text-white text-xs font-medium hover:from-indigo-500 hover:to-purple-500 transition-all disabled:opacity-50"
               >
-                {loading ? 'Connexion...' : '🔐 Connecter Pi'}
+                {loading ? t('auth.connecting') : `🔐 ${t('nav.connect')}`}
               </button>
             )}
             <button

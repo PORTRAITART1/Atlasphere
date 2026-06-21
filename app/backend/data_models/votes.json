@@ -1,0 +1,36 @@
+{
+    "title": "votes",
+    "type": "object",
+    "properties": {
+        "id": {
+            "type": "integer"
+        },
+        "project_id": {
+            "type": "integer",
+            "description": "Reference to project"
+        },
+        "vote_type": {
+            "type": "string",
+            "description": "Vote: for, against, abstain"
+        },
+        "weight": {
+            "type": "number",
+            "description": "Vote weight based on reputation"
+        },
+        "pi_uid": {
+            "type": "string",
+            "description": "Pi Network UID of voter"
+        },
+        "user_id": {
+            "type": "string",
+            "description": "System-managed owner user ID"
+        }
+    },
+    "required": [
+        "project_id",
+        "vote_type",
+        "weight",
+        "pi_uid",
+        "user_id"
+    ]
+}

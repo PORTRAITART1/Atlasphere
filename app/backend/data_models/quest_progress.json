@@ -1,0 +1,41 @@
+{
+    "title": "quest_progress",
+    "type": "object",
+    "properties": {
+        "id": {
+            "type": "integer"
+        },
+        "quest_id": {
+            "type": "string",
+            "description": "Reference to quest"
+        },
+        "pi_uid": {
+            "type": "string",
+            "description": "Pi Network UID"
+        },
+        "progress": {
+            "type": "integer",
+            "default": 0,
+            "description": "Current progress value"
+        },
+        "completed": {
+            "type": "boolean",
+            "default": false,
+            "description": "Whether quest is completed"
+        },
+        "claimed": {
+            "type": "boolean",
+            "default": false,
+            "description": "Whether reward has been claimed"
+        },
+        "user_id": {
+            "type": "string",
+            "description": "System-managed owner user ID"
+        }
+    },
+    "required": [
+        "quest_id",
+        "pi_uid",
+        "user_id"
+    ]
+}

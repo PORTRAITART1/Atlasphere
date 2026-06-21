@@ -1,0 +1,93 @@
+{
+    "title": "projects",
+    "type": "object",
+    "properties": {
+        "id": {
+            "type": "integer"
+        },
+        "title": {
+            "type": "string",
+            "description": "Project title"
+        },
+        "description": {
+            "type": "string",
+            "description": "Full project description"
+        },
+        "category": {
+            "type": "string",
+            "description": "Category: education, tech, environment, commerce, health, social"
+        },
+        "budget": {
+            "type": "number",
+            "description": "Target budget in Pi"
+        },
+        "raised": {
+            "type": "number",
+            "default": 0,
+            "description": "Amount raised so far"
+        },
+        "status": {
+            "type": "string",
+            "default": "proposed",
+            "description": "Status: proposed, voting, funded, in_progress, completed, failed"
+        },
+        "votes_for": {
+            "type": "integer",
+            "default": 0,
+            "description": "Total weighted votes for"
+        },
+        "votes_against": {
+            "type": "integer",
+            "default": 0,
+            "description": "Total weighted votes against"
+        },
+        "voter_count": {
+            "type": "integer",
+            "default": 0,
+            "description": "Number of unique voters"
+        },
+        "milestones": {
+            "type": "string",
+            "default": "[]",
+            "description": "JSON array of milestones"
+        },
+        "team": {
+            "type": "string",
+            "default": "[]",
+            "description": "JSON array of team members"
+        },
+        "region": {
+            "type": "string",
+            "description": "Geographic region"
+        },
+        "deadline": {
+            "type": "string",
+            "description": "Voting/funding deadline"
+        },
+        "escrow_contract_id": {
+            "type": "string",
+            "description": "PiRC2 escrow contract ID"
+        },
+        "quorum": {
+            "type": "number",
+            "default": 0.05,
+            "description": "Minimum quorum percentage"
+        },
+        "threshold": {
+            "type": "number",
+            "default": 0.66,
+            "description": "Approval threshold percentage"
+        },
+        "user_id": {
+            "type": "string",
+            "description": "System-managed owner user ID"
+        }
+    },
+    "required": [
+        "title",
+        "description",
+        "category",
+        "budget",
+        "user_id"
+    ]
+}
