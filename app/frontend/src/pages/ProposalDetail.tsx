@@ -1,32 +1,139 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
-import { getProposalById, getStatusLabel, getStatusColor, getCategoryLabel } from '@/lib/store';
-import { getCurrentUser, castVote, contributePI, subscribe } from '@/lib/pi-sdk';
+import PageTransition from '@/components/PageTransition';
+import PiPaymentButton from '@/components/PiPaymentButton';
+import {
+  fetchProjectById,
+  fetchAllVotes,
+  createVote,
+  createContribution,
+  updateProject,
+  type Project,
+  type Vote,
+  getStatusLabel,
+  getStatusColor,
+  getCategoryLabel,
+  parseMilestones,
+  parseTeam,
+} from '@/lib/api';
+import { getCurrentUser, subscribe } from '@/lib/pi-sdk';
 
 export default function ProposalDetail() {
   const { id } = useParams<{ id: string }>();
-  const proposal = getProposalById(id || '');
+  const [project, setProject] = useState<Project | null>(null);
+  const [votes, setVotes] = useState<Vote[]>([]);
+  const [loading, setLoading] = useState(true);
   const [user, setUser] = useState(getCurrentUser());
   const [voted, setVoted] = useState(false);
-  const [contributed, setContributed] = useState(false);
   const [contributionAmount, setContributionAmount] = useState('10');
-  const [activeTab, setActiveTab] = useState<'overview' | 'comments' | 'team'>('overview');
+  const [contributing, setContributing] = useState(false);
+  const [activeTab, setActiveTab] = useState<'overview' | 'milestones' | 'team'>('overview');
 
   useEffect(() => {
     return subscribe(() => setUser(getCurrentUser()));
   }, []);
 
-  if (!proposal) {
+  useEffect(() => {
+    if (id) loadProject(parseInt(id));
+  }, [id]);
+
+  const loadProject = async (projectId: number) => {
+    setLoading(true);
+    try {
+      const proj = await fetchProjectById(projectId);
+      setProject(proj);
+
+      // Load votes for this project
+      const votesResult = await fetchAllVotes({
+        query: { project_id: projectId },
+        limit: 100,
+      });
+      if (votesResult?.items) {
+        setVotes(votesResult.items);
+        // Check if current user already voted
+        if (user) {
+          const hasVoted = votesResult.items.some((v) => v.pi_uid === user.uid);
+          setVoted(hasVoted);
+        }
+      }
+    } catch (err) {
+      console.error('Failed to load project:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleVote = async (voteType: 'for' | 'against') => {
+    if (!user || !project || voted) return;
+    try {
+      await createVote({
+        project_id: project.id,
+        vote_type: voteType,
+        weight: user.votingPower || 1,
+        pi_uid: user.uid,
+      });
+
+      // Update project vote counts
+      const newVotesFor = (project.votes_for || 0) + (voteType === 'for' ? (user.votingPower || 1) : 0);
+      const newVotesAgainst = (project.votes_against || 0) + (voteType === 'against' ? (user.votingPower || 1) : 0);
+      const newVoterCount = (project.voter_count || 0) + 1;
+
+      await updateProject(project.id, {
+        votes_for: newVotesFor,
+        votes_against: newVotesAgainst,
+        voter_count: newVoterCount,
+      });
+
+      setProject({
+        ...project,
+        votes_for: newVotesFor,
+        votes_against: newVotesAgainst,
+        voter_count: newVoterCount,
+      });
+      setVoted(true);
+    } catch (err) {
+      console.error('Vote failed:', err);
+    }
+  };
+
+  const handleContribute = async () => {
+    if (!user || !project) return;
+    const amount = parseFloat(contributionAmount);
+    if (isNaN(amount) || amount <= 0) return;
+
+    setContributing(true);
+    try {
+      await createContribution({
+        project_id: project.id,
+        amount,
+        pi_uid: user.uid,
+        status: 'completed',
+      });
+
+      // Update project raised amount
+      const newRaised = (project.raised || 0) + amount;
+      await updateProject(project.id, { raised: newRaised });
+
+      setProject({ ...project, raised: newRaised });
+      setContributionAmount('10');
+    } catch (err) {
+      console.error('Contribution failed:', err);
+    } finally {
+      setContributing(false);
+    }
+  };
+
+  if (loading) {
     return (
       <div className="min-h-screen bg-slate-950 flex flex-col">
         <Navbar />
         <div className="flex-1 flex items-center justify-center">
           <div className="text-center">
-            <div className="text-4xl mb-4">❌</div>
-            <p className="text-gray-400 mb-4">Proposition introuvable</p>
-            <Link to="/proposals" className="text-indigo-400 hover:text-indigo-300">← Retour aux propositions</Link>
+            <div className="animate-spin w-8 h-8 border-2 border-indigo-500 border-t-transparent rounded-full mx-auto mb-4" />
+            <p className="text-gray-400">Chargement...</p>
           </div>
         </div>
         <Footer />
@@ -34,207 +141,358 @@ export default function ProposalDetail() {
     );
   }
 
-  const votePercentage = proposal.totalVoters > 0 ? (proposal.votesFor / proposal.totalVoters) * 100 : 0;
-  const fundingPercentage = proposal.fundingGoal > 0 ? (proposal.fundingRaised / proposal.fundingGoal) * 100 : 0;
+  if (!project) {
+    return (
+      <div className="min-h-screen bg-slate-950 flex flex-col">
+        <Navbar />
+        <div className="flex-1 flex items-center justify-center">
+          <div className="text-center">
+            <div className="text-4xl mb-4">❌</div>
+            <p className="text-gray-400 mb-4">Proposition introuvable</p>
+            <Link to="/proposals" className="text-indigo-400 hover:text-indigo-300">
+              ← Retour aux propositions
+            </Link>
+          </div>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
 
-  const handleVote = async (voteType: 'for' | 'against') => {
-    if (!user) return;
-    const success = await castVote();
-    if (success) {
-      setVoted(true);
-      if (voteType === 'for') {
-        proposal.votesFor += user.votingPower;
-      } else {
-        proposal.votesAgainst += user.votingPower;
-      }
-      proposal.totalVoters += 1;
-    }
-  };
-
-  const handleContribute = async () => {
-    if (!user) return;
-    const amount = parseFloat(contributionAmount);
-    if (isNaN(amount) || amount <= 0) return;
-    const success = await contributePI(amount);
-    if (success) {
-      setContributed(true);
-      proposal.fundingRaised += amount;
-      proposal.contributors += 1;
-    }
-  };
+  const votePercentage =
+    (project.voter_count || 0) > 0
+      ? ((project.votes_for || 0) / ((project.votes_for || 0) + (project.votes_against || 0) || 1)) * 100
+      : 50;
+  const fundingPercentage = project.budget > 0 ? ((project.raised || 0) / project.budget) * 100 : 0;
+  const milestones = parseMilestones(project.milestones);
+  const team = parseTeam(project.team);
 
   return (
     <div className="min-h-screen bg-slate-950 flex flex-col">
       <Navbar />
 
-      <main className="flex-1 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <Link to="/proposals" className="text-indigo-400 hover:text-indigo-300 text-sm mb-6 inline-block">← Retour aux propositions</Link>
+      <PageTransition>
+        <main className="flex-1 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <Link to="/proposals" className="text-indigo-400 hover:text-indigo-300 text-sm mb-6 inline-block">
+            ← Retour aux propositions
+          </Link>
 
-        {/* Header */}
-        <div className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-6 mb-6">
-          <div className="flex flex-wrap items-center gap-3 mb-4">
-            <span className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(proposal.status)}`}>
-              {getStatusLabel(proposal.status)}
-            </span>
-            <span className="text-sm text-gray-400">{getCategoryLabel(proposal.category)}</span>
-            <span className="text-xs text-gray-500 ml-auto">Créé le {proposal.createdAt}</span>
-          </div>
-          <h1 className="text-2xl md:text-3xl font-bold text-white mb-3">{proposal.title}</h1>
-          <div className="flex items-center gap-2 mb-4">
-            <span className="text-xl">{proposal.authorAvatar}</span>
-            <span className="text-gray-300">{proposal.author}</span>
-          </div>
-          <p className="text-gray-400">{proposal.fullDescription}</p>
-        </div>
+          {/* Header */}
+          <motion.div
+            className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-6 mb-6"
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4 }}
+          >
+            <div className="flex flex-wrap items-center gap-3 mb-4">
+              <span className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(project.status)}`}>
+                {getStatusLabel(project.status)}
+              </span>
+              <span className="text-sm text-gray-400">{getCategoryLabel(project.category)}</span>
+              <span className="text-xs text-gray-500 ml-auto">
+                Créé le {project.created_at ? new Date(project.created_at).toLocaleDateString('fr-FR') : 'N/A'}
+              </span>
+            </div>
+            <h1 className="text-2xl md:text-3xl font-bold text-white mb-3">{project.title}</h1>
+            <p className="text-gray-400">{project.description}</p>
+          </motion.div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Main Content */}
-          <div className="lg:col-span-2 space-y-6">
-            {/* Tabs */}
-            <div className="flex gap-1 bg-slate-800/50 rounded-lg p-1">
-              {(['overview', 'comments', 'team'] as const).map((tab) => (
-                <button
-                  key={tab}
-                  onClick={() => setActiveTab(tab)}
-                  className={`flex-1 px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-                    activeTab === tab ? 'bg-indigo-600 text-white' : 'text-gray-400 hover:text-white'
-                  }`}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {/* Main Content */}
+            <div className="lg:col-span-2 space-y-6">
+              {/* Tabs */}
+              <div className="flex gap-1 bg-slate-800/50 rounded-lg p-1">
+                {(['overview', 'milestones', 'team'] as const).map((tab) => (
+                  <button
+                    key={tab}
+                    onClick={() => setActiveTab(tab)}
+                    className={`flex-1 px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                      activeTab === tab ? 'bg-indigo-600 text-white' : 'text-gray-400 hover:text-white'
+                    }`}
+                  >
+                    {tab === 'overview' ? 'Aperçu' : tab === 'milestones' ? 'Jalons' : 'Équipe'}
+                  </button>
+                ))}
+              </div>
+
+              {activeTab === 'overview' && (
+                <motion.div
+                  className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-6"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
                 >
-                  {tab === 'overview' ? 'Aperçu' : tab === 'comments' ? `Commentaires (${proposal.comments.length})` : 'Équipe'}
-                </button>
-              ))}
+                  <h3 className="text-lg font-semibold text-white mb-4">Détails du Projet</h3>
+                  <p className="text-gray-300 leading-relaxed">{project.description}</p>
+                  {project.region && (
+                    <div className="mt-4 text-sm text-gray-400">
+                      <span className="font-medium text-gray-300">Région:</span> {project.region}
+                    </div>
+                  )}
+                  <div className="mt-4 grid grid-cols-2 gap-4 text-sm">
+                    <div className="bg-slate-900/50 rounded-lg p-3">
+                      <div className="text-gray-400">Budget</div>
+                      <div className="text-amber-400 font-bold">{project.budget.toLocaleString()} π</div>
+                    </div>
+                    <div className="bg-slate-900/50 rounded-lg p-3">
+                      <div className="text-gray-400">Collecté</div>
+                      <div className="text-emerald-400 font-bold">{(project.raised || 0).toLocaleString()} π</div>
+                    </div>
+                    <div className="bg-slate-900/50 rounded-lg p-3">
+                      <div className="text-gray-400">Votes Pour</div>
+                      <div className="text-blue-400 font-bold">{project.votes_for || 0}</div>
+                    </div>
+                    <div className="bg-slate-900/50 rounded-lg p-3">
+                      <div className="text-gray-400">Votes Contre</div>
+                      <div className="text-red-400 font-bold">{project.votes_against || 0}</div>
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+
+              {activeTab === 'milestones' && (
+                <motion.div
+                  className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-6"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                >
+                  <h3 className="text-lg font-semibold text-white mb-4">Jalons du Projet</h3>
+                  {milestones.length > 0 ? (
+                    <div className="space-y-4">
+                      {milestones.map((m, i) => (
+                        <div key={i} className="flex items-start gap-3">
+                          <div
+                            className={`w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 ${
+                              m.completed ? 'bg-emerald-500' : 'bg-slate-700'
+                            }`}
+                          >
+                            {m.completed ? (
+                              <span className="text-white text-xs">✓</span>
+                            ) : (
+                              <span className="text-gray-400 text-xs">{i + 1}</span>
+                            )}
+                          </div>
+                          <div>
+                            <div className={`font-medium ${m.completed ? 'text-emerald-400' : 'text-white'}`}>
+                              {m.title}
+                            </div>
+                            <div className="text-sm text-gray-400">{m.description}</div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-gray-400 text-sm">Aucun jalon défini pour ce projet.</p>
+                  )}
+                </motion.div>
+              )}
+
+              {activeTab === 'team' && (
+                <motion.div
+                  className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-6"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                >
+                  <h3 className="text-lg font-semibold text-white mb-4">Équipe</h3>
+                  {team.length > 0 ? (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      {team.map((t, i) => (
+                        <div
+                          key={i}
+                          className="bg-slate-900/50 border border-slate-700/50 rounded-xl p-4 flex items-center gap-3"
+                        >
+                          <span className="text-2xl">{t.avatar}</span>
+                          <div>
+                            <div className="font-medium text-white">{t.name}</div>
+                            <div className="text-sm text-gray-400">{t.role}</div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-gray-400 text-sm">Aucune information d&apos;équipe disponible.</p>
+                  )}
+                </motion.div>
+              )}
+
+              {/* Recent Votes */}
+              {votes.length > 0 && (
+                <motion.div
+                  className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-6"
+                  initial={{ opacity: 0, y: 16 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.2 }}
+                >
+                  <h3 className="text-lg font-semibold text-white mb-4">
+                    Derniers Votes ({votes.length})
+                  </h3>
+                  <div className="space-y-2 max-h-48 overflow-y-auto">
+                    {votes.slice(0, 10).map((v) => (
+                      <div key={v.id} className="flex items-center gap-2 text-sm">
+                        <span
+                          className={`w-5 h-5 rounded-full flex items-center justify-center text-xs ${
+                            v.vote_type === 'for'
+                              ? 'bg-emerald-500/20 text-emerald-400'
+                              : 'bg-red-500/20 text-red-400'
+                          }`}
+                        >
+                          {v.vote_type === 'for' ? '✓' : '✗'}
+                        </span>
+                        <span className="text-gray-400 truncate">{v.pi_uid.slice(0, 8)}...</span>
+                        <span className="text-xs text-gray-500 ml-auto">
+                          poids: {v.weight}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </motion.div>
+              )}
             </div>
 
-            {activeTab === 'overview' && (
-              <div className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-6">
-                <h3 className="text-lg font-semibold text-white mb-4">Jalons du Projet</h3>
-                <div className="space-y-4">
-                  {proposal.milestones.map((m, i) => (
-                    <div key={i} className="flex items-start gap-3">
-                      <div className={`w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 ${m.completed ? 'bg-emerald-500' : 'bg-slate-700'}`}>
-                        {m.completed ? <span className="text-white text-xs">✓</span> : <span className="text-gray-400 text-xs">{i + 1}</span>}
-                      </div>
-                      <div>
-                        <div className={`font-medium ${m.completed ? 'text-emerald-400' : 'text-white'}`}>{m.title}</div>
-                        <div className="text-sm text-gray-400">{m.description}</div>
-                      </div>
+            {/* Sidebar */}
+            <div className="space-y-6">
+              {/* Voting */}
+              {project.status === 'voting' && (
+                <motion.div
+                  className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-5"
+                  initial={{ opacity: 0, x: 16 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.1 }}
+                >
+                  <h3 className="text-lg font-semibold text-white mb-4">🗳️ Vote</h3>
+                  <div className="space-y-3 mb-4">
+                    <div className="flex justify-between text-sm">
+                      <span className="text-emerald-400">Pour: {project.votes_for || 0}</span>
+                      <span className="text-red-400">Contre: {project.votes_against || 0}</span>
                     </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {activeTab === 'comments' && (
-              <div className="space-y-4">
-                {proposal.comments.map((c) => (
-                  <div key={c.id} className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-4">
-                    <div className="flex items-center gap-2 mb-2">
-                      <span className="text-lg">{c.avatar}</span>
-                      <span className="text-sm font-medium text-white">{c.author}</span>
-                      <span className="text-xs text-gray-500 ml-auto">{c.date}</span>
+                    <div className="w-full h-3 bg-slate-700 rounded-full overflow-hidden flex">
+                      <div className="h-full bg-emerald-500" style={{ width: `${votePercentage}%` }} />
+                      <div className="h-full bg-red-500" style={{ width: `${100 - votePercentage}%` }} />
                     </div>
-                    <p className="text-gray-300 text-sm">{c.text}</p>
-                    <div className="mt-2 text-xs text-gray-500">❤️ {c.likes}</div>
-                  </div>
-                ))}
-              </div>
-            )}
-
-            {activeTab === 'team' && (
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {proposal.team.map((t, i) => (
-                  <div key={i} className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-4 flex items-center gap-3">
-                    <span className="text-2xl">{t.avatar}</span>
-                    <div>
-                      <div className="font-medium text-white">{t.name}</div>
-                      <div className="text-sm text-gray-400">{t.role}</div>
+                    <div className="text-xs text-gray-400 text-center">
+                      {project.voter_count || 0} votants
+                      {project.deadline && ` • Deadline: ${project.deadline}`}
                     </div>
                   </div>
-                ))}
-              </div>
-            )}
-          </div>
+                  {user && !voted ? (
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => handleVote('for')}
+                        className="flex-1 px-4 py-2 rounded-lg bg-emerald-600 text-white text-sm font-medium hover:bg-emerald-500 transition-colors"
+                      >
+                        ✓ Pour
+                      </button>
+                      <button
+                        onClick={() => handleVote('against')}
+                        className="flex-1 px-4 py-2 rounded-lg bg-red-600 text-white text-sm font-medium hover:bg-red-500 transition-colors"
+                      >
+                        ✗ Contre
+                      </button>
+                    </div>
+                  ) : voted ? (
+                    <div className="text-center text-emerald-400 text-sm py-2">✓ Vote enregistré !</div>
+                  ) : (
+                    <div className="text-center text-gray-400 text-sm py-2">Connectez-vous pour voter</div>
+                  )}
+                </motion.div>
+              )}
 
-          {/* Sidebar */}
-          <div className="space-y-6">
-            {/* Voting */}
-            {proposal.status === 'voting' && (
-              <div className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-5">
-                <h3 className="text-lg font-semibold text-white mb-4">🗳️ Vote</h3>
-                <div className="space-y-3 mb-4">
-                  <div className="flex justify-between text-sm">
-                    <span className="text-emerald-400">Pour: {proposal.votesFor}</span>
-                    <span className="text-red-400">Contre: {proposal.votesAgainst}</span>
+              {/* Funding */}
+              {(project.status === 'funding' || project.status === 'approved') && (
+                <motion.div
+                  className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-5"
+                  initial={{ opacity: 0, x: 16 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.1 }}
+                >
+                  <h3 className="text-lg font-semibold text-white mb-4">💰 Financement</h3>
+                  <div className="space-y-3 mb-4">
+                    <div className="text-2xl font-bold text-amber-400">
+                      {(project.raised || 0).toLocaleString()} π
+                    </div>
+                    <div className="text-sm text-gray-400">
+                      sur {project.budget.toLocaleString()} π objectif
+                    </div>
+                    <div className="w-full h-3 bg-slate-700 rounded-full overflow-hidden">
+                      <div
+                        className="h-full bg-gradient-to-r from-amber-500 to-amber-400"
+                        style={{ width: `${Math.min(fundingPercentage, 100)}%` }}
+                      />
+                    </div>
+                    <div className="text-xs text-gray-400">{fundingPercentage.toFixed(0)}% atteint</div>
                   </div>
-                  <div className="w-full h-3 bg-slate-700 rounded-full overflow-hidden flex">
-                    <div className="h-full bg-emerald-500" style={{ width: `${votePercentage}%` }} />
-                    <div className="h-full bg-red-500" style={{ width: `${100 - votePercentage}%` }} />
+                  {user ? (
+                    <div className="space-y-2">
+                      <input
+                        type="number"
+                        value={contributionAmount}
+                        onChange={(e) => setContributionAmount(e.target.value)}
+                        className="w-full px-3 py-2 rounded-lg bg-slate-900 border border-slate-700 text-white text-sm focus:outline-none focus:border-amber-500"
+                        placeholder="Montant en Pi"
+                      />
+                      <button
+                        onClick={handleContribute}
+                        disabled={contributing}
+                        className="w-full px-4 py-2 rounded-lg bg-gradient-to-r from-amber-600 to-amber-500 text-white text-sm font-medium hover:from-amber-500 hover:to-amber-400 transition-all disabled:opacity-50"
+                      >
+                        {contributing ? 'En cours...' : 'Contribuer en Pi'}
+                      </button>
+                      <PiPaymentButton
+                        amount={parseFloat(contributionAmount) || 10}
+                        projectId={project.id}
+                        memo={`Contribution à ${project.title}`}
+                        onSuccess={() => loadProject(project.id)}
+                        className="w-full px-4 py-2 rounded-lg bg-gradient-to-r from-purple-600 to-indigo-600 text-white text-sm font-medium hover:from-purple-500 hover:to-indigo-500 transition-all"
+                      >
+                        💎 Payer avec Pi Network
+                      </PiPaymentButton>
+                    </div>
+                  ) : (
+                    <div className="text-center text-gray-400 text-sm py-2">Connectez-vous pour contribuer</div>
+                  )}
+                </motion.div>
+              )}
+
+              {/* Info */}
+              <motion.div
+                className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-5"
+                initial={{ opacity: 0, x: 16 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.2 }}
+              >
+                <h3 className="text-lg font-semibold text-white mb-3">Informations</h3>
+                <div className="space-y-2 text-sm">
+                  <div className="flex justify-between">
+                    <span className="text-gray-400">Catégorie</span>
+                    <span className="text-white">{getCategoryLabel(project.category)}</span>
                   </div>
-                  <div className="text-xs text-gray-400 text-center">{proposal.totalVoters} votants • Deadline: {proposal.deadline}</div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-400">Créé le</span>
+                    <span className="text-white">
+                      {project.created_at ? new Date(project.created_at).toLocaleDateString('fr-FR') : 'N/A'}
+                    </span>
+                  </div>
+                  {project.deadline && (
+                    <div className="flex justify-between">
+                      <span className="text-gray-400">Deadline</span>
+                      <span className="text-white">{project.deadline}</span>
+                    </div>
+                  )}
+                  <div className="flex justify-between">
+                    <span className="text-gray-400">Budget</span>
+                    <span className="text-white">{project.budget.toLocaleString()} π</span>
+                  </div>
+                  {project.quorum && (
+                    <div className="flex justify-between">
+                      <span className="text-gray-400">Quorum</span>
+                      <span className="text-white">{(project.quorum * 100).toFixed(0)}%</span>
+                    </div>
+                  )}
                 </div>
-                {user && !voted ? (
-                  <div className="flex gap-2">
-                    <button onClick={() => handleVote('for')} className="flex-1 px-4 py-2 rounded-lg bg-emerald-600 text-white text-sm font-medium hover:bg-emerald-500 transition-colors">
-                      ✓ Pour
-                    </button>
-                    <button onClick={() => handleVote('against')} className="flex-1 px-4 py-2 rounded-lg bg-red-600 text-white text-sm font-medium hover:bg-red-500 transition-colors">
-                      ✗ Contre
-                    </button>
-                  </div>
-                ) : voted ? (
-                  <div className="text-center text-emerald-400 text-sm py-2">✓ Vote enregistré !</div>
-                ) : (
-                  <div className="text-center text-gray-400 text-sm py-2">Connectez-vous pour voter</div>
-                )}
-              </div>
-            )}
-
-            {/* Funding */}
-            {(proposal.status === 'funding' || proposal.status === 'approved') && (
-              <div className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-5">
-                <h3 className="text-lg font-semibold text-white mb-4">💰 Financement</h3>
-                <div className="space-y-3 mb-4">
-                  <div className="text-2xl font-bold text-amber-400">{proposal.fundingRaised.toLocaleString()} π</div>
-                  <div className="text-sm text-gray-400">sur {proposal.fundingGoal.toLocaleString()} π objectif</div>
-                  <div className="w-full h-3 bg-slate-700 rounded-full overflow-hidden">
-                    <div className="h-full bg-gradient-to-r from-amber-500 to-amber-400" style={{ width: `${Math.min(fundingPercentage, 100)}%` }} />
-                  </div>
-                  <div className="text-xs text-gray-400">{proposal.contributors} contributeurs</div>
-                </div>
-                {user && !contributed ? (
-                  <div className="space-y-2">
-                    <input
-                      type="number"
-                      value={contributionAmount}
-                      onChange={(e) => setContributionAmount(e.target.value)}
-                      className="w-full px-3 py-2 rounded-lg bg-slate-900 border border-slate-700 text-white text-sm focus:outline-none focus:border-amber-500"
-                      placeholder="Montant en Pi"
-                    />
-                    <button onClick={handleContribute} className="w-full px-4 py-2 rounded-lg bg-gradient-to-r from-amber-600 to-amber-500 text-white text-sm font-medium hover:from-amber-500 hover:to-amber-400 transition-all">
-                      Contribuer en Pi
-                    </button>
-                  </div>
-                ) : contributed ? (
-                  <div className="text-center text-amber-400 text-sm py-2">✓ Contribution enregistrée !</div>
-                ) : (
-                  <div className="text-center text-gray-400 text-sm py-2">Connectez-vous pour contribuer</div>
-                )}
-              </div>
-            )}
-
-            {/* Info */}
-            <div className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-5">
-              <h3 className="text-lg font-semibold text-white mb-3">Informations</h3>
-              <div className="space-y-2 text-sm">
-                <div className="flex justify-between"><span className="text-gray-400">Catégorie</span><span className="text-white">{getCategoryLabel(proposal.category)}</span></div>
-                <div className="flex justify-between"><span className="text-gray-400">Créé le</span><span className="text-white">{proposal.createdAt}</span></div>
-                <div className="flex justify-between"><span className="text-gray-400">Deadline</span><span className="text-white">{proposal.deadline}</span></div>
-                <div className="flex justify-between"><span className="text-gray-400">Objectif</span><span className="text-white">{proposal.fundingGoal.toLocaleString()} π</span></div>
-              </div>
+              </motion.div>
             </div>
           </div>
-        </div>
-      </main>
+        </main>
+      </PageTransition>
 
       <Footer />
     </div>

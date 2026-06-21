@@ -1,15 +1,61 @@
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
-import ProposalCard from '@/components/ProposalCard';
 import PageTransition from '@/components/PageTransition';
-import { getProposals, getPlatformStats } from '@/lib/store';
+import {
+  fetchAllProjects,
+  fetchAllVotes,
+  fetchAllContributions,
+  type Project,
+  getStatusLabel,
+  getStatusColor,
+  getCategoryLabel,
+} from '@/lib/api';
 
 export default function Index() {
-  const stats = getPlatformStats();
-  const proposals = getProposals();
-  const featured = proposals.filter((p) => p.status === 'voting' || p.status === 'funding').slice(0, 3);
+  const [featured, setFeatured] = useState<Project[]>([]);
+  const [stats, setStats] = useState({
+    totalProjects: 0,
+    totalFunded: 0,
+    totalPiInvested: 0,
+    totalVotes: 0,
+  });
+
+  useEffect(() => {
+    loadData();
+  }, []);
+
+  const loadData = async () => {
+    try {
+      const [projectsRes, votesRes, contribRes] = await Promise.all([
+        fetchAllProjects({ limit: 100 }),
+        fetchAllVotes({ limit: 1 }),
+        fetchAllContributions({ limit: 1 }),
+      ]);
+
+      if (projectsRes?.items) {
+        const projects = projectsRes.items;
+        const featuredProjects = projects
+          .filter((p) => p.status === 'voting' || p.status === 'funding')
+          .slice(0, 3);
+        setFeatured(featuredProjects);
+
+        const funded = projects.filter((p) => p.status === 'funded' || p.status === 'completed').length;
+        const totalRaised = projects.reduce((sum, p) => sum + (p.raised || 0), 0);
+
+        setStats({
+          totalProjects: projectsRes.total,
+          totalFunded: funded,
+          totalPiInvested: totalRaised,
+          totalVotes: votesRes?.total || 0,
+        });
+      }
+    } catch (err) {
+      console.error('Failed to load homepage data:', err);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-slate-950 flex flex-col">
@@ -54,7 +100,7 @@ export default function Index() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.2 }}
               >
-                Votez sur les projets communautaires, financez les initiatives locales, et participez 
+                Votez sur les projets communautaires, financez les initiatives locales, et participez
                 à la gouvernance décentralisée de l&apos;écosystème Pi avec des millions de Pionniers.
               </motion.p>
               <motion.div
@@ -84,10 +130,10 @@ export default function Index() {
         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-8 relative z-10">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {[
-              { label: 'Pionniers Actifs', value: stats.totalPioneers.toLocaleString(), icon: '👥' },
+              { label: 'Projets Soumis', value: stats.totalProjects.toString(), icon: '📋' },
               { label: 'Projets Financés', value: stats.totalFunded.toString(), icon: '🏆' },
-              { label: 'Pi Investis', value: `${(stats.totalPiInvested / 1000).toFixed(0)}K π`, icon: '💰' },
-              { label: 'Votes Exprimés', value: stats.totalVotesCast.toLocaleString(), icon: '🗳️' },
+              { label: 'Pi Investis', value: stats.totalPiInvested > 1000 ? `${(stats.totalPiInvested / 1000).toFixed(0)}K π` : `${stats.totalPiInvested} π`, icon: '💰' },
+              { label: 'Votes Exprimés', value: stats.totalVotes.toLocaleString(), icon: '🗳️' },
             ].map((stat, i) => (
               <motion.div
                 key={stat.label}
@@ -173,15 +219,99 @@ export default function Index() {
               Voir tout →
             </Link>
           </motion.div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {featured.map((p, i) => (
-              <ProposalCard key={p.id} proposal={p} index={i} />
-            ))}
-          </div>
+          {featured.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {featured.map((p, i) => (
+                <FeaturedProjectCard key={p.id} project={p} index={i} />
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-12 bg-slate-800/30 border border-slate-700/30 rounded-xl">
+              <div className="text-3xl mb-3">🚀</div>
+              <p className="text-gray-400">Aucune proposition active pour le moment.</p>
+              <Link to="/create" className="text-indigo-400 hover:text-indigo-300 text-sm mt-2 inline-block">
+                Soyez le premier à proposer un projet →
+              </Link>
+            </div>
+          )}
         </section>
       </PageTransition>
 
       <Footer />
     </div>
+  );
+}
+
+function FeaturedProjectCard({ project, index }: { project: Project; index: number }) {
+  const votePercentage =
+    (project.voter_count || 0) > 0
+      ? ((project.votes_for || 0) / (project.voter_count || 1)) * 100
+      : 0;
+  const fundingPercentage =
+    project.budget > 0 ? ((project.raised || 0) / project.budget) * 100 : 0;
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 24 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.5, delay: index * 0.1 }}
+      whileHover={{ y: -4, transition: { duration: 0.2 } }}
+    >
+      <Link
+        to={`/proposal/${project.id}`}
+        className="block bg-slate-800/50 border border-slate-700/50 rounded-xl p-5 hover:border-indigo-500/40 hover:bg-slate-800/80 transition-all group h-full"
+      >
+        <div className="flex items-start justify-between mb-3">
+          <span className={`px-2.5 py-1 rounded-full text-xs font-medium ${getStatusColor(project.status)}`}>
+            {getStatusLabel(project.status)}
+          </span>
+          <span className="text-xs text-gray-500">{getCategoryLabel(project.category)}</span>
+        </div>
+
+        <h3 className="text-lg font-semibold text-white group-hover:text-indigo-300 transition-colors mb-2">
+          {project.title}
+        </h3>
+        <p className="text-gray-400 text-sm line-clamp-2 mb-4">{project.description}</p>
+
+        {project.status === 'voting' && (
+          <div className="space-y-1.5">
+            <div className="flex justify-between text-xs text-gray-400">
+              <span>Votes: {project.voter_count || 0}</span>
+              <span>{votePercentage.toFixed(0)}% Pour</span>
+            </div>
+            <div className="w-full h-2 bg-slate-700 rounded-full overflow-hidden">
+              <motion.div
+                className="h-full bg-gradient-to-r from-emerald-500 to-emerald-400 rounded-full"
+                initial={{ width: 0 }}
+                whileInView={{ width: `${votePercentage}%` }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.8, delay: 0.3 + index * 0.08, ease: 'easeOut' }}
+              />
+            </div>
+          </div>
+        )}
+
+        {(project.status === 'funding' || project.status === 'funded') && (
+          <div className="space-y-1.5">
+            <div className="flex justify-between text-xs text-gray-400">
+              <span>
+                {(project.raised || 0).toLocaleString()} π / {project.budget.toLocaleString()} π
+              </span>
+              <span>{fundingPercentage.toFixed(0)}%</span>
+            </div>
+            <div className="w-full h-2 bg-slate-700 rounded-full overflow-hidden">
+              <motion.div
+                className="h-full bg-gradient-to-r from-amber-500 to-amber-400 rounded-full"
+                initial={{ width: 0 }}
+                whileInView={{ width: `${Math.min(fundingPercentage, 100)}%` }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.8, delay: 0.3 + index * 0.08, ease: 'easeOut' }}
+              />
+            </div>
+          </div>
+        )}
+      </Link>
+    </motion.div>
   );
 }

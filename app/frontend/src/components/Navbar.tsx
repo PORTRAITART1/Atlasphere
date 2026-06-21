@@ -3,6 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { getCurrentUser, authenticate, logout, subscribe, type PiUser } from '@/lib/pi-sdk';
 import { t, subscribeI18n } from '@/lib/i18n';
 import LanguageSelector from '@/components/LanguageSelector';
+import NotificationBell from '@/components/NotificationBell';
 
 export default function Navbar() {
   const [user, setUser] = useState<PiUser | null>(getCurrentUser());
@@ -70,6 +71,7 @@ export default function Navbar() {
 
           <div className="flex items-center gap-2">
             <LanguageSelector />
+            <NotificationBell />
 
             {user ? (
               <div className="flex items-center gap-2">

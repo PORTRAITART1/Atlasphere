@@ -39,6 +39,12 @@ Build PiDAO - A decentralized governance platform for Pi Network Pioneers where 
 - [x] Rename: PiPolis → Polis (all frontend + backend references, logo file, localStorage keys)
 - [x] Add Arabic (AR) language support to Privacy and Terms pages with full RTL support
 - [x] Rename: Polis → PolisGo (all frontend pages, components, i18n translations, backend references)
+- [x] Connect Proposals page to backend API (list, filter, search, pagination)
+- [x] Connect ProposalDetail page to backend (load project, vote via API)
+- [x] Connect Funding page to backend (list funded projects, contribute via API)
+- [x] Connect Dashboard page to backend (my proposals, votes, contributions)
+- [x] Connect CreateProposal page to backend (POST new project)
+- [x] Add notifications system in Navbar (badge + dropdown)
 
 ## Progress Log
 - 2026-05-24: Plan approved, starting PiDAO development

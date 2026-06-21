@@ -1,5 +1,7 @@
 import { useState, useRef } from 'react';
-import { client } from '@/lib/api';
+import { createClient } from '@metagptx/web-sdk';
+
+const client = createClient();
 
 interface AIAssistantProps {
   title: string;

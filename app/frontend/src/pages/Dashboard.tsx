@@ -5,16 +5,52 @@ import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import PageTransition from '@/components/PageTransition';
 import { getCurrentUser, authenticate, subscribe, type PiUser } from '@/lib/pi-sdk';
-import { getUserVotes, getUserContributions, getProposalById } from '@/lib/store';
+import {
+  fetchMyProjects,
+  fetchMyVotes,
+  fetchMyContributions,
+  type Project,
+  type Vote,
+  type Contribution,
+  getStatusLabel,
+  getStatusColor,
+} from '@/lib/api';
 
 export default function Dashboard() {
   const [user, setUser] = useState<PiUser | null>(getCurrentUser());
   const [loading, setLoading] = useState(false);
-  const [activeTab, setActiveTab] = useState<'overview' | 'votes' | 'contributions'>('overview');
+  const [dataLoading, setDataLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState<'overview' | 'proposals' | 'votes' | 'contributions'>('overview');
+  const [myProjects, setMyProjects] = useState<Project[]>([]);
+  const [myVotes, setMyVotes] = useState<Vote[]>([]);
+  const [myContributions, setMyContributions] = useState<Contribution[]>([]);
 
   useEffect(() => {
     return subscribe(() => setUser(getCurrentUser()));
   }, []);
+
+  useEffect(() => {
+    if (user) loadDashboardData();
+  }, [user]);
+
+  const loadDashboardData = async () => {
+    setDataLoading(true);
+    try {
+      const [projectsRes, votesRes, contributionsRes] = await Promise.all([
+        fetchMyProjects({ limit: 50, sort: '-created_at' }),
+        fetchMyVotes({ limit: 50, sort: '-created_at' }),
+        fetchMyContributions({ limit: 50, sort: '-created_at' }),
+      ]);
+
+      if (projectsRes?.items) setMyProjects(projectsRes.items);
+      if (votesRes?.items) setMyVotes(votesRes.items);
+      if (contributionsRes?.items) setMyContributions(contributionsRes.items);
+    } catch (err) {
+      console.error('Failed to load dashboard data:', err);
+    } finally {
+      setDataLoading(false);
+    }
+  };
 
   const handleAuth = async () => {
     setLoading(true);
@@ -55,9 +91,7 @@ export default function Dashboard() {
     );
   }
 
-  const votes = getUserVotes();
-  const contributions = getUserContributions();
-  const totalContributed = contributions.reduce((sum, c) => sum + c.amount, 0);
+  const totalContributed = myContributions.reduce((sum, c) => sum + c.amount, 0);
 
   return (
     <div className="min-h-screen bg-slate-950 flex flex-col">
@@ -113,10 +147,10 @@ export default function Dashboard() {
           {/* Stats Grid */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
             {[
-              { label: 'Réputation', value: user.reputation, icon: '⭐', color: 'text-amber-400' },
-              { label: 'Pouvoir de Vote', value: user.votingPower, icon: '🗳️', color: 'text-indigo-400' },
-              { label: 'Votes Exprimés', value: user.votescast, icon: '✓', color: 'text-emerald-400' },
-              { label: 'Contributions', value: user.contributions, icon: '💰', color: 'text-purple-400' },
+              { label: 'Mes Propositions', value: myProjects.length, icon: '📋', color: 'text-indigo-400' },
+              { label: 'Mes Votes', value: myVotes.length, icon: '🗳️', color: 'text-emerald-400' },
+              { label: 'Contributions', value: myContributions.length, icon: '💰', color: 'text-amber-400' },
+              { label: 'Total Contribué', value: `${totalContributed.toFixed(0)} π`, icon: '💎', color: 'text-purple-400' },
             ].map((stat, i) => (
               <motion.div
                 key={stat.label}
@@ -140,7 +174,7 @@ export default function Dashboard() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, delay: 0.3 }}
           >
-            {(['overview', 'votes', 'contributions'] as const).map((tab) => (
+            {(['overview', 'proposals', 'votes', 'contributions'] as const).map((tab) => (
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
@@ -148,119 +182,224 @@ export default function Dashboard() {
                   activeTab === tab ? 'bg-indigo-600 text-white' : 'text-gray-400 hover:text-white'
                 }`}
               >
-                {tab === 'overview' ? 'Aperçu' : tab === 'votes' ? 'Mes Votes' : 'Mes Contributions'}
+                {tab === 'overview'
+                  ? 'Aperçu'
+                  : tab === 'proposals'
+                    ? 'Mes Propositions'
+                    : tab === 'votes'
+                      ? 'Mes Votes'
+                      : 'Mes Contributions'}
               </button>
             ))}
           </motion.div>
 
-          {activeTab === 'overview' && (
-            <motion.div
-              className="grid grid-cols-1 md:grid-cols-2 gap-6"
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.4 }}
-            >
-              <div className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-5">
-                <h3 className="text-lg font-semibold text-white mb-4">Activité Récente</h3>
-                <div className="space-y-3">
-                  {votes.slice(0, 3).map((v) => {
-                    const proposal = getProposalById(v.proposalId);
-                    return (
-                      <div key={v.proposalId} className="flex items-center gap-3 text-sm">
-                        <span className={v.vote === 'for' ? 'text-emerald-400' : 'text-red-400'}>{v.vote === 'for' ? '✓' : '✗'}</span>
-                        <span className="text-gray-300 truncate">{proposal?.title || 'Proposition'}</span>
-                        <span className="text-xs text-gray-500 ml-auto">{v.date}</span>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-              <div className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-5">
-                <h3 className="text-lg font-semibold text-white mb-4">Résumé Financier</h3>
-                <div className="space-y-3">
-                  <div className="flex justify-between text-sm">
-                    <span className="text-gray-400">Total Contribué</span>
-                    <span className="text-amber-400 font-medium">{totalContributed} π</span>
-                  </div>
-                  <div className="flex justify-between text-sm">
-                    <span className="text-gray-400">Projets Soutenus</span>
-                    <span className="text-white font-medium">{contributions.length}</span>
-                  </div>
-                  <div className="flex justify-between text-sm">
-                    <span className="text-gray-400">Propositions Créées</span>
-                    <span className="text-white font-medium">{user.proposalsCreated}</span>
-                  </div>
-                </div>
-              </div>
-            </motion.div>
-          )}
-
-          {activeTab === 'votes' && (
-            <motion.div
-              className="space-y-3"
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.4 }}
-            >
-              {votes.map((v, i) => {
-                const proposal = getProposalById(v.proposalId);
-                return (
-                  <motion.div
-                    key={v.proposalId}
-                    initial={{ opacity: 0, x: -16 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ duration: 0.3, delay: i * 0.05 }}
-                  >
-                    <Link to={`/proposal/${v.proposalId}`} className="block bg-slate-800/50 border border-slate-700/50 rounded-xl p-4 hover:border-indigo-500/30 transition-colors">
-                      <div className="flex items-center gap-3">
-                        <span className={`w-8 h-8 rounded-full flex items-center justify-center text-sm ${v.vote === 'for' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-red-500/20 text-red-400'}`}>
-                          {v.vote === 'for' ? '✓' : '✗'}
-                        </span>
-                        <div className="flex-1">
-                          <div className="text-white font-medium">{proposal?.title || 'Proposition'}</div>
-                          <div className="text-xs text-gray-400">Voté le {v.date}</div>
+          {dataLoading ? (
+            <div className="text-center py-12">
+              <div className="animate-spin w-8 h-8 border-2 border-indigo-500 border-t-transparent rounded-full mx-auto mb-4" />
+              <p className="text-gray-400">Chargement de vos données...</p>
+            </div>
+          ) : (
+            <>
+              {activeTab === 'overview' && (
+                <motion.div
+                  className="grid grid-cols-1 md:grid-cols-2 gap-6"
+                  initial={{ opacity: 0, y: 16 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.4 }}
+                >
+                  <div className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-5">
+                    <h3 className="text-lg font-semibold text-white mb-4">Activité Récente</h3>
+                    <div className="space-y-3">
+                      {myVotes.slice(0, 5).map((v) => (
+                        <div key={v.id} className="flex items-center gap-3 text-sm">
+                          <span className={v.vote_type === 'for' ? 'text-emerald-400' : 'text-red-400'}>
+                            {v.vote_type === 'for' ? '✓' : '✗'}
+                          </span>
+                          <Link to={`/proposal/${v.project_id}`} className="text-gray-300 truncate hover:text-indigo-300">
+                            Projet #{v.project_id}
+                          </Link>
+                          <span className="text-xs text-gray-500 ml-auto">
+                            {v.created_at ? new Date(v.created_at).toLocaleDateString('fr-FR') : ''}
+                          </span>
                         </div>
-                        <span className={`px-2 py-1 rounded text-xs ${v.vote === 'for' ? 'bg-emerald-500/10 text-emerald-400' : 'bg-red-500/10 text-red-400'}`}>
-                          {v.vote === 'for' ? 'Pour' : 'Contre'}
-                        </span>
+                      ))}
+                      {myVotes.length === 0 && (
+                        <p className="text-gray-500 text-sm">Aucun vote pour le moment.</p>
+                      )}
+                    </div>
+                  </div>
+                  <div className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-5">
+                    <h3 className="text-lg font-semibold text-white mb-4">Résumé Financier</h3>
+                    <div className="space-y-3">
+                      <div className="flex justify-between text-sm">
+                        <span className="text-gray-400">Total Contribué</span>
+                        <span className="text-amber-400 font-medium">{totalContributed.toFixed(1)} π</span>
                       </div>
-                    </Link>
-                  </motion.div>
-                );
-              })}
-            </motion.div>
-          )}
+                      <div className="flex justify-between text-sm">
+                        <span className="text-gray-400">Projets Soutenus</span>
+                        <span className="text-white font-medium">{myContributions.length}</span>
+                      </div>
+                      <div className="flex justify-between text-sm">
+                        <span className="text-gray-400">Propositions Créées</span>
+                        <span className="text-white font-medium">{myProjects.length}</span>
+                      </div>
+                      <div className="flex justify-between text-sm">
+                        <span className="text-gray-400">Votes Exprimés</span>
+                        <span className="text-white font-medium">{myVotes.length}</span>
+                      </div>
+                    </div>
+                  </div>
+                </motion.div>
+              )}
 
-          {activeTab === 'contributions' && (
-            <motion.div
-              className="space-y-3"
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.4 }}
-            >
-              {contributions.map((c, i) => {
-                const proposal = getProposalById(c.proposalId);
-                return (
-                  <motion.div
-                    key={c.proposalId + c.date}
-                    initial={{ opacity: 0, x: -16 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ duration: 0.3, delay: i * 0.05 }}
-                  >
-                    <Link to={`/proposal/${c.proposalId}`} className="block bg-slate-800/50 border border-slate-700/50 rounded-xl p-4 hover:border-indigo-500/30 transition-colors">
-                      <div className="flex items-center gap-3">
-                        <span className="w-8 h-8 rounded-full flex items-center justify-center text-sm bg-amber-500/20 text-amber-400">π</span>
-                        <div className="flex-1">
-                          <div className="text-white font-medium">{proposal?.title || 'Projet'}</div>
-                          <div className="text-xs text-gray-400">Contribué le {c.date}</div>
+              {activeTab === 'proposals' && (
+                <motion.div
+                  className="space-y-3"
+                  initial={{ opacity: 0, y: 16 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.4 }}
+                >
+                  {myProjects.map((p, i) => (
+                    <motion.div
+                      key={p.id}
+                      initial={{ opacity: 0, x: -16 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ duration: 0.3, delay: i * 0.05 }}
+                    >
+                      <Link
+                        to={`/proposal/${p.id}`}
+                        className="block bg-slate-800/50 border border-slate-700/50 rounded-xl p-4 hover:border-indigo-500/30 transition-colors"
+                      >
+                        <div className="flex items-center gap-3">
+                          <span className={`px-2 py-1 rounded-full text-xs ${getStatusColor(p.status)}`}>
+                            {getStatusLabel(p.status)}
+                          </span>
+                          <div className="flex-1">
+                            <div className="text-white font-medium">{p.title}</div>
+                            <div className="text-xs text-gray-400">
+                              {p.created_at ? new Date(p.created_at).toLocaleDateString('fr-FR') : ''}
+                            </div>
+                          </div>
+                          <span className="text-amber-400 font-medium text-sm">
+                            {p.budget.toLocaleString()} π
+                          </span>
                         </div>
-                        <span className="text-amber-400 font-medium">{c.amount} π</span>
-                      </div>
-                    </Link>
-                  </motion.div>
-                );
-              })}
-            </motion.div>
+                      </Link>
+                    </motion.div>
+                  ))}
+                  {myProjects.length === 0 && (
+                    <div className="text-center py-12">
+                      <div className="text-4xl mb-4">📋</div>
+                      <p className="text-gray-400 mb-4">Vous n&apos;avez pas encore créé de proposition.</p>
+                      <Link
+                        to="/create"
+                        className="text-indigo-400 hover:text-indigo-300 font-medium"
+                      >
+                        Créer ma première proposition →
+                      </Link>
+                    </div>
+                  )}
+                </motion.div>
+              )}
+
+              {activeTab === 'votes' && (
+                <motion.div
+                  className="space-y-3"
+                  initial={{ opacity: 0, y: 16 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.4 }}
+                >
+                  {myVotes.map((v, i) => (
+                    <motion.div
+                      key={v.id}
+                      initial={{ opacity: 0, x: -16 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ duration: 0.3, delay: i * 0.05 }}
+                    >
+                      <Link
+                        to={`/proposal/${v.project_id}`}
+                        className="block bg-slate-800/50 border border-slate-700/50 rounded-xl p-4 hover:border-indigo-500/30 transition-colors"
+                      >
+                        <div className="flex items-center gap-3">
+                          <span
+                            className={`w-8 h-8 rounded-full flex items-center justify-center text-sm ${
+                              v.vote_type === 'for'
+                                ? 'bg-emerald-500/20 text-emerald-400'
+                                : 'bg-red-500/20 text-red-400'
+                            }`}
+                          >
+                            {v.vote_type === 'for' ? '✓' : '✗'}
+                          </span>
+                          <div className="flex-1">
+                            <div className="text-white font-medium">Projet #{v.project_id}</div>
+                            <div className="text-xs text-gray-400">
+                              Voté le {v.created_at ? new Date(v.created_at).toLocaleDateString('fr-FR') : ''}
+                            </div>
+                          </div>
+                          <span
+                            className={`px-2 py-1 rounded text-xs ${
+                              v.vote_type === 'for'
+                                ? 'bg-emerald-500/10 text-emerald-400'
+                                : 'bg-red-500/10 text-red-400'
+                            }`}
+                          >
+                            {v.vote_type === 'for' ? 'Pour' : 'Contre'} (×{v.weight})
+                          </span>
+                        </div>
+                      </Link>
+                    </motion.div>
+                  ))}
+                  {myVotes.length === 0 && (
+                    <div className="text-center py-12">
+                      <div className="text-4xl mb-4">🗳️</div>
+                      <p className="text-gray-400">Vous n&apos;avez pas encore voté.</p>
+                    </div>
+                  )}
+                </motion.div>
+              )}
+
+              {activeTab === 'contributions' && (
+                <motion.div
+                  className="space-y-3"
+                  initial={{ opacity: 0, y: 16 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.4 }}
+                >
+                  {myContributions.map((c, i) => (
+                    <motion.div
+                      key={c.id}
+                      initial={{ opacity: 0, x: -16 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ duration: 0.3, delay: i * 0.05 }}
+                    >
+                      <Link
+                        to={`/proposal/${c.project_id}`}
+                        className="block bg-slate-800/50 border border-slate-700/50 rounded-xl p-4 hover:border-indigo-500/30 transition-colors"
+                      >
+                        <div className="flex items-center gap-3">
+                          <span className="w-8 h-8 rounded-full flex items-center justify-center text-sm bg-amber-500/20 text-amber-400">
+                            π
+                          </span>
+                          <div className="flex-1">
+                            <div className="text-white font-medium">Projet #{c.project_id}</div>
+                            <div className="text-xs text-gray-400">
+                              Contribué le {c.created_at ? new Date(c.created_at).toLocaleDateString('fr-FR') : ''}
+                            </div>
+                          </div>
+                          <span className="text-amber-400 font-medium">{c.amount} π</span>
+                        </div>
+                      </Link>
+                    </motion.div>
+                  ))}
+                  {myContributions.length === 0 && (
+                    <div className="text-center py-12">
+                      <div className="text-4xl mb-4">💰</div>
+                      <p className="text-gray-400">Vous n&apos;avez pas encore contribué.</p>
+                    </div>
+                  )}
+                </motion.div>
+              )}
+            </>
           )}
         </main>
       </PageTransition>
