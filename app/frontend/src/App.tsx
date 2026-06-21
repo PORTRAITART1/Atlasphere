@@ -10,6 +10,8 @@ import Funding from './pages/Funding';
 import Dashboard from './pages/Dashboard';
 import Quests from './pages/Quests';
 import AuthCallback from './pages/AuthCallback';
+import Privacy from './pages/Privacy';
+import Terms from './pages/Terms';
 
 const queryClient = new QueryClient();
 
@@ -23,6 +25,8 @@ const AppRoutes = () => (
     <Route path="/dashboard" element={<Dashboard />} />
     <Route path="/quests" element={<Quests />} />
     <Route path="/auth/callback" element={<AuthCallback />} />
+    <Route path="/privacy" element={<Privacy />} />
+    <Route path="/terms" element={<Terms />} />
   </Routes>
 );
 
