@@ -18,7 +18,7 @@ interface PiPaymentButtonProps {
 export default function PiPaymentButton({
   amount,
   projectId,
-  memo = 'Polis contribution',
+  memo = 'PolisGo contribution',
   onSuccess,
   onError,
   className = '',

@@ -1,4 +1,4 @@
-// Pi Network SDK v2.0 Integration for Polis
+// Pi Network SDK v2.0 Integration for PolisGo
 // This module wraps the real Pi SDK with sandbox fallback
 
 export interface PiUser {
@@ -66,9 +66,9 @@ export function initPiSdk(): void {
       sandbox: !isProduction
     });
     piSdkInitialized = true;
-    console.log('[Polis] Pi SDK initialized', { sandbox: !isProduction });
+    console.log('[PolisGo] Pi SDK initialized', { sandbox: !isProduction });
   } else {
-    console.log('[Polis] Pi SDK not available - running in standalone mode');
+    console.log('[PolisGo] Pi SDK not available - running in standalone mode');
   }
 }
 
@@ -92,7 +92,7 @@ export function setCurrentUser(user: PiUser | null): void {
 
 // Handle incomplete payments found during authentication
 function onIncompletePaymentFound(payment: unknown) {
-  console.log('[Polis] Incomplete payment found:', payment);
+  console.log('[PolisGo] Incomplete payment found:', payment);
   // TODO: Handle incomplete payment - send to server for completion
 }
 
@@ -131,7 +131,7 @@ export async function authenticate(): Promise<PiUser> {
       notifyListeners();
       return piUser;
     } catch (error) {
-      console.error('[Polis] Pi authentication failed:', error);
+      console.error('[PolisGo] Pi authentication failed:', error);
       throw error;
     }
   } else {
@@ -179,16 +179,16 @@ export async function createPiPayment(
           onReadyForServerApproval: onApprove,
           onReadyForServerCompletion: onComplete,
           onCancel: (paymentId) => {
-            console.log('[Polis] Payment cancelled:', paymentId);
+            console.log('[PolisGo] Payment cancelled:', paymentId);
           },
           onError: (error) => {
-            console.error('[Polis] Payment error:', error);
+            console.error('[PolisGo] Payment error:', error);
           }
         }
       );
       return true;
     } catch (error) {
-      console.error('[Polis] Payment creation failed:', error);
+      console.error('[PolisGo] Payment creation failed:', error);
       return false;
     }
   } else {
@@ -224,7 +224,7 @@ export function logout() {
 export async function contributePI(amount: number): Promise<boolean> {
   return createPiPayment(
     amount,
-    'Polis contribution',
+    'PolisGo contribution',
     { type: 'donation' },
     async () => {},
     async () => {}
