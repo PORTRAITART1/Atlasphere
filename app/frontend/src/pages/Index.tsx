@@ -43,7 +43,7 @@ export default function Index() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.1 }}
               >
-                Construisez l&apos;Avenir de{' '}
+                Gouvernance Communautaire sur{' '}
                 <span className="bg-gradient-to-r from-indigo-400 via-purple-400 to-amber-400 bg-clip-text text-transparent">
                   Pi Network
                 </span>
