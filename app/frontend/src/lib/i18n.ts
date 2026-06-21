@@ -1,15 +1,16 @@
-// Polis Internationalization (i18n) - 5 languages: FR, EN, ES, PT, ZH
+// Polis Internationalization (i18n) - 6 languages: FR, EN, ES, PT, ZH, AR
 import { useState, useEffect } from 'react';
 
-export type Locale = 'fr' | 'en' | 'es' | 'pt' | 'zh';
+export type Locale = 'fr' | 'en' | 'es' | 'pt' | 'zh' | 'ar';
 
-export const locales: Locale[] = ['fr', 'en', 'es', 'pt', 'zh'];
+export const locales: Locale[] = ['fr', 'en', 'es', 'pt', 'zh', 'ar'];
 export const localeNames: Record<Locale, string> = {
   fr: 'Français',
   en: 'English',
   es: 'Español',
   pt: 'Português',
-  zh: '中文'
+  zh: '中文',
+  ar: 'العربية'
 };
 
 export const localeFlags: Record<Locale, string> = {
@@ -17,7 +18,8 @@ export const localeFlags: Record<Locale, string> = {
   en: '🇬🇧',
   es: '🇪🇸',
   pt: '🇧🇷',
-  zh: '🇨🇳'
+  zh: '🇨🇳',
+  ar: '🇸🇦'
 };
 
 type TranslationKey = string;
@@ -966,6 +968,203 @@ const messages: Record<Locale, Translations> = {
     'terms.s11.text': '我们可能随时修改这些条款。更改将通过平台通知。修改后继续使用即表示接受新条款。',
     'terms.s12.title': '12. 联系方式',
     'terms.s12.text': '如对这些条款有任何疑问，请通过Pi Network平台或我们的社区支持系统与我们联系。',
+  },
+
+  ar: {
+    // Navigation
+    'nav.home': 'الرئيسية',
+    'nav.proposals': 'المقترحات',
+    'nav.funding': 'التمويل',
+    'nav.dashboard': 'لوحة التحكم',
+    'nav.create': 'إنشاء',
+    'nav.quests': 'المهام',
+    'nav.connect': 'اتصل بـ Pi',
+    'nav.disconnect': 'قطع الاتصال',
+
+    // Hero
+    'hero.title': 'حوكمة لامركزية لرواد Pi',
+    'hero.subtitle': 'اقترح، صوّت، موّل المشاريع المجتمعية بعملة Pi. ابنِ سمعتك وشارك في صنع القرار الجماعي.',
+    'hero.cta': 'استكشف المقترحات',
+    'hero.cta2': 'أنشئ مقترحاً',
+
+    // Stats
+    'stats.projects': 'مشاريع نشطة',
+    'stats.pioneers': 'رواد مشاركون',
+    'stats.funded': 'Pi ممولة',
+    'stats.votes': 'أصوات مسجلة',
+
+    // Project
+    'project.propose': 'اقترح مشروعاً',
+    'project.budget': 'الميزانية',
+    'project.raised': 'تم جمع',
+    'project.goal': 'الهدف',
+    'project.status': 'الحالة',
+    'project.deadline': 'الموعد النهائي',
+    'project.category': 'الفئة',
+    'project.vote': 'صوّت',
+    'project.fund': 'موّل',
+    'project.details': 'التفاصيل',
+    'project.milestones': 'المراحل',
+    'project.team': 'الفريق',
+
+    // Voting
+    'vote.for': 'مع',
+    'vote.against': 'ضد',
+    'vote.abstain': 'امتناع',
+    'vote.weight': 'وزن التصويت',
+    'vote.quorum': 'النصاب',
+    'vote.threshold': 'عتبة الموافقة',
+    'vote.submitted': 'تم تسجيل تصويتك!',
+    'vote.already': 'لقد صوّت بالفعل',
+
+    // Funding
+    'fund.contribute': 'ساهم',
+    'fund.amount': 'المبلغ',
+    'fund.progress': 'التقدم',
+    'fund.contributors': 'المساهمون',
+    'fund.days_left': 'أيام متبقية',
+
+    // Dashboard
+    'dashboard.title': 'لوحة التحكم',
+    'dashboard.reputation': 'السمعة',
+    'dashboard.level': 'المستوى',
+    'dashboard.voting_power': 'قوة التصويت',
+    'dashboard.contributions': 'المساهمات',
+    'dashboard.votes_cast': 'الأصوات المسجلة',
+    'dashboard.streak': 'سلسلة النشاط',
+    'dashboard.badges': 'الشارات',
+    'dashboard.overview': 'نظرة عامة',
+    'dashboard.my_votes': 'أصواتي',
+    'dashboard.my_contributions': 'مساهماتي',
+
+    // Quests
+    'quests.title': 'المهام المجتمعية',
+    'quests.daily': 'يومية',
+    'quests.weekly': 'أسبوعية',
+    'quests.milestone': 'مراحل',
+    'quests.one_time': 'لمرة واحدة',
+    'quests.progress': 'التقدم',
+    'quests.claim': 'استلم المكافأة',
+    'quests.completed': 'مكتملة',
+    'quests.claimed': 'تم الاستلام',
+
+    // Categories
+    'cat.education': 'تعليم',
+    'cat.tech': 'تكنولوجيا',
+    'cat.environment': 'بيئة',
+    'cat.commerce': 'تجارة',
+    'cat.health': 'صحة',
+    'cat.social': 'اجتماعي',
+
+    // Status
+    'status.proposed': 'مقترح',
+    'status.voting': 'قيد التصويت',
+    'status.funded': 'ممول',
+    'status.in_progress': 'قيد التنفيذ',
+    'status.completed': 'مكتمل',
+    'status.failed': 'فشل',
+
+    // Common
+    'common.loading': 'جاري التحميل...',
+    'common.error': 'خطأ',
+    'common.success': 'نجاح',
+    'common.cancel': 'إلغاء',
+    'common.confirm': 'تأكيد',
+    'common.save': 'حفظ',
+    'common.search': 'بحث',
+    'common.filter': 'تصفية',
+    'common.sort': 'ترتيب',
+    'common.all': 'الكل',
+    'common.back': 'رجوع',
+
+    'auth.connect_pi': 'الاتصال بـ Pi Network',
+    'auth.connecting': 'جاري الاتصال...',
+    'auth.login_required': 'تسجيل الدخول مطلوب',
+    'auth.login_desc': 'اتصل بـ Pi Network للوصول إلى هذه الميزة',
+
+    'escrow.locked': 'أموال مقفلة',
+    'escrow.released': 'أموال محررة',
+    'escrow.milestone_proof': 'إثبات المرحلة',
+
+    'notif.vote_ended': 'انتهى التصويت',
+    'notif.milestone_reached': 'تم بلوغ المرحلة',
+    'notif.funds_released': 'تم تحرير الأموال',
+    'notif.quest_completed': 'تمت المهمة',
+    'notif.project_funded': 'تم تمويل المشروع',
+
+    // Privacy Policy
+    'privacy.title': 'سياسة الخصوصية',
+    'privacy.lastUpdate': 'آخر تحديث: 20 يونيو 2026',
+    'privacy.s1.title': '1. المقدمة',
+    'privacy.s1.text': 'تلتزم Polis ("نحن") بحماية خصوصية مستخدميها ("أنت"). تصف هذه السياسة كيف نجمع بياناتك الشخصية ونستخدمها ونحميها عند استخدامك لمنصتنا للحوكمة اللامركزية على شبكة Pi.',
+    'privacy.s2.title': '2. البيانات المجمعة',
+    'privacy.s2.intro': 'نجمع البيانات التالية:',
+    'privacy.s2.item1': 'معرّف شبكة Pi (UID) واسم المستخدم أثناء المصادقة',
+    'privacy.s2.item2': 'سجل التصويت والمقترحات والمساهمات على المنصة',
+    'privacy.s2.item3': 'بيانات تقدم المهام ونقاط السمعة',
+    'privacy.s2.item4': 'تفضيلات اللغة وإعدادات الواجهة',
+    'privacy.s3.title': '3. استخدام البيانات',
+    'privacy.s3.intro': 'تُستخدم بياناتك من أجل:',
+    'privacy.s3.item1': 'التحقق من هويتك عبر SDK شبكة Pi',
+    'privacy.s3.item2': 'إدارة أصواتك ومقترحاتك ومساهماتك المالية',
+    'privacy.s3.item3': 'حساب نقاط سمعتك ووزن تصويتك',
+    'privacy.s3.item4': 'تتبع تقدمك في المهام المجتمعية',
+    'privacy.s3.item5': 'تحسين المنصة وتخصيص تجربتك',
+    'privacy.s4.title': '4. معاملات Pi',
+    'privacy.s4.text': 'تتم معالجة معاملات Pi عبر SDK الرسمي لشبكة Pi. نسجل مبالغ وحالات المدفوعات لضمان شفافية التمويل المجتمعي. لا نخزن مفاتيحك الخاصة أبداً.',
+    'privacy.s5.title': '5. مشاركة البيانات',
+    'privacy.s5.text': 'لا نبيع أو نشارك بياناتك الشخصية مع أطراف ثالثة. الأصوات والمساهمات مرئية للعموم على المنصة لضمان شفافية الحوكمة. قد يُشارك معرّف Pi الخاص بك مع شبكة Pi للمصادقة.',
+    'privacy.s6.title': '6. الأمان',
+    'privacy.s6.text': 'نستخدم إجراءات أمنية وفق معايير الصناعة لحماية بياناتك، بما في ذلك التشفير أثناء النقل والتخزين، والمصادقة الآمنة عبر شبكة Pi، وعمليات التدقيق الأمني المنتظمة.',
+    'privacy.s7.title': '7. حقوقك',
+    'privacy.s7.intro': 'لديك الحقوق التالية:',
+    'privacy.s7.item1': 'الوصول إلى بياناتك الشخصية',
+    'privacy.s7.item2': 'تصحيح المعلومات غير الدقيقة',
+    'privacy.s7.item3': 'حذف حسابك والبيانات المرتبطة',
+    'privacy.s7.item4': 'تصدير بياناتك بتنسيق قابل للقراءة',
+    'privacy.s7.item5': 'سحب موافقتك في أي وقت',
+    'privacy.s8.title': '8. ملفات تعريف الارتباط والتخزين المحلي',
+    'privacy.s8.text': 'نستخدم التخزين المحلي للمتصفح لحفظ تفضيلات اللغة وجلسة المصادقة. لا نستخدم ملفات تعريف ارتباط تتبع من أطراف ثالثة.',
+    'privacy.s9.title': '9. الاتصال',
+    'privacy.s9.text': 'لأي أسئلة حول هذه السياسة، تواصل معنا عبر منصة Pi Network أو من خلال نظام الدعم المجتمعي.',
+
+    // Terms of Service
+    'terms.title': 'شروط الخدمة',
+    'terms.lastUpdate': 'آخر تحديث: 20 يونيو 2026',
+    'terms.s1.title': '1. قبول الشروط',
+    'terms.s1.text': 'بالوصول إلى Polis واستخدامها، فإنك توافق على الالتزام بشروط الخدمة هذه. إذا لم تقبل هذه الشروط، يرجى عدم استخدام المنصة.',
+    'terms.s2.title': '2. وصف الخدمة',
+    'terms.s2.intro': 'Polis هي منصة حوكمة لامركزية على شبكة Pi تتيح للرواد:',
+    'terms.s2.item1': 'تقديم مقترحات مشاريع مجتمعية',
+    'terms.s2.item2': 'التصويت على المقترحات بنظام سمعة مرجح',
+    'terms.s2.item3': 'تمويل المشاريع المعتمدة بعملة Pi',
+    'terms.s2.item4': 'المشاركة في المهام لكسب المكافآت',
+    'terms.s2.item5': 'بناء السمعة داخل المجتمع',
+    'terms.s3.title': '3. الأهلية',
+    'terms.s3.text': 'يجب أن يكون لديك حساب موثق على شبكة Pi لاستخدام Polis. يجب أن تكون في السن القانوني في ولايتك القضائية لإبرام اتفاقيات ملزمة.',
+    'terms.s4.title': '4. حساب المستخدم',
+    'terms.s4.text': 'حسابك مرتبط بهويتك على شبكة Pi. أنت مسؤول عن الحفاظ على أمان حسابك. أي نشاط يتم من خلال حسابك يقع تحت مسؤوليتك.',
+    'terms.s5.title': '5. قواعد السلوك',
+    'terms.s5.intro': 'باستخدام Polis، تتعهد بما يلي:',
+    'terms.s5.item1': 'عدم نشر محتوى غير قانوني أو مسيء أو مضلل',
+    'terms.s5.item2': 'عدم التلاعب بالأصوات أو نظام السمعة',
+    'terms.s5.item3': 'عدم إنشاء مقترحات وهمية لتحويل الأموال',
+    'terms.s5.item4': 'احترام أعضاء المجتمع الآخرين',
+    'terms.s5.item5': 'عدم استخدام الروبوتات أو الأتمتة غير المصرح بها',
+    'terms.s6.title': '6. معاملات Pi',
+    'terms.s6.text': 'المساهمات بعملة Pi طوعية وتتم عبر SDK الرسمي لشبكة Pi. المعاملات المؤكدة لا رجعة فيها. Polis غير مسؤولة عن تقلبات قيمة Pi.',
+    'terms.s7.title': '7. الملكية الفكرية',
+    'terms.s7.text': 'تظل المقترحات المقدمة ملكية فكرية لأصحابها. بتقديم مقترح، تمنح المجتمع ترخيص استخدام لتنفيذ المشروع في حال الموافقة عليه.',
+    'terms.s8.title': '8. تحديد المسؤولية',
+    'terms.s8.text': 'يُقدَّم Polis "كما هو". لا نضمن نجاح المشاريع الممولة أو العائد على الاستثمار. المنصة غير مسؤولة عن الخسائر المتعلقة بمعاملات Pi أو المشاريع المجتمعية.',
+    'terms.s9.title': '9. الحوكمة والتصويت',
+    'terms.s9.text': 'تُحدد نتائج التصويت بنظام السمعة المرجح. يُحدد النصاب وعتبات الموافقة من قبل المجتمع. قرارات الحوكمة نهائية بعد إغلاق التصويت.',
+    'terms.s10.title': '10. التعليق والإنهاء',
+    'terms.s10.text': 'نحتفظ بالحق في تعليق أو إنهاء وصولك في حالة انتهاك هذه الشروط أو السلوك الاحتيالي أو النشاط الضار بالمجتمع.',
+    'terms.s11.title': '11. التعديلات',
+    'terms.s11.text': 'قد نعدل هذه الشروط في أي وقت. سيتم إخطارك بالتغييرات عبر المنصة. استمرارك في الاستخدام بعد التعديل يشكل قبولاً للشروط الجديدة.',
+    'terms.s12.title': '12. الاتصال',
+    'terms.s12.text': 'لأي أسئلة حول هذه الشروط، تواصل معنا عبر منصة Pi Network أو من خلال نظام الدعم المجتمعي.',
   }
 };
 
@@ -986,10 +1185,16 @@ export function getLocale(): Locale {
   return currentLocale;
 }
 
+export function isRTL(): boolean {
+  return currentLocale === 'ar';
+}
+
 export function setLocale(locale: Locale): void {
   if (locales.includes(locale)) {
     currentLocale = locale;
     localStorage.setItem('polis_locale', locale);
+    document.documentElement.dir = locale === 'ar' ? 'rtl' : 'ltr';
+    document.documentElement.lang = locale;
     notifyI18nListeners();
   }
 }
@@ -1019,3 +1224,5 @@ export function useI18nRerender() {
 
 // Initialize
 currentLocale = detectLocale();
+document.documentElement.dir = currentLocale === 'ar' ? 'rtl' : 'ltr';
+document.documentElement.lang = currentLocale;
