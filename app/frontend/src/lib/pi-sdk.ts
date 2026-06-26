@@ -1,4 +1,4 @@
-// Pi Network SDK v2.0 Integration for PolisGo
+// Pi Network SDK v2.0 Integration for PoliGov
 // This module wraps the real Pi SDK with sandbox fallback
 import { createClient } from '@metagptx/web-sdk';
 
@@ -69,9 +69,9 @@ export function initPiSdk(): void {
       sandbox: !isProduction
     });
     piSdkInitialized = true;
-    console.log('[PolisGo] Pi SDK initialized', { sandbox: !isProduction });
+    console.log('[PoliGov] Pi SDK initialized', { sandbox: !isProduction });
   } else {
-    console.log('[PolisGo] Pi SDK not available - running in standalone mode');
+    console.log('[PoliGov] Pi SDK not available - running in standalone mode');
   }
 }
 
@@ -95,7 +95,7 @@ export function setCurrentUser(user: PiUser | null): void {
 
 // Handle incomplete payments found during authentication
 function onIncompletePaymentFound(payment: unknown) {
-  console.log('[PolisGo] Incomplete payment found:', payment);
+  console.log('[PoliGov] Incomplete payment found:', payment);
 }
 
 // Verify Pi token with backend and get/create profile
@@ -130,7 +130,7 @@ async function verifyWithBackend(accessToken: string): Promise<PiUser | null> {
       };
     }
   } catch (error) {
-    console.warn('[PolisGo] Backend verification failed, using local profile:', error);
+    console.warn('[PoliGov] Backend verification failed, using local profile:', error);
   }
   return null;
 }
@@ -180,7 +180,7 @@ export async function authenticate(): Promise<PiUser> {
       const auth = await window.Pi.authenticate(scopes, onIncompletePaymentFound);
 
       // Store token for later use
-      localStorage.setItem('polisgo_pi_token', auth.accessToken);
+      localStorage.setItem('poligov_pi_token', auth.accessToken);
 
       // Verify with backend and create/update profile
       const backendUser = await verifyWithBackend(auth.accessToken);
@@ -210,11 +210,11 @@ export async function authenticate(): Promise<PiUser> {
         };
       }
 
-      localStorage.setItem('polisgo_user', JSON.stringify(currentUser));
+      localStorage.setItem('poligov_user', JSON.stringify(currentUser));
       notifyListeners();
       return currentUser;
     } catch (error) {
-      console.error('[PolisGo] Pi authentication failed:', error);
+      console.error('[PoliGov] Pi authentication failed:', error);
       throw error;
     }
   } else {
@@ -249,7 +249,7 @@ export async function authenticate(): Promise<PiUser> {
       };
     }
 
-    localStorage.setItem('polisgo_user', JSON.stringify(currentUser));
+    localStorage.setItem('poligov_user', JSON.stringify(currentUser));
     notifyListeners();
     return currentUser;
   }
@@ -277,9 +277,9 @@ export async function createPiPayment(
                 method: 'POST',
                 data: { payment_id: paymentId },
               });
-              console.log('[PolisGo] Payment approved by server:', paymentId);
+              console.log('[PoliGov] Payment approved by server:', paymentId);
             } catch (err) {
-              console.error('[PolisGo] Server approval failed:', err);
+              console.error('[PoliGov] Server approval failed:', err);
             }
             if (onApprove) await onApprove(paymentId);
           },
@@ -297,26 +297,26 @@ export async function createPiPayment(
                   pi_uid: currentUser?.uid || '',
                 },
               });
-              console.log('[PolisGo] Payment completed:', paymentId, txid);
+              console.log('[PoliGov] Payment completed:', paymentId, txid);
 
               // Check quest progress after funding
               await checkQuestProgress('fund');
             } catch (err) {
-              console.error('[PolisGo] Server completion failed:', err);
+              console.error('[PoliGov] Server completion failed:', err);
             }
             if (onComplete) await onComplete(paymentId, txid);
           },
           onCancel: (paymentId: string) => {
-            console.log('[PolisGo] Payment cancelled:', paymentId);
+            console.log('[PoliGov] Payment cancelled:', paymentId);
           },
           onError: (error: Error) => {
-            console.error('[PolisGo] Payment error:', error);
+            console.error('[PoliGov] Payment error:', error);
           }
         }
       );
       return true;
     } catch (error) {
-      console.error('[PolisGo] Payment creation failed:', error);
+      console.error('[PoliGov] Payment creation failed:', error);
       return false;
     }
   } else {
@@ -334,7 +334,7 @@ export async function createPiPayment(
       });
     } catch {
       // In sandbox, approval might fail due to missing PI_API_KEY - that's OK
-      console.log('[PolisGo] Sandbox: skipping server approval');
+      console.log('[PoliGov] Sandbox: skipping server approval');
     }
 
     if (onApprove) await onApprove(fakePaymentId);
@@ -355,7 +355,7 @@ export async function createPiPayment(
       });
     } catch {
       // Fallback: record contribution directly
-      console.log('[PolisGo] Sandbox: recording contribution directly');
+      console.log('[PoliGov] Sandbox: recording contribution directly');
       try {
         await client.apiCall.invoke({
           url: '/api/v1/entities/contributions',
@@ -370,7 +370,7 @@ export async function createPiPayment(
           },
         });
       } catch (e) {
-        console.error('[PolisGo] Failed to record contribution:', e);
+        console.error('[PoliGov] Failed to record contribution:', e);
       }
     }
 
@@ -383,7 +383,7 @@ export async function createPiPayment(
         piBalance: currentUser.piBalance - amount,
         contributions: currentUser.contributions + 1
       };
-      localStorage.setItem('polisgo_user', JSON.stringify(currentUser));
+      localStorage.setItem('poligov_user', JSON.stringify(currentUser));
       notifyListeners();
     }
 
@@ -424,7 +424,7 @@ export async function submitGovernanceVote(projectId: number, voteType: 'for' | 
         votescast: currentUser.votescast + 1,
         reputation: currentUser.reputation + 5,
       };
-      localStorage.setItem('polisgo_user', JSON.stringify(currentUser));
+      localStorage.setItem('poligov_user', JSON.stringify(currentUser));
       notifyListeners();
 
       // Check quest progress
@@ -493,7 +493,7 @@ export async function checkQuestProgress(actionType: 'vote' | 'fund' | 'login' |
     });
 
     if (response?.data?.newly_completed?.length > 0) {
-      console.log('[PolisGo] Quests completed:', response.data.newly_completed);
+      console.log('[PoliGov] Quests completed:', response.data.newly_completed);
     }
     return response?.data?.newly_completed || [];
   } catch {
@@ -503,8 +503,8 @@ export async function checkQuestProgress(actionType: 'vote' | 'fund' | 'login' |
 
 export function logout() {
   currentUser = null;
-  localStorage.removeItem('polisgo_user');
-  localStorage.removeItem('polisgo_pi_token');
+  localStorage.removeItem('poligov_user');
+  localStorage.removeItem('poligov_pi_token');
   notifyListeners();
 }
 
@@ -512,7 +512,7 @@ export function logout() {
 export async function contributePI(amount: number): Promise<boolean> {
   return createPiPayment(
     amount,
-    'PolisGo contribution',
+    'PoliGov contribution',
     { type: 'donation' }
   );
 }
@@ -525,7 +525,7 @@ export async function castVote(): Promise<boolean> {
       votescast: currentUser.votescast + 1,
       reputation: currentUser.reputation + 5
     };
-    localStorage.setItem('polisgo_user', JSON.stringify(currentUser));
+    localStorage.setItem('poligov_user', JSON.stringify(currentUser));
     notifyListeners();
     return true;
   }
@@ -535,7 +535,7 @@ export async function castVote(): Promise<boolean> {
 // Restore user from localStorage on load
 export function restoreSession(): void {
   try {
-    const saved = localStorage.getItem('polisgo_user');
+    const saved = localStorage.getItem('poligov_user');
     if (saved) {
       currentUser = JSON.parse(saved);
       notifyListeners();

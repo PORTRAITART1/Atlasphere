@@ -1,4 +1,4 @@
-// PolisGo API Service - Connects frontend to real backend
+// PoliGov API Service - Connects frontend to real backend
 import { createClient } from '@metagptx/web-sdk';
 
 const client = createClient();
