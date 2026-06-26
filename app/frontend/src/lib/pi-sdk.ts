@@ -545,6 +545,69 @@ export function restoreSession(): void {
   }
 }
 
+// Auto-authenticate when running inside Pi Browser
+// This detects the Pioneer's Pi username automatically
+export async function autoAuthenticate(): Promise<PiUser | null> {
+  // If already authenticated, return current user
+  if (currentUser) return currentUser;
+
+  // Only auto-auth inside Pi Browser
+  if (!isInPiBrowser()) {
+    // Try to restore from localStorage
+    restoreSession();
+    return currentUser;
+  }
+
+  // Initialize Pi SDK first
+  initPiSdk();
+
+  try {
+    const scopes = ['username', 'payments'];
+    const auth = await window.Pi!.authenticate(scopes, onIncompletePaymentFound);
+
+    // Store token
+    localStorage.setItem('poligov_pi_token', auth.accessToken);
+
+    // Verify with backend
+    const backendUser = await verifyWithBackend(auth.accessToken);
+
+    if (backendUser) {
+      currentUser = backendUser;
+    } else {
+      // Use Pi SDK response directly
+      currentUser = {
+        uid: auth.user.uid,
+        username: auth.user.username,
+        displayName: auth.user.username,
+        avatar: '🧑‍💻',
+        reputation: 0,
+        votingPower: 10,
+        piBalance: 0,
+        joinedDate: new Date().toISOString().split('T')[0],
+        proposalsCreated: 0,
+        votescast: 0,
+        contributions: 0,
+        badges: [],
+        level: 'bronze',
+        piLocked: 0,
+        streakDays: 0,
+        kycVerified: false,
+        language: 'fr'
+      };
+    }
+
+    localStorage.setItem('poligov_user', JSON.stringify(currentUser));
+    notifyListeners();
+    console.log('[PoliGov] Auto-authenticated Pioneer:', currentUser.username);
+    return currentUser;
+  } catch (error) {
+    console.warn('[PoliGov] Auto-authentication failed, user can authenticate manually:', error);
+    // Restore from localStorage as fallback
+    restoreSession();
+    return currentUser;
+  }
+}
+
 // Initialize on module load
 if (typeof window !== 'undefined') {
   restoreSession();
