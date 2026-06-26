@@ -173,8 +173,11 @@ async function fetchProfileFromBackend(): Promise<PiUser | null> {
 
 // Authenticate with Pi Network (real SDK or sandbox simulation)
 export async function authenticate(): Promise<PiUser> {
+  // Ensure Pi SDK is initialized before authenticating
+  initPiSdk();
+
   if (window.Pi) {
-    // Real Pi SDK authentication
+    // Real Pi SDK authentication inside Pi Browser
     try {
       const scopes = ['username', 'payments'];
       const auth = await window.Pi.authenticate(scopes, onIncompletePaymentFound);
