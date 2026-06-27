@@ -129,7 +129,7 @@ async def query_votess_all(
     fields: str = Query(None, description="Comma-separated list of fields to return"),
     db: AsyncSession = Depends(get_db),
 ):
-    # Query votess with filtering, sorting, and pagination without user limitation
+    """Query all votes with filtering, sorting, and pagination - no authentication required."""
     logger.debug(f"Querying votess: query={query}, sort={sort}, skip={skip}, limit={limit}, fields={fields}")
 
     service = VotesService(db)

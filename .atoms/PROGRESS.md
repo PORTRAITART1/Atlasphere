@@ -51,6 +51,12 @@ Build PiDAO - A decentralized governance platform for Pi Network Pioneers where 
 - [x] Connect Quests page to real backend /api/v1/quests/* APIs
 - [x] Add comments/discussion system for proposals (social feature)
 
+- [ ] Smart Contract Escrow page (milestones, verrouillage/libération fonds, remboursement)
+- [ ] Système de Réputation avancé (score, badges, graphique, poids de vote)
+- [ ] API Documentation page (/api-docs)
+- [ ] Optimisations Performance & UX (lazy loading, skeletons, pagination)
+- [ ] Page Sécurité & Transparence (/security)
+
 ## Progress Log
 - 2026-05-24: Plan approved, starting PiDAO development
 - 2026-06-21: Frontend connected to backend APIs (proposals, voting, funding, dashboard, notifications)

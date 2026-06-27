@@ -1,0 +1,50 @@
+📋 Feuille de Route Complète — AtlasPi épinglée
+
+✅ Phase A — Fondations Mainnet
+
+✅ Point 1  — 🟣 Switch Mainnet (pirc2-production)
+✅ Point 2  — 🧭 Menu unifié 13 pages
+✅ Point 3  — ❤️ Discover comme page cœur
+✅ Point 4  — 💎 Liaison Paiement → VIP activation
+✅ Point 5  — 👤 Profile vivant Pi SDK + VIP réel
+
+✅ Phase B — Consolidation Produit
+
+✅ Point 6  — 🛟 Support avancé Pi + backend
+✅ Point 7  — 🟣 Health enrichi + PiRC2 consolidé
+✅ Point 8  — 📊 Admin VIP users + routes backend
+
+✅ Phase C — Finition
+
+✅ Point 9  — 🏪 Merchant listings — badge Pi + compteur
+✅ Point 10 — 🔐 Auth flow complet + VIP status
+✅ Point 11 — 📱 CSS mobile — nav-highlight + nettoyage
+✅ Point 12 — 🚀 Tests finaux — tous endpoints validés
+
+🔄 Phase D — Enrichissement & Croissance
+
+✅ Point 13 — 🏪 Merchant detail — badge Pi + Pay button
+✅ Point 14 — 📋 My Subscriptions — Pi SDK auth
+⏳ Point 15 — 🔔 Notifications dynamiques
+⏳ Point 16 — 📊 Analytics admin enrichis
+
+⏳ Phase E — Qualité & Cohérence
+
+⏳ Point 17 — 🔢 Versions config.js unifiées v=13
+⏳ Point 18 — 🧹 Nettoyage pages orphelines
+⏳ Point 19 — 📝 Textes cohérents (plus de "testnet")
+⏳ Point 20 — 🔗 Liens internes tous vérifiés
+
+⏳ Phase F — Fonctionnalités Avancées
+
+⏳ Point 21 — 🗺️ Carte interactive marchands
+⏳ Point 22 — 🔍 Recherche avancée + filtres Pi
+⏳ Point 23 — 📱 PWA — installable sur mobile
+⏳ Point 24 — 🌍 Multi-langue (FR/EN/AR)
+
+⏳ Phase G — Sécurité & Production
+
+⏳ Point 25 — 🔒 Rate limiting renforcé
+⏳ Point 26 — 🛡️ Validation inputs backend
+⏳ Point 27 — 📊 Logs structurés
+⏳ Point 28 — 🚨 Alertes erreurs critiques
