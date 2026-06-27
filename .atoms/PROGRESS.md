@@ -58,3 +58,4 @@ Build PiDAO - A decentralized governance platform for Pi Network Pioneers where 
 - 2026-06-21: Phase 2 complete - Pi SDK auth verified with backend, payments wired to approve/complete APIs, quests connected, comments/discussion system added to proposals
 - 2026-06-26: Rename PolisGo → PoliGov across all frontend (components, pages, i18n, pi-sdk, api) and backend files
 - 2026-06-26: Phase 3 - Auto-détection du pseudo Pi dans le Pi Browser (autoAuthenticate, loading screen, @username dans Navbar)
+- 2026-06-27: Phase 4 - Aligned with Pi Develop platform standards (SDK types from @pinetwork-js/sdk, PiRC2 subscription contract types, social features openShareDialog/openConversation, Subscriptions page with Soroban smart contract integration)

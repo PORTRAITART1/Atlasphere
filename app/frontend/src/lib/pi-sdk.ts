@@ -1,8 +1,66 @@
 // Pi Network SDK v2.0 Integration for PoliGov
-// This module wraps the real Pi SDK with sandbox fallback
+// Aligned with @pinetwork-js/sdk and Pi Develop platform standards
+// Reference: https://github.com/pi-apps/pi-platform-docs/blob/master/SDK_reference.md
 import { createClient } from '@metagptx/web-sdk';
 
 const client = createClient();
+
+// --- Pi SDK Types (aligned with @pinetwork-js/api-typing) ---
+
+/** Pi Network user object returned by authenticate() */
+export interface APIUser {
+  uid: string;
+  username: string;
+}
+
+/** Payment data for createPayment() */
+export interface APIPartialPayment {
+  amount: number;
+  memo: string;
+  metadata: Record<string, string>;
+}
+
+/** Full payment object (returned on incomplete payment) */
+export interface APIPayment {
+  identifier: string;
+  user_uid: string;
+  amount: number;
+  memo: string;
+  metadata: Record<string, string>;
+  from_address: string;
+  to_address: string;
+  direction: 'user_to_app' | 'app_to_user';
+  status: {
+    developer_approved: boolean;
+    transaction_verified: boolean;
+    developer_completed: boolean;
+    cancelled: boolean;
+  };
+  transaction: {
+    txid: string;
+    verified: boolean;
+  } | null;
+  created_at: string;
+}
+
+/** Callbacks for payment lifecycle */
+export interface PaymentCallbacks {
+  onReadyForServerApproval: (paymentId: string) => Promise<void>;
+  onReadyForServerCompletion: (paymentId: string, txid: string) => Promise<void>;
+  onCancel: (paymentId: string) => void;
+  onError: (error: Error, payment?: APIPayment) => void;
+}
+
+/** Authentication result */
+export interface AuthResult {
+  accessToken: string;
+  user: APIUser;
+}
+
+/** Available SDK scopes */
+export type APIScopes = ['username', 'payments'];
+
+// --- PoliGov User Profile (extends Pi user with app-specific data) ---
 
 export interface PiUser {
   uid: string;
@@ -24,26 +82,61 @@ export interface PiUser {
   language: string;
 }
 
-export interface PiPaymentData {
-  amount: number;
-  memo: string;
-  metadata: Record<string, string>;
+// --- PiRC2 Subscription Types (Soroban Smart Contract) ---
+
+export interface PiRC2Service {
+  service_id: number;
+  merchant: string;
+  name: string;
+  price: number; // in smallest token unit (1 Pi = 10000000)
+  period_secs: number;
+  trial_period_secs: number;
+  approve_periods: number;
+  is_active: boolean;
+  created_at: number;
 }
 
-export interface PiPaymentCallbacks {
-  onReadyForServerApproval: (paymentId: string) => Promise<void>;
-  onReadyForServerCompletion: (paymentId: string, txid: string) => Promise<void>;
-  onCancel: (paymentId: string) => void;
-  onError: (error: Error, payment?: unknown) => void;
+export interface PiRC2Subscription {
+  sub_id: number;
+  subscriber: string;
+  service_id: number;
+  price: number;
+  period_secs: number;
+  trial_period_secs: number;
+  trial_end_ts: number;
+  auto_renew: boolean;
+  service_end_ts: number;
+  next_charge_ts: number;
+  created_at: number;
 }
 
-// Declare Pi SDK global type
+export interface PiRC2ProcessResult {
+  charged: number;
+  failed: number;
+  skipped: number;
+  total: number;
+}
+
+// PiRC2 Contract on Pi Testnet
+export const PIRC2_CONTRACT_ID = 'CCUF75B6W3HRJTJD6O7OXNI72HGJ7DERZ5MUNOMFMSK23ME5GUIKPFYV';
+export const PI_TESTNET_RPC = 'https://rpc.testnet.minepi.com';
+export const PI_NETWORK_PASSPHRASE = 'Pi Testnet';
+
+// --- Declare Pi SDK global type (aligned with official SDK) ---
 declare global {
   interface Window {
     Pi?: {
-      init: (config: { version: string; sandbox: boolean }) => void;
-      authenticate: (scopes: string[], onIncompletePaymentFound: (payment: unknown) => void) => Promise<{ accessToken: string; user: { uid: string; username: string } }>;
-      createPayment: (paymentData: PiPaymentData, callbacks: PiPaymentCallbacks) => Promise<unknown>;
+      init: (config: { version: string; sandbox?: boolean }) => void;
+      authenticate: (
+        scopes: APIScopes,
+        onIncompletePaymentFound: (payment: APIPayment) => void
+      ) => Promise<AuthResult>;
+      createPayment: (
+        paymentData: APIPartialPayment,
+        callbacks: PaymentCallbacks
+      ) => Promise<void>;
+      openShareDialog: (title: string, sharingMessage: string) => void;
+      openConversation: (conversationId: number) => void;
     };
   }
 }
@@ -94,8 +187,10 @@ export function setCurrentUser(user: PiUser | null): void {
 }
 
 // Handle incomplete payments found during authentication
-function onIncompletePaymentFound(payment: unknown) {
-  console.log('[PoliGov] Incomplete payment found:', payment);
+// Per Pi SDK spec, this is called when an unfinished payment is detected
+function onIncompletePaymentFound(payment: APIPayment) {
+  console.log('[PoliGov] Incomplete payment found:', payment.identifier, payment.status);
+  // TODO: Resume incomplete payment via server-side completion
 }
 
 // Verify Pi token with backend and get/create profile
@@ -179,7 +274,7 @@ export async function authenticate(): Promise<PiUser> {
   if (window.Pi) {
     // Real Pi SDK authentication inside Pi Browser
     try {
-      const scopes = ['username', 'payments'];
+      const scopes: APIScopes = ['username', 'payments'];
       const auth = await window.Pi.authenticate(scopes, onIncompletePaymentFound);
 
       // Store token for later use
@@ -565,7 +660,7 @@ export async function autoAuthenticate(): Promise<PiUser | null> {
   initPiSdk();
 
   try {
-    const scopes = ['username', 'payments'];
+    const scopes: APIScopes = ['username', 'payments'];
     const auth = await window.Pi!.authenticate(scopes, onIncompletePaymentFound);
 
     // Store token
@@ -609,6 +704,69 @@ export async function autoAuthenticate(): Promise<PiUser | null> {
     restoreSession();
     return currentUser;
   }
+}
+
+// --- Pi Social Features (Pi Browser native) ---
+
+/** Open Pi Browser's native share dialog */
+export function shareOnPi(title: string, message: string): void {
+  if (window.Pi) {
+    window.Pi.openShareDialog(title, message);
+  } else {
+    // Fallback: use Web Share API or copy to clipboard
+    if (navigator.share) {
+      navigator.share({ title, text: message }).catch(() => {});
+    } else {
+      navigator.clipboard.writeText(message).catch(() => {});
+    }
+  }
+}
+
+/** Open a Pi conversation (Pi Browser native messaging) */
+export function openPiConversation(conversationId: number): void {
+  if (window.Pi) {
+    window.Pi.openConversation(conversationId);
+  } else {
+    console.log('[PoliGov] openConversation not available outside Pi Browser');
+  }
+}
+
+/** Share a proposal on Pi Network */
+export function shareProposal(proposalTitle: string, proposalId: number): void {
+  const message = `🗳️ Découvrez cette proposition sur PoliGov: "${proposalTitle}" - Votez et participez à la gouvernance Pi! ${window.location.origin}/proposal/${proposalId}`;
+  shareOnPi('PoliGov - Proposition', message);
+}
+
+/** Share a funding project on Pi Network */
+export function shareFundingProject(projectTitle: string, projectId: number): void {
+  const message = `💰 Projet à financer sur PoliGov: "${projectTitle}" - Contribuez avec vos Pi! ${window.location.origin}/proposal/${projectId}`;
+  shareOnPi('PoliGov - Financement', message);
+}
+
+// --- PiRC2 Subscription Helpers ---
+
+/** Convert Pi amount to smallest unit (7 decimals) */
+export function piToStroops(piAmount: number): number {
+  return Math.round(piAmount * 10_000_000);
+}
+
+/** Convert smallest unit to Pi amount */
+export function stroopsToPi(stroops: number): number {
+  return stroops / 10_000_000;
+}
+
+/** Format subscription period in human-readable format */
+export function formatPeriod(periodSecs: number): string {
+  const days = Math.round(periodSecs / 86400);
+  if (days >= 365) return `${Math.round(days / 365)} an(s)`;
+  if (days >= 30) return `${Math.round(days / 30)} mois`;
+  if (days >= 7) return `${Math.round(days / 7)} semaine(s)`;
+  return `${days} jour(s)`;
+}
+
+/** Check if a subscription is currently active */
+export function isSubscriptionActive(subscription: PiRC2Subscription): boolean {
+  return Date.now() / 1000 < subscription.service_end_ts;
 }
 
 // Initialize on module load
