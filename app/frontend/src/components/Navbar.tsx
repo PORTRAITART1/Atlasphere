@@ -35,6 +35,7 @@ export default function Navbar() {
     { path: '/funding', label: t('nav.funding') },
     { path: '/subscriptions', label: '💎 Abonnements' },
     { path: '/quests', label: `🎯 ${t('nav.quests')}` },
+    { path: '/reputation', label: `⭐ ${t('nav.reputation') || 'Reputation'}` },
     { path: '/create', label: t('nav.create') },
     { path: '/dashboard', label: t('nav.dashboard') },
   ];

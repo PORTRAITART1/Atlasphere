@@ -141,6 +141,12 @@ export default function Funding() {
                           >
                             {p.title}
                           </Link>
+                          <Link
+                            to={`/escrow/${p.id}`}
+                            className="text-xs px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 hover:bg-indigo-500/30 transition-colors"
+                          >
+                            🔐 Escrow
+                          </Link>
                         </div>
                         <p className="text-gray-400 text-sm mb-4">{p.description}</p>
                         <div className="space-y-2">

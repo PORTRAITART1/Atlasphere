@@ -34,6 +34,7 @@ const messages: Record<Locale, Translations> = {
     'nav.dashboard': 'Tableau de Bord',
     'nav.create': 'Créer',
     'nav.quests': 'Quêtes',
+    'nav.reputation': 'Réputation',
     'nav.connect': 'Connecter Pi',
     'nav.disconnect': 'Déconnecter',
 
@@ -233,6 +234,7 @@ const messages: Record<Locale, Translations> = {
     'nav.dashboard': 'Dashboard',
     'nav.create': 'Create',
     'nav.quests': 'Quests',
+    'nav.reputation': 'Reputation',
     'nav.connect': 'Connect Pi',
     'nav.disconnect': 'Disconnect',
 
@@ -419,6 +421,7 @@ const messages: Record<Locale, Translations> = {
     'nav.dashboard': 'Panel',
     'nav.create': 'Crear',
     'nav.quests': 'Misiones',
+    'nav.reputation': 'Reputación',
     'nav.connect': 'Conectar Pi',
     'nav.disconnect': 'Desconectar',
 
@@ -605,6 +608,7 @@ const messages: Record<Locale, Translations> = {
     'nav.dashboard': 'Painel',
     'nav.create': 'Criar',
     'nav.quests': 'Missões',
+    'nav.reputation': 'Reputação',
     'nav.connect': 'Conectar Pi',
     'nav.disconnect': 'Desconectar',
 
@@ -791,6 +795,7 @@ const messages: Record<Locale, Translations> = {
     'nav.dashboard': '仪表盘',
     'nav.create': '创建',
     'nav.quests': '任务',
+    'nav.reputation': '声誉',
     'nav.connect': '连接 Pi',
     'nav.disconnect': '断开连接',
 
@@ -978,6 +983,7 @@ const messages: Record<Locale, Translations> = {
     'nav.dashboard': 'لوحة التحكم',
     'nav.create': 'إنشاء',
     'nav.quests': 'المهام',
+    'nav.reputation': 'السمعة',
     'nav.connect': 'اتصل بـ Pi',
     'nav.disconnect': 'قطع الاتصال',
 

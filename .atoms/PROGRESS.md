@@ -51,8 +51,8 @@ Build PiDAO - A decentralized governance platform for Pi Network Pioneers where 
 - [x] Connect Quests page to real backend /api/v1/quests/* APIs
 - [x] Add comments/discussion system for proposals (social feature)
 
-- [ ] Smart Contract Escrow page (milestones, verrouillage/libération fonds, remboursement)
-- [ ] Système de Réputation avancé (score, badges, graphique, poids de vote)
+- [x] Smart Contract Escrow page (milestones, verrouillage/libération fonds, remboursement)
+- [x] Système de Réputation avancé (score, badges, graphique, poids de vote)
 - [ ] API Documentation page (/api-docs)
 - [ ] Optimisations Performance & UX (lazy loading, skeletons, pagination)
 - [ ] Page Sécurité & Transparence (/security)
@@ -65,3 +65,4 @@ Build PiDAO - A decentralized governance platform for Pi Network Pioneers where 
 - 2026-06-26: Rename PolisGo → PoliGov across all frontend (components, pages, i18n, pi-sdk, api) and backend files
 - 2026-06-26: Phase 3 - Auto-détection du pseudo Pi dans le Pi Browser (autoAuthenticate, loading screen, @username dans Navbar)
 - 2026-06-27: Phase 4 - Aligned with Pi Develop platform standards (SDK types from @pinetwork-js/sdk, PiRC2 subscription contract types, social features openShareDialog/openConversation, Subscriptions page with Soroban smart contract integration)
+- 2026-06-27: Phase 5 - Smart Contract Escrow page (/escrow/:id) with milestone tracking, proof submission, fund release, and refund mechanism. Advanced Reputation System page (/reputation) with score calculation, level progression, voting weight, badges, and breakdown chart. Fixed votes /all backend route deployment.

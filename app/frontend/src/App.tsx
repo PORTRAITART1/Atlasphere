@@ -9,6 +9,8 @@ import CreateProposal from './pages/CreateProposal';
 import Funding from './pages/Funding';
 import Dashboard from './pages/Dashboard';
 import Quests from './pages/Quests';
+import Escrow from './pages/Escrow';
+import Reputation from './pages/Reputation';
 import AuthCallback from './pages/AuthCallback';
 import Privacy from './pages/Privacy';
 import Terms from './pages/Terms';
@@ -26,6 +28,8 @@ const AppRoutes = () => (
     <Route path="/dashboard" element={<Dashboard />} />
     <Route path="/quests" element={<Quests />} />
     <Route path="/subscriptions" element={<Subscriptions />} />
+    <Route path="/escrow/:id" element={<Escrow />} />
+    <Route path="/reputation" element={<Reputation />} />
     <Route path="/auth/callback" element={<AuthCallback />} />
     <Route path="/privacy" element={<Privacy />} />
     <Route path="/terms" element={<Terms />} />
