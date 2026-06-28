@@ -368,3 +368,27 @@ export function parseTeam(team: string | null): { name: string; role: string; av
     return [];
   }
 }
+
+// Convenience API object for generic CRUD operations
+export const api = {
+  async listAll(entity: string, params?: { query?: string; sort?: string; skip?: number; limit?: number }) {
+    const res = await client.entities.list(entity, { ...params, limit: params?.limit || 2000 });
+    return res as { items: Record<string, unknown>[]; total: number; skip: number; limit: number };
+  },
+  async listMy(entity: string, params?: { query?: string; sort?: string; skip?: number; limit?: number }) {
+    const res = await client.entities.list(entity, { ...params, owned: true, limit: params?.limit || 2000 });
+    return res as { items: Record<string, unknown>[]; total: number; skip: number; limit: number };
+  },
+  async get(entity: string, id: number) {
+    return await client.entities.get(entity, id);
+  },
+  async create(entity: string, data: Record<string, unknown>) {
+    return await client.entities.create(entity, data);
+  },
+  async update(entity: string, id: number, data: Record<string, unknown>) {
+    return await client.entities.update(entity, id, data);
+  },
+  async remove(entity: string, id: number) {
+    return await client.entities.delete(entity, id);
+  },
+};

@@ -4,6 +4,7 @@ import { getCurrentUser, authenticate, logout, subscribe, type PiUser } from '@/
 import { t, subscribeI18n } from '@/lib/i18n';
 import LanguageSelector from '@/components/LanguageSelector';
 import NotificationBell from '@/components/NotificationBell';
+import GlobalSearch from '@/components/GlobalSearch';
 
 export default function Navbar() {
   const [user, setUser] = useState<PiUser | null>(getCurrentUser());
@@ -33,11 +34,13 @@ export default function Navbar() {
     { path: '/', label: t('nav.home') },
     { path: '/proposals', label: t('nav.proposals') },
     { path: '/funding', label: t('nav.funding') },
-    { path: '/subscriptions', label: '💎 Abonnements' },
+    { path: '/map', label: '🗺️ Carte' },
+    { path: '/analytics', label: '📊 Analytics' },
+    { path: '/delegation', label: '🤝 Délégation' },
     { path: '/quests', label: `🎯 ${t('nav.quests')}` },
-    { path: '/reputation', label: `⭐ ${t('nav.reputation') || 'Reputation'}` },
     { path: '/create', label: t('nav.create') },
     { path: '/dashboard', label: t('nav.dashboard') },
+    { path: '/admin', label: '🛡️ Admin' },
   ];
 
   return (
@@ -72,6 +75,7 @@ export default function Navbar() {
           </div>
 
           <div className="flex items-center gap-2">
+            <GlobalSearch />
             <LanguageSelector />
             <NotificationBell />
 

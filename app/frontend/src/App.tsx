@@ -16,6 +16,10 @@ const Escrow = lazy(() => import('./pages/Escrow'));
 const Reputation = lazy(() => import('./pages/Reputation'));
 const ApiDocs = lazy(() => import('./pages/ApiDocs'));
 const Security = lazy(() => import('./pages/Security'));
+const Admin = lazy(() => import('./pages/Admin'));
+const Delegation = lazy(() => import('./pages/Delegation'));
+const Analytics = lazy(() => import('./pages/Analytics'));
+const ProjectMap = lazy(() => import('./pages/ProjectMap'));
 const AuthCallback = lazy(() => import('./pages/AuthCallback'));
 const Privacy = lazy(() => import('./pages/Privacy'));
 const Terms = lazy(() => import('./pages/Terms'));
@@ -49,6 +53,10 @@ const AppRoutes = () => (
       <Route path="/reputation" element={<Reputation />} />
       <Route path="/api-docs" element={<ApiDocs />} />
       <Route path="/security" element={<Security />} />
+      <Route path="/admin" element={<Admin />} />
+      <Route path="/delegation" element={<Delegation />} />
+      <Route path="/analytics" element={<Analytics />} />
+      <Route path="/map" element={<ProjectMap />} />
       <Route path="/auth/callback" element={<AuthCallback />} />
       <Route path="/privacy" element={<Privacy />} />
       <Route path="/terms" element={<Terms />} />
