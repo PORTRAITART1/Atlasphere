@@ -316,54 +316,45 @@ export async function authenticate(): Promise<PiUser> {
       throw error;
     }
   } else {
-    // Sandbox simulation for development outside Pi Browser
-    await new Promise((r) => setTimeout(r, 1200));
-
-    // Try to fetch existing profile from backend
-    const backendProfile = await fetchProfileFromBackend();
-
-    if (backendProfile) {
-      currentUser = backendProfile;
-    } else {
-      // Try to get the Atoms Cloud authenticated user's real name
-      let realUsername = '';
-      let realDisplayName = '';
-      try {
-        const meResponse = await client.apiCall.invoke({
-          url: '/api/v1/auth/me',
-          method: 'GET',
-        });
-        if (meResponse?.data) {
-          realUsername = meResponse.data.name || meResponse.data.email?.split('@')[0] || '';
-          realDisplayName = meResponse.data.name || realUsername;
-        }
-      } catch {
-        // Not authenticated with Atoms Cloud yet - use fallback
+    // Sandbox mode for development outside Pi Browser
+    // Try to get the Atoms Cloud authenticated user's real name (fast, no artificial delay)
+    let realUsername = '';
+    let realDisplayName = '';
+    try {
+      const meResponse = await client.apiCall.invoke({
+        url: '/api/v1/auth/me',
+        method: 'GET',
+      });
+      if (meResponse?.data) {
+        realUsername = meResponse.data.name || meResponse.data.email?.split('@')[0] || '';
+        realDisplayName = meResponse.data.name || realUsername;
       }
-
-      const username = realUsername || 'pioneer_dao';
-      const displayName = realDisplayName || 'Pioneer DAO';
-
-      currentUser = {
-        uid: 'pioneer_' + Math.random().toString(36).slice(2, 10),
-        username,
-        displayName,
-        avatar: '🧑‍💻',
-        reputation: 850,
-        votingPower: 42,
-        piBalance: 1247.5,
-        joinedDate: '2024-03-15',
-        proposalsCreated: 3,
-        votescast: 28,
-        contributions: 12,
-        badges: ['Early Voter', 'Proposal Creator', 'Top Contributor', 'Community Builder'],
-        level: 'silver',
-        piLocked: 500,
-        streakDays: 14,
-        kycVerified: true,
-        language: 'fr'
-      };
+    } catch {
+      // Not authenticated with Atoms Cloud yet - use fallback
     }
+
+    const username = realUsername || 'pioneer_dao';
+    const displayName = realDisplayName || 'Pioneer DAO';
+
+    currentUser = {
+      uid: 'pioneer_' + Math.random().toString(36).slice(2, 10),
+      username,
+      displayName,
+      avatar: '🧑‍💻',
+      reputation: 850,
+      votingPower: 42,
+      piBalance: 1247.5,
+      joinedDate: '2024-03-15',
+      proposalsCreated: 3,
+      votescast: 28,
+      contributions: 12,
+      badges: ['Early Voter', 'Proposal Creator', 'Top Contributor', 'Community Builder'],
+      level: 'silver',
+      piLocked: 500,
+      streakDays: 14,
+      kycVerified: true,
+      language: 'fr'
+    };
 
     localStorage.setItem('poligov_user', JSON.stringify(currentUser));
     notifyListeners();
