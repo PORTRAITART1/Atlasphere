@@ -32,9 +32,9 @@ export default function Footer() {
             <h4 className="text-white font-semibold mb-3">Communauté</h4>
             <div className="space-y-2">
               <a href="#" className="block text-gray-400 hover:text-indigo-400 text-sm transition-colors">Pi Network</a>
-              <a href="#" className="block text-gray-400 hover:text-indigo-400 text-sm transition-colors">Documentation</a>
-              <a href="#" className="block text-gray-400 hover:text-indigo-400 text-sm transition-colors">Discord</a>
-              <a href="#" className="block text-gray-400 hover:text-indigo-400 text-sm transition-colors">Twitter</a>
+              <Link to="/api-docs" className="block text-gray-400 hover:text-indigo-400 text-sm transition-colors">📖 API Documentation</Link>
+              <Link to="/security" className="block text-gray-400 hover:text-indigo-400 text-sm transition-colors">🛡️ Sécurité & Transparence</Link>
+              <Link to="/reputation" className="block text-gray-400 hover:text-indigo-400 text-sm transition-colors">⭐ Réputation</Link>
             </div>
           </div>
         </div>

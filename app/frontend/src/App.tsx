@@ -1,39 +1,59 @@
+import { lazy, Suspense } from 'react';
 import { Toaster } from '@/components/ui/sonner';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import Index from './pages/Index';
-import Proposals from './pages/Proposals';
-import ProposalDetail from './pages/ProposalDetail';
-import CreateProposal from './pages/CreateProposal';
-import Funding from './pages/Funding';
-import Dashboard from './pages/Dashboard';
-import Quests from './pages/Quests';
-import Escrow from './pages/Escrow';
-import Reputation from './pages/Reputation';
-import AuthCallback from './pages/AuthCallback';
-import Privacy from './pages/Privacy';
-import Terms from './pages/Terms';
-import Subscriptions from './pages/Subscriptions';
+
+// Lazy-loaded pages for performance
+const Index = lazy(() => import('./pages/Index'));
+const Proposals = lazy(() => import('./pages/Proposals'));
+const ProposalDetail = lazy(() => import('./pages/ProposalDetail'));
+const CreateProposal = lazy(() => import('./pages/CreateProposal'));
+const Funding = lazy(() => import('./pages/Funding'));
+const Dashboard = lazy(() => import('./pages/Dashboard'));
+const Quests = lazy(() => import('./pages/Quests'));
+const Escrow = lazy(() => import('./pages/Escrow'));
+const Reputation = lazy(() => import('./pages/Reputation'));
+const ApiDocs = lazy(() => import('./pages/ApiDocs'));
+const Security = lazy(() => import('./pages/Security'));
+const AuthCallback = lazy(() => import('./pages/AuthCallback'));
+const Privacy = lazy(() => import('./pages/Privacy'));
+const Terms = lazy(() => import('./pages/Terms'));
+const Subscriptions = lazy(() => import('./pages/Subscriptions'));
 
 const queryClient = new QueryClient();
 
+function PageLoader() {
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-indigo-950 to-slate-900 flex items-center justify-center">
+      <div className="flex flex-col items-center gap-3">
+        <div className="animate-spin w-8 h-8 border-4 border-indigo-500 border-t-transparent rounded-full" />
+        <p className="text-sm text-gray-400">Loading...</p>
+      </div>
+    </div>
+  );
+}
+
 const AppRoutes = () => (
-  <Routes>
-    <Route path="/" element={<Index />} />
-    <Route path="/proposals" element={<Proposals />} />
-    <Route path="/proposal/:id" element={<ProposalDetail />} />
-    <Route path="/create" element={<CreateProposal />} />
-    <Route path="/funding" element={<Funding />} />
-    <Route path="/dashboard" element={<Dashboard />} />
-    <Route path="/quests" element={<Quests />} />
-    <Route path="/subscriptions" element={<Subscriptions />} />
-    <Route path="/escrow/:id" element={<Escrow />} />
-    <Route path="/reputation" element={<Reputation />} />
-    <Route path="/auth/callback" element={<AuthCallback />} />
-    <Route path="/privacy" element={<Privacy />} />
-    <Route path="/terms" element={<Terms />} />
-  </Routes>
+  <Suspense fallback={<PageLoader />}>
+    <Routes>
+      <Route path="/" element={<Index />} />
+      <Route path="/proposals" element={<Proposals />} />
+      <Route path="/proposal/:id" element={<ProposalDetail />} />
+      <Route path="/create" element={<CreateProposal />} />
+      <Route path="/funding" element={<Funding />} />
+      <Route path="/dashboard" element={<Dashboard />} />
+      <Route path="/quests" element={<Quests />} />
+      <Route path="/subscriptions" element={<Subscriptions />} />
+      <Route path="/escrow/:id" element={<Escrow />} />
+      <Route path="/reputation" element={<Reputation />} />
+      <Route path="/api-docs" element={<ApiDocs />} />
+      <Route path="/security" element={<Security />} />
+      <Route path="/auth/callback" element={<AuthCallback />} />
+      <Route path="/privacy" element={<Privacy />} />
+      <Route path="/terms" element={<Terms />} />
+    </Routes>
+  </Suspense>
 );
 
 const App = () => (
