@@ -3,6 +3,7 @@ import { Toaster } from '@/components/ui/sonner';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import FeedbackForm from '@/components/FeedbackForm';
 
 // Lazy-loaded pages for performance
 const Index = lazy(() => import('./pages/Index'));
@@ -24,6 +25,7 @@ const AuthCallback = lazy(() => import('./pages/AuthCallback'));
 const Privacy = lazy(() => import('./pages/Privacy'));
 const Terms = lazy(() => import('./pages/Terms'));
 const Subscriptions = lazy(() => import('./pages/Subscriptions'));
+const Settings = lazy(() => import('./pages/Settings'));
 
 const queryClient = new QueryClient();
 
@@ -60,6 +62,7 @@ const AppRoutes = () => (
       <Route path="/auth/callback" element={<AuthCallback />} />
       <Route path="/privacy" element={<Privacy />} />
       <Route path="/terms" element={<Terms />} />
+      <Route path="/settings" element={<Settings />} />
     </Routes>
   </Suspense>
 );
@@ -70,6 +73,7 @@ const App = () => (
       <Toaster />
       <BrowserRouter>
         <AppRoutes />
+        <FeedbackForm />
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>

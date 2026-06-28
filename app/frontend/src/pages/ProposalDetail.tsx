@@ -6,6 +6,7 @@ import Footer from '@/components/Footer';
 import PageTransition from '@/components/PageTransition';
 import PiPaymentButton from '@/components/PiPaymentButton';
 import Comments from '@/components/Comments';
+import SocialShare from '@/components/SocialShare';
 import {
   fetchProjectById,
   fetchAllVotes,
@@ -494,6 +495,15 @@ export default function ProposalDetail() {
                 </div>
               </motion.div>
             </div>
+          </div>
+
+          {/* Social Share */}
+          <div className="mt-6 bg-slate-800/50 border border-slate-700/50 rounded-xl p-5">
+            <SocialShare
+              title={project.title}
+              description={project.description?.slice(0, 100)}
+              url={window.location.href}
+            />
           </div>
 
           {/* Comments Section */}
