@@ -1,9 +1,10 @@
-import { lazy, Suspense } from 'react';
+import { lazy, Suspense, useEffect } from 'react';
 import { Toaster } from '@/components/ui/sonner';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import FeedbackForm from '@/components/FeedbackForm';
+import { autoAuthenticate, isInPiBrowser } from '@/lib/pi-sdk';
 
 // Lazy-loaded pages for performance
 const Index = lazy(() => import('./pages/Index'));
@@ -67,17 +68,28 @@ const AppRoutes = () => (
   </Suspense>
 );
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <BrowserRouter>
-        <AppRoutes />
-        <FeedbackForm />
-      </BrowserRouter>
-    </TooltipProvider>
-  </QueryClientProvider>
-);
+const App = () => {
+  useEffect(() => {
+    // Auto-authenticate if inside Pi Browser to detect Pioneer's username immediately
+    if (isInPiBrowser()) {
+      autoAuthenticate().catch((err) => {
+        console.warn('[PoliGov] Auto-authentication skipped:', err);
+      });
+    }
+  }, []);
+
+  return (
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
+        <Toaster />
+        <BrowserRouter>
+          <AppRoutes />
+          <FeedbackForm />
+        </BrowserRouter>
+      </TooltipProvider>
+    </QueryClientProvider>
+  );
+};
 
 export default App;
 export { AppRoutes };

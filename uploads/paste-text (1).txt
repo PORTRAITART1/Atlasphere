@@ -1,0 +1,35 @@
+Platform APIs (backend)
+The Platform API is the server-side API surface of the Pi ecosystem. You’ll use it to verify users, approve and complete payments, create server-initiated payments (A2U payments), and validate rewarded ads.
+
+If you’re looking for frontend JavaScript SDK installation and window.Pi usage, start at the Pi SDK section.
+
+What the Platform API is for
+Authentication verification: validate a user session from your backend via GET /me (using the user access token).
+Payments:
+U2A (User-to-App): your frontend starts the flow, but your backend must approve and complete it.
+A2U (App-to-User): your backend creates payments directly on behalf of your app (for example, payouts or rewards). See Advanced Payments for server-initiated and more complex flows.
+Flow model: all payments move through Server-Side Approval (for U2A) and Server-Side Completion (for all payment types). For a visual walkthrough, see the Payments guide.
+Ads: verify rewarded ad status before granting rewards.
+Authorization (important)
+The Platform API supports:
+
+Access token auth: Authorization: Bearer <user access token> (user-scoped endpoints like /me)
+Server API key auth: Authorization: Key <server API key> (server-only endpoints like payment approval/completion)
+Your Server API key must never be exposed in frontend code.
+
+How the frontend SDK plugs into the Platform API
+Frontend calls Pi.authenticate(...) → you get an accessToken → backend calls GET /me to verify identity.
+Frontend calls Pi.createPayment(...) → callbacks provide paymentId / txid → backend calls:
+POST /payments/{payment_id}/approve
+POST /payments/{payment_id}/complete
+Frontend shows a rewarded ad → you get an adId → backend calls GET /ads_network/status/:adId before rewarding.
+Start here
+Platform API reference: Platform API
+Authentication guide: Authentication
+Payments guide: Payments and Advanced Payments
+Ads guide: Ads
+Developer Portal / app setup: Developer Portal
+End-to-end example app: Pi Demo App – complete open-source reference showing how the frontend SDK and Platform API work together.
+Advanced topics
+PiNet (subdomain + metadata): PiNet – create a *.pinet.com URL for your app and control Open Graph / Twitter Card metadata that Pi exposes for previews/sharing.
+Custom tokens on Pi Testnet: Tokens – create and manage testnet tokens, configure pi.toml, and integrate with Pi Wallet.

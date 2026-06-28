@@ -1,10 +1,13 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { getCurrentUser, authenticate, logout, subscribe, type PiUser } from '@/lib/pi-sdk';
+import { getCurrentUser, authenticate, logout, subscribe, isInPiBrowser, type PiUser } from '@/lib/pi-sdk';
 import { t, subscribeI18n } from '@/lib/i18n';
 import LanguageSelector from '@/components/LanguageSelector';
 import NotificationBell from '@/components/NotificationBell';
 import GlobalSearch from '@/components/GlobalSearch';
+import { createClient } from '@metagptx/web-sdk';
+
+const authClient = createClient();
 
 export default function Navbar() {
   const [user, setUser] = useState<PiUser | null>(getCurrentUser());
@@ -24,7 +27,27 @@ export default function Navbar() {
   const handleAuth = async () => {
     setLoading(true);
     try {
-      await authenticate();
+      // If inside Pi Browser, authenticate directly with Pi SDK
+      if (isInPiBrowser()) {
+        await authenticate();
+      } else {
+        // Outside Pi Browser: ensure Atoms Cloud auth first, then Pi auth
+        // Check if already authenticated with Atoms Cloud
+        try {
+          const meRes = await authClient.apiCall.invoke({ url: '/api/v1/auth/me', method: 'GET' });
+          if (!meRes?.data) {
+            // Not authenticated - trigger Atoms Cloud login
+            authClient.auth.login();
+            return;
+          }
+        } catch {
+          // Not authenticated - trigger Atoms Cloud login
+          authClient.auth.login();
+          return;
+        }
+        // Already authenticated with Atoms Cloud, proceed with Pi SDK sandbox
+        await authenticate();
+      }
     } finally {
       setLoading(false);
     }

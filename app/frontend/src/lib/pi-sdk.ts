@@ -325,11 +325,29 @@ export async function authenticate(): Promise<PiUser> {
     if (backendProfile) {
       currentUser = backendProfile;
     } else {
-      // Create sandbox user
+      // Try to get the Atoms Cloud authenticated user's real name
+      let realUsername = '';
+      let realDisplayName = '';
+      try {
+        const meResponse = await client.apiCall.invoke({
+          url: '/api/v1/auth/me',
+          method: 'GET',
+        });
+        if (meResponse?.data) {
+          realUsername = meResponse.data.name || meResponse.data.email?.split('@')[0] || '';
+          realDisplayName = meResponse.data.name || realUsername;
+        }
+      } catch {
+        // Not authenticated with Atoms Cloud yet - use fallback
+      }
+
+      const username = realUsername || 'pioneer_dao';
+      const displayName = realDisplayName || 'Pioneer DAO';
+
       currentUser = {
         uid: 'pioneer_' + Math.random().toString(36).slice(2, 10),
-        username: 'pioneer_dao',
-        displayName: 'Pioneer DAO',
+        username,
+        displayName,
         avatar: '🧑‍💻',
         reputation: 850,
         votingPower: 42,
