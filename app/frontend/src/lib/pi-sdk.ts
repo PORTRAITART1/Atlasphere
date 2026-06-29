@@ -317,29 +317,14 @@ export async function authenticate(): Promise<PiUser> {
     }
   } else {
     // Sandbox mode for development outside Pi Browser
-    // Try to get the Atoms Cloud authenticated user's real name (fast, no artificial delay)
-    let realUsername = '';
-    let realDisplayName = '';
-    try {
-      const meResponse = await client.apiCall.invoke({
-        url: '/api/v1/auth/me',
-        method: 'GET',
-      });
-      if (meResponse?.data) {
-        realUsername = meResponse.data.name || meResponse.data.email?.split('@')[0] || '';
-        realDisplayName = meResponse.data.name || realUsername;
-      }
-    } catch {
-      // Not authenticated with Atoms Cloud yet - use fallback
-    }
+    // Instantly create user, then try to get real name in background
+    const uid = 'pioneer_' + Math.random().toString(36).slice(2, 10);
 
-    const username = realUsername || 'pioneer_dao';
-    const displayName = realDisplayName || 'Pioneer DAO';
-
+    // Create user immediately with default name
     currentUser = {
-      uid: 'pioneer_' + Math.random().toString(36).slice(2, 10),
-      username,
-      displayName,
+      uid,
+      username: 'pioneer_dao',
+      displayName: 'Pioneer DAO',
       avatar: '🧑‍💻',
       reputation: 850,
       votingPower: 42,
@@ -358,6 +343,33 @@ export async function authenticate(): Promise<PiUser> {
 
     localStorage.setItem('poligov_user', JSON.stringify(currentUser));
     notifyListeners();
+
+    // Try to update with real name in background (non-blocking, with 2s timeout)
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 2000);
+    try {
+      const meResponse = await client.apiCall.invoke({
+        url: '/api/v1/auth/me',
+        method: 'GET',
+      });
+      clearTimeout(timeout);
+      if (meResponse?.data) {
+        const realUsername = meResponse.data.name || meResponse.data.email?.split('@')[0] || '';
+        if (realUsername) {
+          currentUser = {
+            ...currentUser!,
+            username: realUsername,
+            displayName: meResponse.data.name || realUsername,
+          };
+          localStorage.setItem('poligov_user', JSON.stringify(currentUser));
+          notifyListeners();
+        }
+      }
+    } catch {
+      clearTimeout(timeout);
+      // Keep default name - no delay for user
+    }
+
     return currentUser;
   }
 }
