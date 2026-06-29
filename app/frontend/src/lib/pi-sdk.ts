@@ -3,7 +3,12 @@
 // Reference: https://github.com/pi-apps/pi-platform-docs/blob/master/SDK_reference.md
 import { createClient } from '@metagptx/web-sdk';
 
-const client = createClient();
+// Lazy-initialize client only when needed (avoids blocking on module load)
+let _client: ReturnType<typeof createClient> | null = null;
+function getClient() {
+  if (!_client) _client = createClient();
+  return _client;
+}
 
 // --- Pi SDK Types (aligned with @pinetwork-js/api-typing) ---
 
@@ -196,7 +201,7 @@ function onIncompletePaymentFound(payment: APIPayment) {
 // Verify Pi token with backend and get/create profile
 async function verifyWithBackend(accessToken: string): Promise<PiUser | null> {
   try {
-    const response = await client.apiCall.invoke({
+    const response = await getClient().apiCall.invoke({
       url: '/api/v1/pi-auth/verify',
       method: 'POST',
       data: { access_token: accessToken },
@@ -233,7 +238,7 @@ async function verifyWithBackend(accessToken: string): Promise<PiUser | null> {
 // Get profile from backend
 async function fetchProfileFromBackend(): Promise<PiUser | null> {
   try {
-    const response = await client.apiCall.invoke({
+    const response = await getClient().apiCall.invoke({
       url: '/api/v1/pi-auth/profile',
       method: 'GET',
     });
@@ -317,12 +322,9 @@ export async function authenticate(): Promise<PiUser> {
     }
   } else {
     // Sandbox mode for development outside Pi Browser
-    // Instantly create user, then try to get real name in background
-    const uid = 'pioneer_' + Math.random().toString(36).slice(2, 10);
-
-    // Create user immediately with default name
+    // Instant authentication - no network calls needed
     currentUser = {
-      uid,
+      uid: 'pioneer_' + Math.random().toString(36).slice(2, 10),
       username: 'pioneer_dao',
       displayName: 'Pioneer DAO',
       avatar: '🧑‍💻',
@@ -343,33 +345,6 @@ export async function authenticate(): Promise<PiUser> {
 
     localStorage.setItem('poligov_user', JSON.stringify(currentUser));
     notifyListeners();
-
-    // Try to update with real name in background (non-blocking, with 2s timeout)
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 2000);
-    try {
-      const meResponse = await client.apiCall.invoke({
-        url: '/api/v1/auth/me',
-        method: 'GET',
-      });
-      clearTimeout(timeout);
-      if (meResponse?.data) {
-        const realUsername = meResponse.data.name || meResponse.data.email?.split('@')[0] || '';
-        if (realUsername) {
-          currentUser = {
-            ...currentUser!,
-            username: realUsername,
-            displayName: meResponse.data.name || realUsername,
-          };
-          localStorage.setItem('poligov_user', JSON.stringify(currentUser));
-          notifyListeners();
-        }
-      }
-    } catch {
-      clearTimeout(timeout);
-      // Keep default name - no delay for user
-    }
-
     return currentUser;
   }
 }
@@ -391,7 +366,7 @@ export async function createPiPayment(
           onReadyForServerApproval: async (paymentId: string) => {
             // Call backend to approve the payment
             try {
-              await client.apiCall.invoke({
+              await getClient().apiCall.invoke({
                 url: '/api/v1/pi-payments/approve',
                 method: 'POST',
                 data: { payment_id: paymentId },
@@ -405,7 +380,7 @@ export async function createPiPayment(
           onReadyForServerCompletion: async (paymentId: string, txid: string) => {
             // Call backend to complete the payment and record contribution
             try {
-              await client.apiCall.invoke({
+              await getClient().apiCall.invoke({
                 url: '/api/v1/pi-payments/complete',
                 method: 'POST',
                 data: {
@@ -446,7 +421,7 @@ export async function createPiPayment(
 
     // Simulate server approval
     try {
-      await client.apiCall.invoke({
+      await getClient().apiCall.invoke({
         url: '/api/v1/pi-payments/approve',
         method: 'POST',
         data: { payment_id: fakePaymentId },
@@ -461,7 +436,7 @@ export async function createPiPayment(
 
     // Complete payment and record contribution via backend
     try {
-      await client.apiCall.invoke({
+      await getClient().apiCall.invoke({
         url: '/api/v1/pi-payments/complete',
         method: 'POST',
         data: {
@@ -476,7 +451,7 @@ export async function createPiPayment(
       // Fallback: record contribution directly
       console.log('[PoliGov] Sandbox: recording contribution directly');
       try {
-        await client.apiCall.invoke({
+        await getClient().apiCall.invoke({
           url: '/api/v1/entities/contributions',
           method: 'POST',
           data: {
@@ -526,7 +501,7 @@ export async function submitGovernanceVote(projectId: number, voteType: 'for' | 
   }
 
   try {
-    const response = await client.apiCall.invoke({
+    const response = await getClient().apiCall.invoke({
       url: '/api/v1/governance/vote',
       method: 'POST',
       data: {
@@ -577,7 +552,7 @@ export async function fetchReputation(piUid?: string): Promise<{
   if (!uid) return null;
 
   try {
-    const response = await client.apiCall.invoke({
+    const response = await getClient().apiCall.invoke({
       url: `/api/v1/governance/reputation/${uid}`,
       method: 'GET',
     });
@@ -602,7 +577,7 @@ export async function checkQuestProgress(actionType: 'vote' | 'fund' | 'login' |
   if (!currentUser) return [];
 
   try {
-    const response = await client.apiCall.invoke({
+    const response = await getClient().apiCall.invoke({
       url: '/api/v1/quests/check-progress',
       method: 'POST',
       data: {

@@ -3,8 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { createClient } from '@metagptx/web-sdk';
 import { authenticate, getCurrentUser } from '@/lib/pi-sdk';
 
-const client = createClient();
-
 export default function AuthCallback() {
   const [status, setStatus] = useState('Connexion en cours...');
   const navigate = useNavigate();
@@ -15,26 +13,49 @@ export default function AuthCallback() {
 
   const handleAuthCallback = async () => {
     try {
-      // Complete the Atoms Cloud login flow
-      await client.auth.login();
+      // Try Atoms Cloud login with a 3-second timeout
+      const client = createClient();
+      const loginPromise = client.auth.login();
+      const timeoutPromise = new Promise((_, reject) =>
+        setTimeout(() => reject(new Error('Login timeout')), 3000)
+      );
+
+      try {
+        await Promise.race([loginPromise, timeoutPromise]);
+      } catch {
+        // Login timed out or failed - continue with sandbox auth
+        console.log('[PoliGov] Atoms Cloud login skipped (timeout or unavailable)');
+      }
+
       setStatus('Authentification Pi Network...');
 
-      // Now authenticate with Pi SDK (sandbox mode since we're outside Pi Browser)
+      // Authenticate with Pi SDK (instant in sandbox mode)
       await authenticate();
 
       const user = getCurrentUser();
       if (user) {
         setStatus(`Bienvenue @${user.username} !`);
-        // Redirect to dashboard after successful auth
-        setTimeout(() => navigate('/dashboard'), 1500);
+        setTimeout(() => navigate('/dashboard'), 1000);
       } else {
         setStatus('Authentification réussie');
-        setTimeout(() => navigate('/'), 1500);
+        setTimeout(() => navigate('/'), 1000);
       }
     } catch (error) {
       console.error('[PoliGov] Auth callback error:', error);
-      setStatus('Erreur d\'authentification. Redirection...');
-      setTimeout(() => navigate('/'), 2000);
+      // Even on error, try to authenticate locally
+      try {
+        await authenticate();
+        const user = getCurrentUser();
+        if (user) {
+          setStatus(`Bienvenue @${user.username} !`);
+          setTimeout(() => navigate('/dashboard'), 1000);
+          return;
+        }
+      } catch {
+        // Final fallback
+      }
+      setStatus('Redirection...');
+      setTimeout(() => navigate('/'), 1000);
     }
   };
 
