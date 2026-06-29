@@ -7,7 +7,8 @@ import PageTransition from '@/components/PageTransition';
 import { getCurrentUser, subscribe } from '@/lib/pi-sdk';
 import { t } from '@/lib/i18n';
 
-const client = createClient();
+let _client: ReturnType<typeof createClient> | null = null;
+function getClient() { if (!_client) _client = createClient(); return _client; }
 
 interface Quest {
   id: number;
@@ -58,7 +59,7 @@ export default function Quests() {
     setLoading(true);
     try {
       const piUid = user?.uid || '';
-      const response = await client.apiCall.invoke({
+      const response = await getClient().apiCall.invoke({
         url: '/api/v1/quests/available',
         method: 'GET',
         data: { pi_uid: piUid },
@@ -85,7 +86,7 @@ export default function Quests() {
     if (!user) return;
     setClaiming(questId);
     try {
-      await client.apiCall.invoke({
+      await getClient().apiCall.invoke({
         url: '/api/v1/quests/claim',
         method: 'POST',
         data: { quest_id: questId, pi_uid: user.uid },

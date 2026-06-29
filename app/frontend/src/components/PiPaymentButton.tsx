@@ -3,7 +3,8 @@ import { createClient } from '@metagptx/web-sdk';
 import { createPiPayment, getCurrentUser } from '@/lib/pi-sdk';
 import { t } from '@/lib/i18n';
 
-const client = createClient();
+let _client: ReturnType<typeof createClient> | null = null;
+function getClient() { if (!_client) _client = createClient(); return _client; }
 
 interface PiPaymentButtonProps {
   amount: number;
@@ -46,7 +47,7 @@ export default function PiPaymentButton({
         async (paymentId: string) => {
           setStatus('approving');
           try {
-            await client.apiCall.invoke({
+            await getClient().apiCall.invoke({
               url: '/api/v1/pi-payments/approve',
               method: 'POST',
               data: { payment_id: paymentId },
@@ -59,7 +60,7 @@ export default function PiPaymentButton({
         async (paymentId: string, txid: string) => {
           setStatus('completing');
           try {
-            await client.apiCall.invoke({
+            await getClient().apiCall.invoke({
               url: '/api/v1/pi-payments/complete',
               method: 'POST',
               data: {
@@ -72,7 +73,7 @@ export default function PiPaymentButton({
             });
 
             // Check quest progress after funding
-            await client.apiCall.invoke({
+            await getClient().apiCall.invoke({
               url: '/api/v1/quests/check-progress',
               method: 'POST',
               data: { pi_uid: user.uid, action_type: 'fund' },

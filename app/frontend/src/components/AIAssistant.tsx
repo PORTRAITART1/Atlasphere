@@ -1,7 +1,8 @@
 import { useState, useRef } from 'react';
 import { createClient } from '@metagptx/web-sdk';
 
-const client = createClient();
+let _client: ReturnType<typeof createClient> | null = null;
+function getClient() { if (!_client) _client = createClient(); return _client; }
 
 interface AIAssistantProps {
   title: string;
@@ -100,7 +101,7 @@ Réponds en français.`;
     const prompt = buildPrompt(mode);
 
     try {
-      await client.ai.gentxt({
+      await getClient().ai.gentxt({
         messages: [
           {
             role: 'system',

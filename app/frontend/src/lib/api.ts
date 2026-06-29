@@ -1,7 +1,12 @@
 // PoliGov API Service - Connects frontend to real backend
 import { createClient } from '@metagptx/web-sdk';
 
-const client = createClient();
+// Lazy-initialize client to avoid blocking on module load
+let _client: ReturnType<typeof createClient> | null = null;
+function getClient() {
+  if (!_client) _client = createClient();
+  return _client;
+}
 
 // Types matching backend schemas
 export interface Project {
@@ -107,7 +112,7 @@ export async function fetchAllProjects(params?: {
   if (params?.limit !== undefined) searchParams.set('limit', String(params.limit));
 
   const url = `/api/v1/entities/projects/all${searchParams.toString() ? '?' + searchParams.toString() : ''}`;
-  const response = await client.apiCall.invoke({ url, method: 'GET' });
+  const response = await getClient().apiCall.invoke({ url, method: 'GET' });
   return response?.data as ProjectListResponse;
 }
 
@@ -124,13 +129,13 @@ export async function fetchMyProjects(params?: {
   if (params?.limit !== undefined) searchParams.set('limit', String(params.limit));
 
   const url = `/api/v1/entities/projects${searchParams.toString() ? '?' + searchParams.toString() : ''}`;
-  const response = await client.apiCall.invoke({ url, method: 'GET' });
+  const response = await getClient().apiCall.invoke({ url, method: 'GET' });
   return response?.data as ProjectListResponse;
 }
 
 export async function fetchProjectById(id: number): Promise<Project | null> {
   try {
-    const response = await client.apiCall.invoke({
+    const response = await getClient().apiCall.invoke({
       url: `/api/v1/entities/projects/all?query=${encodeURIComponent(JSON.stringify({ id }))}`,
       method: 'GET',
     });
@@ -151,7 +156,7 @@ export async function createProject(data: {
   milestones?: string;
   status?: string;
 }): Promise<Project> {
-  const response = await client.apiCall.invoke({
+  const response = await getClient().apiCall.invoke({
     url: '/api/v1/entities/projects',
     method: 'POST',
     data: {
@@ -167,7 +172,7 @@ export async function createProject(data: {
 }
 
 export async function updateProject(id: number, data: Partial<Project>): Promise<Project> {
-  const response = await client.apiCall.invoke({
+  const response = await getClient().apiCall.invoke({
     url: `/api/v1/entities/projects/${id}`,
     method: 'PUT',
     data,
@@ -190,7 +195,7 @@ export async function fetchAllVotes(params?: {
   if (params?.limit !== undefined) searchParams.set('limit', String(params.limit));
 
   const url = `/api/v1/entities/votes/all${searchParams.toString() ? '?' + searchParams.toString() : ''}`;
-  const response = await client.apiCall.invoke({ url, method: 'GET' });
+  const response = await getClient().apiCall.invoke({ url, method: 'GET' });
   return response?.data as VoteListResponse;
 }
 
@@ -207,7 +212,7 @@ export async function fetchMyVotes(params?: {
   if (params?.limit !== undefined) searchParams.set('limit', String(params.limit));
 
   const url = `/api/v1/entities/votes${searchParams.toString() ? '?' + searchParams.toString() : ''}`;
-  const response = await client.apiCall.invoke({ url, method: 'GET' });
+  const response = await getClient().apiCall.invoke({ url, method: 'GET' });
   return response?.data as VoteListResponse;
 }
 
@@ -217,7 +222,7 @@ export async function createVote(data: {
   weight: number;
   pi_uid: string;
 }): Promise<Vote> {
-  const response = await client.apiCall.invoke({
+  const response = await getClient().apiCall.invoke({
     url: '/api/v1/entities/votes',
     method: 'POST',
     data,
@@ -240,7 +245,7 @@ export async function fetchAllContributions(params?: {
   if (params?.limit !== undefined) searchParams.set('limit', String(params.limit));
 
   const url = `/api/v1/entities/contributions/all${searchParams.toString() ? '?' + searchParams.toString() : ''}`;
-  const response = await client.apiCall.invoke({ url, method: 'GET' });
+  const response = await getClient().apiCall.invoke({ url, method: 'GET' });
   return response?.data as ContributionListResponse;
 }
 
@@ -257,7 +262,7 @@ export async function fetchMyContributions(params?: {
   if (params?.limit !== undefined) searchParams.set('limit', String(params.limit));
 
   const url = `/api/v1/entities/contributions${searchParams.toString() ? '?' + searchParams.toString() : ''}`;
-  const response = await client.apiCall.invoke({ url, method: 'GET' });
+  const response = await getClient().apiCall.invoke({ url, method: 'GET' });
   return response?.data as ContributionListResponse;
 }
 
@@ -269,7 +274,7 @@ export async function createContribution(data: {
   status?: string;
   pi_uid: string;
 }): Promise<Contribution> {
-  const response = await client.apiCall.invoke({
+  const response = await getClient().apiCall.invoke({
     url: '/api/v1/entities/contributions',
     method: 'POST',
     data: { ...data, status: data.status || 'completed' },
@@ -292,12 +297,12 @@ export async function fetchMyNotifications(params?: {
   if (params?.limit !== undefined) searchParams.set('limit', String(params.limit || 20));
 
   const url = `/api/v1/entities/notifications${searchParams.toString() ? '?' + searchParams.toString() : ''}`;
-  const response = await client.apiCall.invoke({ url, method: 'GET' });
+  const response = await getClient().apiCall.invoke({ url, method: 'GET' });
   return response?.data as NotificationListResponse;
 }
 
 export async function markNotificationRead(id: number): Promise<void> {
-  await client.apiCall.invoke({
+  await getClient().apiCall.invoke({
     url: `/api/v1/entities/notifications/${id}`,
     method: 'PUT',
     data: { read: true },
@@ -305,7 +310,7 @@ export async function markNotificationRead(id: number): Promise<void> {
 }
 
 export async function markAllNotificationsRead(ids: number[]): Promise<void> {
-  await client.apiCall.invoke({
+  await getClient().apiCall.invoke({
     url: '/api/v1/entities/notifications/batch',
     method: 'PUT',
     data: {
@@ -372,23 +377,23 @@ export function parseTeam(team: string | null): { name: string; role: string; av
 // Convenience API object for generic CRUD operations
 export const api = {
   async listAll(entity: string, params?: { query?: string; sort?: string; skip?: number; limit?: number }) {
-    const res = await client.entities.list(entity, { ...params, limit: params?.limit || 2000 });
+    const res = await getClient().entities.list(entity, { ...params, limit: params?.limit || 2000 });
     return res as { items: Record<string, unknown>[]; total: number; skip: number; limit: number };
   },
   async listMy(entity: string, params?: { query?: string; sort?: string; skip?: number; limit?: number }) {
-    const res = await client.entities.list(entity, { ...params, owned: true, limit: params?.limit || 2000 });
+    const res = await getClient().entities.list(entity, { ...params, owned: true, limit: params?.limit || 2000 });
     return res as { items: Record<string, unknown>[]; total: number; skip: number; limit: number };
   },
   async get(entity: string, id: number) {
-    return await client.entities.get(entity, id);
+    return await getClient().entities.get(entity, id);
   },
   async create(entity: string, data: Record<string, unknown>) {
-    return await client.entities.create(entity, data);
+    return await getClient().entities.create(entity, data);
   },
   async update(entity: string, id: number, data: Record<string, unknown>) {
-    return await client.entities.update(entity, id, data);
+    return await getClient().entities.update(entity, id, data);
   },
   async remove(entity: string, id: number) {
-    return await client.entities.delete(entity, id);
+    return await getClient().entities.delete(entity, id);
   },
 };

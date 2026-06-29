@@ -3,7 +3,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { createClient } from '@metagptx/web-sdk';
 import { getCurrentUser } from '@/lib/pi-sdk';
 
-const client = createClient();
+let _client: ReturnType<typeof createClient> | null = null;
+function getClient() { if (!_client) _client = createClient(); return _client; }
 
 interface Comment {
   id: number;
@@ -36,7 +37,7 @@ export default function Comments({ projectId }: CommentsProps) {
   const loadComments = async () => {
     setLoading(true);
     try {
-      const response = await client.apiCall.invoke({
+      const response = await getClient().apiCall.invoke({
         url: `/api/v1/entities/comments/all?query=${encodeURIComponent(JSON.stringify({ project_id: projectId }))}&sort=-created_at&limit=50`,
         method: 'GET',
       });
@@ -56,7 +57,7 @@ export default function Comments({ projectId }: CommentsProps) {
 
     setSubmitting(true);
     try {
-      await client.apiCall.invoke({
+      await getClient().apiCall.invoke({
         url: '/api/v1/entities/comments',
         method: 'POST',
         data: {
@@ -82,7 +83,7 @@ export default function Comments({ projectId }: CommentsProps) {
 
     setSubmitting(true);
     try {
-      await client.apiCall.invoke({
+      await getClient().apiCall.invoke({
         url: '/api/v1/entities/comments',
         method: 'POST',
         data: {
@@ -106,7 +107,7 @@ export default function Comments({ projectId }: CommentsProps) {
 
   const handleLike = async (commentId: number, currentLikes: number) => {
     try {
-      await client.apiCall.invoke({
+      await getClient().apiCall.invoke({
         url: `/api/v1/entities/comments/${commentId}`,
         method: 'PUT',
         data: { likes: currentLikes + 1 },
