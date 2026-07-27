@@ -19,11 +19,11 @@ import {
 } from '@/lib/pi-sdk';
 import { Crown, Zap, Shield, Clock, CheckCircle2, XCircle, Share2, RefreshCw } from 'lucide-react';
 
-// PoliGov subscription services (aligned with PiRC2 smart contract spec)
-const POLIGOV_SERVICES: PiRC2Service[] = [
+// Atlasphere subscription services (aligned with PiRC2 smart contract spec)
+const ATLASPHERE_SERVICES: PiRC2Service[] = [
   {
     service_id: 0,
-    merchant: 'POLIGOV_MERCHANT_ADDRESS',
+    merchant: 'ATLASPHERE_MERCHANT_ADDRESS',
     name: 'Pioneer Basic',
     price: 10_000_000, // 1 Pi per period
     period_secs: 2_592_000, // 30 days
@@ -34,7 +34,7 @@ const POLIGOV_SERVICES: PiRC2Service[] = [
   },
   {
     service_id: 1,
-    merchant: 'POLIGOV_MERCHANT_ADDRESS',
+    merchant: 'ATLASPHERE_MERCHANT_ADDRESS',
     name: 'Pioneer Pro',
     price: 50_000_000, // 5 Pi per period
     period_secs: 2_592_000, // 30 days
@@ -45,7 +45,7 @@ const POLIGOV_SERVICES: PiRC2Service[] = [
   },
   {
     service_id: 2,
-    merchant: 'POLIGOV_MERCHANT_ADDRESS',
+    merchant: 'ATLASPHERE_MERCHANT_ADDRESS',
     name: 'Pioneer Elite',
     price: 100_000_000, // 10 Pi per period
     period_secs: 2_592_000, // 30 days
@@ -99,7 +99,7 @@ export default function Subscriptions() {
 
   // Load user's subscriptions (simulated - in production this queries the Soroban contract)
   useEffect(() => {
-    const saved = localStorage.getItem('poligov_subscriptions');
+    const saved = localStorage.getItem('atlasphere_subscriptions');
     if (saved) {
       try {
         setMySubscriptions(JSON.parse(saved));
@@ -119,7 +119,7 @@ export default function Subscriptions() {
         // Per PiRC2 spec: immediate payment for first period (no trial) or approval for auto-renew
         const success = await createPiPayment(
           hasTrial ? 0 : piAmount,
-          `PoliGov ${service.name} - Abonnement`,
+          `Atlasphere ${service.name} - Abonnement`,
           {
             type: 'subscription',
             service_id: service.service_id.toString(),
@@ -156,9 +156,9 @@ export default function Subscriptions() {
 
       const updated = [...mySubscriptions, newSub];
       setMySubscriptions(updated);
-      localStorage.setItem('poligov_subscriptions', JSON.stringify(updated));
+      localStorage.setItem('atlasphere_subscriptions', JSON.stringify(updated));
     } catch (error) {
-      console.error('[PoliGov] Subscription failed:', error);
+      console.error('[Atlasphere] Subscription failed:', error);
     } finally {
       setSubscribing(null);
     }
@@ -170,7 +170,7 @@ export default function Subscriptions() {
       sub.sub_id === subId ? { ...sub, auto_renew: false } : sub
     );
     setMySubscriptions(updated);
-    localStorage.setItem('poligov_subscriptions', JSON.stringify(updated));
+    localStorage.setItem('atlasphere_subscriptions', JSON.stringify(updated));
   };
 
   const handleToggleAutoRenew = (subId: number) => {
@@ -182,7 +182,7 @@ export default function Subscriptions() {
       return sub;
     });
     setMySubscriptions(updated);
-    localStorage.setItem('poligov_subscriptions', JSON.stringify(updated));
+    localStorage.setItem('atlasphere_subscriptions', JSON.stringify(updated));
   };
 
   const getActiveSubscription = (serviceId: number): PiRC2Subscription | undefined => {
@@ -199,7 +199,7 @@ export default function Subscriptions() {
         {/* Header */}
         <div className="text-center mb-12">
           <h1 className="text-4xl font-bold text-white mb-4">
-            Abonnements PoliGov
+            Abonnements Atlasphere
           </h1>
           <p className="text-lg text-slate-300 max-w-2xl mx-auto">
             Débloquez des fonctionnalités avancées de gouvernance avec les abonnements récurrents Pi.
@@ -217,7 +217,7 @@ export default function Subscriptions() {
 
         {/* Subscription Plans */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-          {POLIGOV_SERVICES.map((service, idx) => {
+          {ATLASPHERE_SERVICES.map((service, idx) => {
             const Icon = PLAN_ICONS[idx];
             const activeSub = getActiveSubscription(service.service_id);
             const isActive = !!activeSub;
@@ -416,8 +416,8 @@ export default function Subscriptions() {
             variant="outline"
             className="border-slate-600 text-slate-300 hover:text-white"
             onClick={() => shareOnPi(
-              'PoliGov Subscriptions',
-              '🚀 Découvrez les abonnements PoliGov propulsés par le smart contract PiRC2 sur Soroban! Gouvernance décentralisée pour tous les Pioneers. ' + window.location.href
+              'Atlasphere Subscriptions',
+              '🚀 Découvrez les abonnements Atlasphere propulsés par le smart contract PiRC2 sur Soroban! Gouvernance décentralisée pour tous les Pioneers. ' + window.location.href
             )}
           >
             <Share2 className="w-4 h-4 mr-2" />

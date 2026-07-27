@@ -27,7 +27,7 @@ export default function Navbar() {
       // Authenticate directly - Pi SDK handles both Pi Browser and sandbox modes
       await authenticate();
     } catch (err) {
-      console.error('[PoliGov] Authentication failed:', err);
+      console.error('[Atlasphere] Authentication failed:', err);
     } finally {
       setLoading(false);
     }
@@ -52,12 +52,12 @@ export default function Navbar() {
         <div className="flex items-center justify-between h-16">
           <Link to="/" className="flex items-center gap-2">
             <img
-              src="/assets/logo-poligov.jpeg"
-              alt="PoliGov Logo"
+              src="/assets/logo-atlasphere.jpeg"
+              alt="Atlasphere Logo"
               className="w-10 h-10 rounded-lg object-cover"
             />
             <span className="text-xl font-bold bg-gradient-to-r from-amber-400 to-yellow-500 bg-clip-text text-transparent">
-              PoliGov
+              Atlasphere
             </span>
           </Link>
 

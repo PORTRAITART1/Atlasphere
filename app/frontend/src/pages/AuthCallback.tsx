@@ -24,7 +24,7 @@ export default function AuthCallback() {
         await Promise.race([loginPromise, timeoutPromise]);
       } catch {
         // Login timed out or failed - continue with sandbox auth
-        console.log('[PoliGov] Atoms Cloud login skipped (timeout or unavailable)');
+        console.log('[Atlasphere] Atoms Cloud login skipped (timeout or unavailable)');
       }
 
       setStatus('Authentification Pi Network...');
@@ -41,7 +41,7 @@ export default function AuthCallback() {
         setTimeout(() => navigate('/'), 1000);
       }
     } catch (error) {
-      console.error('[PoliGov] Auth callback error:', error);
+      console.error('[Atlasphere] Auth callback error:', error);
       // Even on error, try to authenticate locally
       try {
         await authenticate();
@@ -64,7 +64,7 @@ export default function AuthCallback() {
       <div className="text-center">
         <div className="animate-spin rounded-full h-12 w-12 border-4 border-indigo-500 border-t-transparent mx-auto mb-4"></div>
         <p className="text-gray-300 text-lg">{status}</p>
-        <p className="text-gray-500 text-sm mt-2">PoliGov - Gouvernance Pi Network</p>
+        <p className="text-gray-500 text-sm mt-2">Atlasphere - Gouvernance Pi Network</p>
       </div>
     </div>
   );

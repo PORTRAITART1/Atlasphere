@@ -33,7 +33,7 @@ export default function Settings() {
   const [saved, setSaved] = useState(false);
 
   useEffect(() => {
-    const savedConfig = localStorage.getItem('poligov_network_config');
+    const savedConfig = localStorage.getItem('atlasphere_network_config');
     if (savedConfig) {
       setConfig(JSON.parse(savedConfig));
     }
@@ -62,7 +62,7 @@ export default function Settings() {
   };
 
   const saveConfig = () => {
-    localStorage.setItem('poligov_network_config', JSON.stringify(config));
+    localStorage.setItem('atlasphere_network_config', JSON.stringify(config));
     setSaved(true);
     setTimeout(() => setSaved(false), 2000);
   };
@@ -81,14 +81,14 @@ export default function Settings() {
   ];
 
   const [checklist, setChecklist] = useState<Record<string, boolean>>(() => {
-    const saved = localStorage.getItem('poligov_mainnet_checklist');
+    const saved = localStorage.getItem('atlasphere_mainnet_checklist');
     return saved ? JSON.parse(saved) : {};
   });
 
   const toggleChecklist = (id: string) => {
     const updated = { ...checklist, [id]: !checklist[id] };
     setChecklist(updated);
-    localStorage.setItem('poligov_mainnet_checklist', JSON.stringify(updated));
+    localStorage.setItem('atlasphere_mainnet_checklist', JSON.stringify(updated));
   };
 
   const checklistProgress = Object.values(checklist).filter(Boolean).length;
@@ -107,7 +107,7 @@ export default function Settings() {
             transition={{ duration: 0.4 }}
           >
             <h1 className="text-3xl font-bold text-white mb-2">⚙️ Configuration Réseau</h1>
-            <p className="text-gray-400 mb-8">Gérez la configuration Testnet/Mainnet de PoliGov</p>
+            <p className="text-gray-400 mb-8">Gérez la configuration Testnet/Mainnet de Atlasphere</p>
           </motion.div>
 
           {/* Network Toggle */}

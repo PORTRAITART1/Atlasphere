@@ -24,9 +24,9 @@ export default function FeedbackForm() {
       userAgent: navigator.userAgent,
     };
     
-    const existingFeedback = JSON.parse(localStorage.getItem('poligov_feedback') || '[]');
+    const existingFeedback = JSON.parse(localStorage.getItem('atlasphere_feedback') || '[]');
     existingFeedback.push(feedback);
-    localStorage.setItem('poligov_feedback', JSON.stringify(existingFeedback));
+    localStorage.setItem('atlasphere_feedback', JSON.stringify(existingFeedback));
     
     setSubmitted(true);
     setTimeout(() => {
@@ -70,7 +70,7 @@ export default function FeedbackForm() {
                 <div className="text-center py-8">
                   <div className="text-5xl mb-4">🎉</div>
                   <h3 className="text-xl font-bold text-white mb-2">Merci pour votre feedback !</h3>
-                  <p className="text-gray-400 text-sm">Votre retour nous aide à améliorer PoliGov.</p>
+                  <p className="text-gray-400 text-sm">Votre retour nous aide à améliorer Atlasphere.</p>
                 </div>
               ) : (
                 <>

@@ -1,4 +1,4 @@
-// Pi Network SDK v2.0 Integration for PoliGov
+// Pi Network SDK v2.0 Integration for Atlasphere
 // Aligned with @pinetwork-js/sdk and Pi Develop platform standards
 // Reference: https://github.com/pi-apps/pi-platform-docs/blob/master/SDK_reference.md
 import { createClient } from '@metagptx/web-sdk';
@@ -65,7 +65,7 @@ export interface AuthResult {
 /** Available SDK scopes */
 export type APIScopes = ['username', 'payments'];
 
-// --- PoliGov User Profile (extends Pi user with app-specific data) ---
+// --- Atlasphere User Profile (extends Pi user with app-specific data) ---
 
 export interface PiUser {
   uid: string;
@@ -167,9 +167,9 @@ export function initPiSdk(): void {
       sandbox: !isProduction
     });
     piSdkInitialized = true;
-    console.log('[PoliGov] Pi SDK initialized', { sandbox: !isProduction });
+    console.log('[Atlasphere] Pi SDK initialized', { sandbox: !isProduction });
   } else {
-    console.log('[PoliGov] Pi SDK not available - running in standalone mode');
+    console.log('[Atlasphere] Pi SDK not available - running in standalone mode');
   }
 }
 
@@ -194,7 +194,7 @@ export function setCurrentUser(user: PiUser | null): void {
 // Handle incomplete payments found during authentication
 // Per Pi SDK spec, this is called when an unfinished payment is detected
 function onIncompletePaymentFound(payment: APIPayment) {
-  console.log('[PoliGov] Incomplete payment found:', payment.identifier, payment.status);
+  console.log('[Atlasphere] Incomplete payment found:', payment.identifier, payment.status);
   // TODO: Resume incomplete payment via server-side completion
 }
 
@@ -230,7 +230,7 @@ async function verifyWithBackend(accessToken: string): Promise<PiUser | null> {
       };
     }
   } catch (error) {
-    console.warn('[PoliGov] Backend verification failed, using local profile:', error);
+    console.warn('[Atlasphere] Backend verification failed, using local profile:', error);
   }
   return null;
 }
@@ -283,7 +283,7 @@ export async function authenticate(): Promise<PiUser> {
       const auth = await window.Pi.authenticate(scopes, onIncompletePaymentFound);
 
       // Store token for later use
-      localStorage.setItem('poligov_pi_token', auth.accessToken);
+      localStorage.setItem('atlasphere_pi_token', auth.accessToken);
 
       // Verify with backend and create/update profile
       const backendUser = await verifyWithBackend(auth.accessToken);
@@ -313,11 +313,11 @@ export async function authenticate(): Promise<PiUser> {
         };
       }
 
-      localStorage.setItem('poligov_user', JSON.stringify(currentUser));
+      localStorage.setItem('atlasphere_user', JSON.stringify(currentUser));
       notifyListeners();
       return currentUser;
     } catch (error) {
-      console.error('[PoliGov] Pi authentication failed:', error);
+      console.error('[Atlasphere] Pi authentication failed:', error);
       throw error;
     }
   } else {
@@ -343,7 +343,7 @@ export async function authenticate(): Promise<PiUser> {
       language: 'fr'
     };
 
-    localStorage.setItem('poligov_user', JSON.stringify(currentUser));
+    localStorage.setItem('atlasphere_user', JSON.stringify(currentUser));
     notifyListeners();
     return currentUser;
   }
@@ -371,9 +371,9 @@ export async function createPiPayment(
                 method: 'POST',
                 data: { payment_id: paymentId },
               });
-              console.log('[PoliGov] Payment approved by server:', paymentId);
+              console.log('[Atlasphere] Payment approved by server:', paymentId);
             } catch (err) {
-              console.error('[PoliGov] Server approval failed:', err);
+              console.error('[Atlasphere] Server approval failed:', err);
             }
             if (onApprove) await onApprove(paymentId);
           },
@@ -391,26 +391,26 @@ export async function createPiPayment(
                   pi_uid: currentUser?.uid || '',
                 },
               });
-              console.log('[PoliGov] Payment completed:', paymentId, txid);
+              console.log('[Atlasphere] Payment completed:', paymentId, txid);
 
               // Check quest progress after funding
               await checkQuestProgress('fund');
             } catch (err) {
-              console.error('[PoliGov] Server completion failed:', err);
+              console.error('[Atlasphere] Server completion failed:', err);
             }
             if (onComplete) await onComplete(paymentId, txid);
           },
           onCancel: (paymentId: string) => {
-            console.log('[PoliGov] Payment cancelled:', paymentId);
+            console.log('[Atlasphere] Payment cancelled:', paymentId);
           },
           onError: (error: Error) => {
-            console.error('[PoliGov] Payment error:', error);
+            console.error('[Atlasphere] Payment error:', error);
           }
         }
       );
       return true;
     } catch (error) {
-      console.error('[PoliGov] Payment creation failed:', error);
+      console.error('[Atlasphere] Payment creation failed:', error);
       return false;
     }
   } else {
@@ -428,7 +428,7 @@ export async function createPiPayment(
       });
     } catch {
       // In sandbox, approval might fail due to missing PI_API_KEY - that's OK
-      console.log('[PoliGov] Sandbox: skipping server approval');
+      console.log('[Atlasphere] Sandbox: skipping server approval');
     }
 
     if (onApprove) await onApprove(fakePaymentId);
@@ -449,7 +449,7 @@ export async function createPiPayment(
       });
     } catch {
       // Fallback: record contribution directly
-      console.log('[PoliGov] Sandbox: recording contribution directly');
+      console.log('[Atlasphere] Sandbox: recording contribution directly');
       try {
         await getClient().apiCall.invoke({
           url: '/api/v1/entities/contributions',
@@ -464,7 +464,7 @@ export async function createPiPayment(
           },
         });
       } catch (e) {
-        console.error('[PoliGov] Failed to record contribution:', e);
+        console.error('[Atlasphere] Failed to record contribution:', e);
       }
     }
 
@@ -477,7 +477,7 @@ export async function createPiPayment(
         piBalance: currentUser.piBalance - amount,
         contributions: currentUser.contributions + 1
       };
-      localStorage.setItem('poligov_user', JSON.stringify(currentUser));
+      localStorage.setItem('atlasphere_user', JSON.stringify(currentUser));
       notifyListeners();
     }
 
@@ -518,7 +518,7 @@ export async function submitGovernanceVote(projectId: number, voteType: 'for' | 
         votescast: currentUser.votescast + 1,
         reputation: currentUser.reputation + 5,
       };
-      localStorage.setItem('poligov_user', JSON.stringify(currentUser));
+      localStorage.setItem('atlasphere_user', JSON.stringify(currentUser));
       notifyListeners();
 
       // Check quest progress
@@ -587,7 +587,7 @@ export async function checkQuestProgress(actionType: 'vote' | 'fund' | 'login' |
     });
 
     if (response?.data?.newly_completed?.length > 0) {
-      console.log('[PoliGov] Quests completed:', response.data.newly_completed);
+      console.log('[Atlasphere] Quests completed:', response.data.newly_completed);
     }
     return response?.data?.newly_completed || [];
   } catch {
@@ -597,8 +597,8 @@ export async function checkQuestProgress(actionType: 'vote' | 'fund' | 'login' |
 
 export function logout() {
   currentUser = null;
-  localStorage.removeItem('poligov_user');
-  localStorage.removeItem('poligov_pi_token');
+  localStorage.removeItem('atlasphere_user');
+  localStorage.removeItem('atlasphere_pi_token');
   notifyListeners();
 }
 
@@ -606,7 +606,7 @@ export function logout() {
 export async function contributePI(amount: number): Promise<boolean> {
   return createPiPayment(
     amount,
-    'PoliGov contribution',
+    'Atlasphere contribution',
     { type: 'donation' }
   );
 }
@@ -619,7 +619,7 @@ export async function castVote(): Promise<boolean> {
       votescast: currentUser.votescast + 1,
       reputation: currentUser.reputation + 5
     };
-    localStorage.setItem('poligov_user', JSON.stringify(currentUser));
+    localStorage.setItem('atlasphere_user', JSON.stringify(currentUser));
     notifyListeners();
     return true;
   }
@@ -629,7 +629,7 @@ export async function castVote(): Promise<boolean> {
 // Restore user from localStorage on load
 export function restoreSession(): void {
   try {
-    const saved = localStorage.getItem('poligov_user');
+    const saved = localStorage.getItem('atlasphere_user');
     if (saved) {
       currentUser = JSON.parse(saved);
       notifyListeners();
@@ -660,7 +660,7 @@ export async function autoAuthenticate(): Promise<PiUser | null> {
     const auth = await window.Pi!.authenticate(scopes, onIncompletePaymentFound);
 
     // Store token
-    localStorage.setItem('poligov_pi_token', auth.accessToken);
+    localStorage.setItem('atlasphere_pi_token', auth.accessToken);
 
     // Verify with backend
     const backendUser = await verifyWithBackend(auth.accessToken);
@@ -690,12 +690,12 @@ export async function autoAuthenticate(): Promise<PiUser | null> {
       };
     }
 
-    localStorage.setItem('poligov_user', JSON.stringify(currentUser));
+    localStorage.setItem('atlasphere_user', JSON.stringify(currentUser));
     notifyListeners();
-    console.log('[PoliGov] Auto-authenticated Pioneer:', currentUser.username);
+    console.log('[Atlasphere] Auto-authenticated Pioneer:', currentUser.username);
     return currentUser;
   } catch (error) {
-    console.warn('[PoliGov] Auto-authentication failed, user can authenticate manually:', error);
+    console.warn('[Atlasphere] Auto-authentication failed, user can authenticate manually:', error);
     // Restore from localStorage as fallback
     restoreSession();
     return currentUser;
@@ -723,20 +723,20 @@ export function openPiConversation(conversationId: number): void {
   if (window.Pi) {
     window.Pi.openConversation(conversationId);
   } else {
-    console.log('[PoliGov] openConversation not available outside Pi Browser');
+    console.log('[Atlasphere] openConversation not available outside Pi Browser');
   }
 }
 
 /** Share a proposal on Pi Network */
 export function shareProposal(proposalTitle: string, proposalId: number): void {
-  const message = `🗳️ Découvrez cette proposition sur PoliGov: "${proposalTitle}" - Votez et participez à la gouvernance Pi! ${window.location.origin}/proposal/${proposalId}`;
-  shareOnPi('PoliGov - Proposition', message);
+  const message = `🗳️ Découvrez cette proposition sur Atlasphere: "${proposalTitle}" - Votez et participez à la gouvernance Pi! ${window.location.origin}/proposal/${proposalId}`;
+  shareOnPi('Atlasphere - Proposition', message);
 }
 
 /** Share a funding project on Pi Network */
 export function shareFundingProject(projectTitle: string, projectId: number): void {
-  const message = `💰 Projet à financer sur PoliGov: "${projectTitle}" - Contribuez avec vos Pi! ${window.location.origin}/proposal/${projectId}`;
-  shareOnPi('PoliGov - Financement', message);
+  const message = `💰 Projet à financer sur Atlasphere: "${projectTitle}" - Contribuez avec vos Pi! ${window.location.origin}/proposal/${projectId}`;
+  shareOnPi('Atlasphere - Financement', message);
 }
 
 // --- PiRC2 Subscription Helpers ---

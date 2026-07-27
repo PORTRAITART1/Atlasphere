@@ -1,4 +1,4 @@
-# 📜 Règles de Gouvernance PoliGov
+# 📜 Règles de Gouvernance Atlasphere
 
 ## Principes Fondamentaux
 

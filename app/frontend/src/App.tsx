@@ -73,7 +73,7 @@ const App = () => {
     // Auto-authenticate if inside Pi Browser to detect Pioneer's username immediately
     if (isInPiBrowser()) {
       autoAuthenticate().catch((err) => {
-        console.warn('[PoliGov] Auto-authentication skipped:', err);
+        console.warn('[Atlasphere] Auto-authentication skipped:', err);
       });
     }
   }, []);
