@@ -1198,7 +1198,7 @@ export function isRTL(): boolean {
 export function setLocale(locale: Locale): void {
   if (locales.includes(locale)) {
     currentLocale = locale;
-    localStorage.setItem('polis_locale', locale);
+    localStorage.setItem('atlasphere_locale', locale);
     document.documentElement.dir = locale === 'ar' ? 'rtl' : 'ltr';
     document.documentElement.lang = locale;
     notifyI18nListeners();
@@ -1211,7 +1211,7 @@ export function t(key: string): string {
 
 // Detect browser language on init
 function detectLocale(): Locale {
-  const saved = localStorage.getItem('polis_locale') as Locale | null;
+  const saved = localStorage.getItem('atlasphere_locale') as Locale | null;
   if (saved && locales.includes(saved)) return saved;
 
   const browserLang = navigator.language.split('-')[0] as Locale;

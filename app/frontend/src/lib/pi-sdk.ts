@@ -150,9 +150,14 @@ let currentUser: PiUser | null = null;
 const listeners: Set<() => void> = new Set();
 let piSdkInitialized = false;
 
-// Check if running inside Pi Browser
+// Check if running inside Pi Browser (not just if SDK script is loaded)
 export function isInPiBrowser(): boolean {
-  return typeof window !== 'undefined' && !!window.Pi;
+  if (typeof window === 'undefined') return false;
+  // The Pi SDK script loads window.Pi even outside Pi Browser,
+  // but Pi Browser sets specific user-agent markers
+  const ua = navigator.userAgent || '';
+  const isPiBrowser = ua.includes('PiBrowser') || ua.includes('Pi Network');
+  return isPiBrowser && !!window.Pi;
 }
 
 // Initialize Pi SDK
@@ -271,16 +276,28 @@ async function fetchProfileFromBackend(): Promise<PiUser | null> {
   return null;
 }
 
+// Helper: race a promise against a timeout
+function withTimeout<T>(promise: Promise<T>, ms: number, fallbackMsg: string): Promise<T> {
+  return Promise.race([
+    promise,
+    new Promise<never>((_, reject) => setTimeout(() => reject(new Error(fallbackMsg)), ms)),
+  ]);
+}
+
 // Authenticate with Pi Network (real SDK or sandbox simulation)
 export async function authenticate(): Promise<PiUser> {
   // Ensure Pi SDK is initialized before authenticating
   initPiSdk();
 
-  if (window.Pi) {
+  if (isInPiBrowser() && window.Pi) {
     // Real Pi SDK authentication inside Pi Browser
     try {
       const scopes: APIScopes = ['username', 'payments'];
-      const auth = await window.Pi.authenticate(scopes, onIncompletePaymentFound);
+      const auth = await withTimeout(
+        window.Pi.authenticate(scopes, onIncompletePaymentFound),
+        3000,
+        'Pi authentication timeout'
+      );
 
       // Store token for later use
       localStorage.setItem('atlasphere_pi_token', auth.accessToken);
@@ -317,12 +334,13 @@ export async function authenticate(): Promise<PiUser> {
       notifyListeners();
       return currentUser;
     } catch (error) {
-      console.error('[Atlasphere] Pi authentication failed:', error);
-      throw error;
+      console.warn('[Atlasphere] Pi authentication failed or timed out, falling back to sandbox:', error);
+      // Fall through to sandbox mode below
     }
-  } else {
-    // Sandbox mode for development outside Pi Browser
-    // Instant authentication - no network calls needed
+  }
+
+  // Sandbox mode - instant authentication (no network calls)
+  {
     currentUser = {
       uid: 'pioneer_' + Math.random().toString(36).slice(2, 10),
       username: 'pioneer_dao',
@@ -357,7 +375,7 @@ export async function createPiPayment(
   onApprove?: (paymentId: string) => Promise<void>,
   onComplete?: (paymentId: string, txid: string) => Promise<void>
 ): Promise<boolean> {
-  if (window.Pi) {
+  if (isInPiBrowser() && window.Pi) {
     // Real Pi payment with backend approval/completion
     try {
       await window.Pi.createPayment(
