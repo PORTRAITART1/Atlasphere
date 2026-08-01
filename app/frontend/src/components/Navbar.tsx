@@ -83,6 +83,7 @@ export default function Navbar() {
               src="/assets/logo-atlasphere-transparent.png"
               alt="Atlasphere Logo"
               className="w-10 h-10 object-contain"
+              style={{ filter: 'brightness(0) saturate(100%) invert(72%) sepia(58%) saturate(600%) hue-rotate(2deg) brightness(103%) contrast(104%)' }}
             />
             <span className="text-xl font-bold bg-gradient-to-r from-amber-400 to-yellow-500 bg-clip-text text-transparent hidden sm:inline">
               Atlasphere
