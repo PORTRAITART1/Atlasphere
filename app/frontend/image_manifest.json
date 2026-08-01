@@ -2,16 +2,6 @@
   "status": "success",
   "results": [
     {
-      "status": "failed",
-      "path": "",
-      "absolute_path": "",
-      "url": "",
-      "message": "Image generation failed: Image creation failed (oneapi): HTTP 403 error: {\"error\":{\"message\":\"daily free quota exhausted (request id: 2026051819521411467774493544907)\",\"type\":\"one_api_error\",\"param\":\"\",\"code\":\"daily_free_quota_exhausted\"}}",
-      "description": "Futuristic purple and gold marketplace hero banner with Pi cryptocurrency symbol, digital commerce network visualization, glowing nodes connected in a decentralized pattern, modern gradient background from deep purple to gold",
-      "style": "photorealistic",
-      "filename": "hero-banner-pi-marketplace.jpg"
-    },
-    {
       "status": "success",
       "path": "https://mgx-backend-cdn.metadl.com/generate/images/317314/2026-05-18/o2bbbpyaagpq/category-digital-goods.png",
       "absolute_path": "https://mgx-backend-cdn.metadl.com/generate/images/317314/2026-05-18/o2bbbpyaagpq/category-digital-goods.png",
@@ -40,16 +30,6 @@
       "description": "Professional services and freelance category image showing diverse professionals collaborating in a modern workspace with holographic displays, purple and gold theme",
       "style": "photorealistic",
       "filename": "category-services-freelance.jpg"
-    },
-    {
-      "status": "failed",
-      "path": "",
-      "absolute_path": "",
-      "url": "",
-      "message": "Image generation failed: Image creation failed (oneapi): HTTP 403 error: {\"error\":{\"message\":\"daily free quota exhausted (request id: 2026051819533223648919893637740)\",\"type\":\"one_api_error\",\"param\":\"\",\"code\":\"daily_free_quota_exhausted\"}}",
-      "description": "Pi Network inspired logo mark - circular golden Pi symbol with orbital rings and network nodes, futuristic minimal design on transparent background",
-      "style": "minimalist",
-      "filename": "logo-pi-marketplace.png"
     },
     {
       "status": "success",
@@ -100,9 +80,17 @@
       "description": "Modern minimalist logo for PiPolis, a decentralized governance platform for Pi Network. Features a stylized Greek column (pillar) merged with the Pi symbol (π), representing democracy and Pi cryptocurrency. Deep indigo and gold color scheme, clean geometric shapes, professional and authoritative feel, centered composition, no text",
       "style": "minimalist",
       "filename": "logo-pipolis-governance-pillar.png"
+    },
+    {
+      "status": "success",
+      "filename": "logo-atlasphere-transparent.png",
+      "url": "https://mgx-backend-cdn.metadl.com/generate/images/317314/2026-07-31/tso536yaajta/logo-atlasphere-transparent.png",
+      "path": "https://mgx-backend-cdn.metadl.com/generate/images/317314/2026-07-31/tso536yaajta/logo-atlasphere-transparent.png",
+      "absolute_path": "https://mgx-backend-cdn.metadl.com/generate/images/317314/2026-07-31/tso536yaajta/logo-atlasphere-transparent.png"
     }
   ],
-  "success_count": 1,
+  "success_count": 9,
   "failed_count": 0,
-  "message": "Generated 1/1 images"
+  "running_count": 0,
+  "message": "Generated 9/9 images total"
 }

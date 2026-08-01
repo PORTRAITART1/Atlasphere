@@ -53,7 +53,7 @@ export default function Navbar() {
         <div className="flex items-center justify-between h-16">
           <Link to="/" className="flex items-center gap-2">
             <img
-              src="/assets/logo-atlasphere.png"
+              src="/assets/logo-atlasphere-transparent.png"
               alt="Atlasphere Logo"
               className="w-10 h-10 rounded-lg object-cover"
             />
