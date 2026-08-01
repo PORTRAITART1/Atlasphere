@@ -31,6 +31,7 @@ const EcoWallet = lazy(() => import('./pages/EcoWallet'));
 const ClimateDashboard = lazy(() => import('./pages/ClimateDashboard'));
 const EcoMarket = lazy(() => import('./pages/EcoMarket'));
 const Predictions = lazy(() => import('./pages/Predictions'));
+const EcoNFT = lazy(() => import('./pages/EcoNFT'));
 
 const queryClient = new QueryClient();
 
@@ -72,6 +73,7 @@ const AppRoutes = () => (
       <Route path="/climate" element={<ClimateDashboard />} />
       <Route path="/eco-market" element={<EcoMarket />} />
       <Route path="/predictions" element={<Predictions />} />
+      <Route path="/eco-nft" element={<EcoNFT />} />
     </Routes>
   </Suspense>
 );

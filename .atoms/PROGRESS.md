@@ -16,7 +16,9 @@ Build PiDAO - A decentralized governance platform for Pi Network Pioneers where 
 - [x] Create ClimateDashboard page (eco score, air quality, CO2, temperature charts)
 - [x] Create EcoMarket page (marketplace for environmental data)
 - [x] Create Predictions page (AI climate predictions via Atoms Cloud)
+- [x] Create EcoNFT page (minting, certification, marketplace NFT, tokenomics)
 - [x] Update App.tsx routes + Navbar with EcoChain menu
+- [x] Verify Pi Payment integration (createPayment with all callbacks)
 - [x] Lint & build verification
 
 ## Previous Task Breakdown

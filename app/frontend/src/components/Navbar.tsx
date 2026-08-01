@@ -41,6 +41,7 @@ export default function Navbar() {
     { path: '/climate', label: '🌍 Climat' },
     { path: '/eco-market', label: '🛒 EcoMarket' },
     { path: '/predictions', label: '🤖 Prédictions' },
+    { path: '/eco-nft', label: '🎨 EcoNFT' },
     { path: '/quests', label: `🎯 ${t('nav.quests')}` },
     { path: '/dashboard', label: t('nav.dashboard') },
     { path: '/admin', label: '🛡️ Admin' },
