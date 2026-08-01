@@ -75,6 +75,16 @@ export default function Navbar() {
     { path: '/eco-leaderboard', label: '🏆 Classement', desc: 'Leaderboard écologique' },
     { path: '/eco-premium', label: '👑 Premium', desc: 'Plans & abonnements' },
     { path: '/eco-api', label: '🔗 API', desc: 'Accès chercheurs' },
+    { path: '/iot-anomalies', label: '🚨 Anomalies', desc: 'Détection intelligente' },
+    { path: '/carbon-credits', label: '🌱 Carbone', desc: 'Crédits carbone' },
+  ];
+
+  const daoLinks = [
+    { path: '/quadratic-voting', label: '📐 Vote Quadratique', desc: 'Gouvernance équitable' },
+    { path: '/committees', label: '🏛️ Comités', desc: 'Sous-DAOs thématiques' },
+    { path: '/treasury', label: '💰 Trésorerie', desc: 'Fonds communautaires' },
+    { path: '/guilds', label: '🛡️ Guildes', desc: 'Équipes écologiques' },
+    { path: '/seasons', label: '🌊 Saisons', desc: 'Événements & missions' },
   ];
 
   const secondaryLinks = [
@@ -158,6 +168,38 @@ export default function Navbar() {
                   ))}
                 </div>
               )}
+            </div>
+
+            {/* DAO Dropdown */}
+            <div className="relative group">
+              <button
+                className={`flex items-center gap-1 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                  daoLinks.some((l) => location.pathname === l.path)
+                    ? 'bg-purple-600/20 text-purple-300'
+                    : 'text-gray-300 hover:text-white hover:bg-white/5'
+                }`}
+              >
+                <span>🏛️ DAO</span>
+                <svg className="w-3.5 h-3.5 transition-transform group-hover:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+              <div className="absolute top-full left-0 mt-1 w-56 bg-slate-800 border border-slate-700/50 rounded-xl shadow-xl shadow-black/20 overflow-hidden z-50 hidden group-hover:block">
+                {daoLinks.map((link) => (
+                  <Link
+                    key={link.path}
+                    to={link.path}
+                    className={`flex flex-col px-4 py-2.5 transition-colors ${
+                      location.pathname === link.path
+                        ? 'bg-purple-600/15 text-purple-300'
+                        : 'text-gray-300 hover:text-white hover:bg-white/5'
+                    }`}
+                  >
+                    <span className="text-sm font-medium">{link.label}</span>
+                    <span className="text-xs text-gray-500">{link.desc}</span>
+                  </Link>
+                ))}
+              </div>
             </div>
 
             {secondaryLinks.map((link) => (

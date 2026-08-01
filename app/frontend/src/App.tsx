@@ -4,6 +4,7 @@ import { TooltipProvider } from '@/components/ui/tooltip';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import FeedbackForm from '@/components/FeedbackForm';
+import EcoChatbot from '@/components/EcoChatbot';
 import { autoAuthenticate, isInPiBrowser } from '@/lib/pi-sdk';
 import { applyTheme } from '@/lib/theme';
 
@@ -42,6 +43,13 @@ const LifestyleOptimizer = lazy(() => import('./pages/LifestyleOptimizer'));
 const EcoPremium = lazy(() => import('./pages/EcoPremium'));
 const EcoLeaderboard = lazy(() => import('./pages/EcoLeaderboard'));
 const EcoApi = lazy(() => import('./pages/EcoApi'));
+const QuadraticVoting = lazy(() => import('./pages/QuadraticVoting'));
+const Committees = lazy(() => import('./pages/Committees'));
+const Treasury = lazy(() => import('./pages/Treasury'));
+const IoTAnomalies = lazy(() => import('./pages/IoTAnomalies'));
+const Guilds = lazy(() => import('./pages/Guilds'));
+const Seasons = lazy(() => import('./pages/Seasons'));
+const CarbonCredits = lazy(() => import('./pages/CarbonCredits'));
 
 const queryClient = new QueryClient();
 
@@ -93,6 +101,13 @@ const AppRoutes = () => (
       <Route path="/eco-premium" element={<EcoPremium />} />
       <Route path="/eco-leaderboard" element={<EcoLeaderboard />} />
       <Route path="/eco-api" element={<EcoApi />} />
+      <Route path="/quadratic-voting" element={<QuadraticVoting />} />
+      <Route path="/committees" element={<Committees />} />
+      <Route path="/treasury" element={<Treasury />} />
+      <Route path="/iot-anomalies" element={<IoTAnomalies />} />
+      <Route path="/guilds" element={<Guilds />} />
+      <Route path="/seasons" element={<Seasons />} />
+      <Route path="/carbon-credits" element={<CarbonCredits />} />
     </Routes>
   </Suspense>
 );
@@ -116,6 +131,7 @@ const App = () => {
         <BrowserRouter>
           <AppRoutes />
           <FeedbackForm />
+          <EcoChatbot />
         </BrowserRouter>
       </TooltipProvider>
     </QueryClientProvider>

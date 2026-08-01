@@ -107,7 +107,18 @@ Build PiDAO - A decentralized governance platform for Pi Network Pioneers where 
 - [x] Leaderboard Écologique (classement mondial/régional, défis communautaires)
 - [x] API Entreprises & Chercheurs (documentation interactive, tarification, accès)
 
+## Task Breakdown (Phases 11-15 — DAO Avancée, IA, Gamification, Entreprise)
+- [x] Gouvernance quadratique (vote quadratique, visualisation poids, comparaison)
+- [x] Comités thématiques / Sous-DAOs (Énergie, Transport, Biodiversité, Eau)
+- [x] Trésorerie communautaire (fonds Pi collectifs, allocation, budget)
+- [x] Chatbot EcoAssistant IA (widget flottant, questions écologiques, suggestions)
+- [x] Détection d'anomalies IoT (alertes intelligentes, pics pollution, notifications)
+- [x] Guildes écologiques (équipes, défis inter-guildes, classement collectif)
+- [x] Saisons & Événements (saisons trimestrielles, missions temporaires, countdown)
+- [x] Crédits carbone tokenisés (marketplace, achat/vente Pi, certification)
+
 ## Progress Log
+- 2026-08-01: Phases 11-15 complete - Gouvernance quadratique (/quadratic-voting), Comités thématiques (/committees), Trésorerie communautaire (/treasury), Chatbot EcoAssistant IA (widget flottant global), Détection anomalies IoT (/iot-anomalies), Guildes écologiques (/guilds), Saisons & Événements (/seasons), Crédits carbone tokenisés (/carbon-credits). Menu DAO ajouté dans Navbar. Lint & build OK.
 - 2026-08-01: Phase 10 complete - EcoChain AI Complétion: Capteurs IoT & Anonymisation (/eco-sensors), Lifestyle Optimizer IA (/lifestyle), Abonnement Premium (/eco-premium), Leaderboard Écologique (/eco-leaderboard), API Entreprises (/eco-api). Lint & build OK.
 - 2026-08-01: Phase 9 complete - Messagerie privée (/messages), Suivi projets financés (/project-tracking), Badges & Achievements (/badges), Communauté/Forum (/community), Notifications push (composant PushNotifications avec permissions), Mode sombre/clair (ThemeToggle avec persistance localStorage). Lint & build OK.
 - 2026-05-24: Plan approved, starting PiDAO development
