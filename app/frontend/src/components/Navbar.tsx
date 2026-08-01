@@ -5,6 +5,9 @@ import { t, subscribeI18n } from '@/lib/i18n';
 import LanguageSelector from '@/components/LanguageSelector';
 import NotificationBell from '@/components/NotificationBell';
 import GlobalSearch from '@/components/GlobalSearch';
+import ThemeToggle from '@/components/ThemeToggle';
+import PushNotifications from '@/components/PushNotifications';
+import { getTotalUnread } from '@/lib/messaging';
 
 export default function Navbar() {
   const [user, setUser] = useState<PiUser | null>(getCurrentUser());
@@ -51,10 +54,13 @@ export default function Navbar() {
     }
   };
 
+  const unreadMessages = getTotalUnread();
+
   const mainLinks = [
     { path: '/', label: t('nav.home') },
     { path: '/proposals', label: t('nav.proposals') },
     { path: '/funding', label: t('nav.funding') },
+    { path: '/community', label: '💬 Communauté' },
     { path: '/quests', label: `🎯 ${t('nav.quests')}` },
   ];
 
@@ -68,6 +74,8 @@ export default function Navbar() {
 
   const secondaryLinks = [
     { path: '/dashboard', label: t('nav.dashboard') },
+    { path: '/badges', label: '🏅 Badges' },
+    { path: '/project-tracking', label: '📋 Suivi' },
     { path: '/admin', label: '🛡️ Admin' },
   ];
 
@@ -165,6 +173,22 @@ export default function Navbar() {
           {/* Right side actions */}
           <div className="flex items-center gap-2">
             <GlobalSearch />
+            <Link
+              to="/messages"
+              className="relative p-2 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-gray-400 hover:text-white transition-all"
+              title="Messages"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+              </svg>
+              {unreadMessages > 0 && (
+                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold rounded-full w-4 h-4 flex items-center justify-center">
+                  {unreadMessages > 9 ? '9+' : unreadMessages}
+                </span>
+              )}
+            </Link>
+            <ThemeToggle />
+            <PushNotifications />
             <LanguageSelector />
             <NotificationBell />
 
@@ -271,6 +295,23 @@ export default function Navbar() {
                   {link.label}
                 </Link>
               ))}
+            </div>
+
+            {/* Social & Gamification */}
+            <div className="space-y-1 mb-3">
+              <p className="px-3 py-1 text-xs font-semibold text-purple-400 uppercase tracking-wider">💬 Social</p>
+              <Link to="/messages" className={`block px-3 py-2.5 rounded-lg text-sm font-medium ${location.pathname === '/messages' ? 'bg-indigo-600/20 text-indigo-300' : 'text-gray-300 hover:text-white hover:bg-white/5'}`}>
+                💌 Messages {unreadMessages > 0 && <span className="ml-1 bg-red-500 text-white text-xs px-1.5 rounded-full">{unreadMessages}</span>}
+              </Link>
+              <Link to="/community" className={`block px-3 py-2.5 rounded-lg text-sm font-medium ${location.pathname === '/community' ? 'bg-indigo-600/20 text-indigo-300' : 'text-gray-300 hover:text-white hover:bg-white/5'}`}>
+                💬 Communauté
+              </Link>
+              <Link to="/badges" className={`block px-3 py-2.5 rounded-lg text-sm font-medium ${location.pathname === '/badges' ? 'bg-indigo-600/20 text-indigo-300' : 'text-gray-300 hover:text-white hover:bg-white/5'}`}>
+                🏅 Badges
+              </Link>
+              <Link to="/project-tracking" className={`block px-3 py-2.5 rounded-lg text-sm font-medium ${location.pathname === '/project-tracking' ? 'bg-indigo-600/20 text-indigo-300' : 'text-gray-300 hover:text-white hover:bg-white/5'}`}>
+                📋 Suivi Projets
+              </Link>
             </div>
 
             {/* Secondary links */}

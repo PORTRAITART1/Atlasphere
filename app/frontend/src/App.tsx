@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import FeedbackForm from '@/components/FeedbackForm';
 import { autoAuthenticate, isInPiBrowser } from '@/lib/pi-sdk';
+import { applyTheme } from '@/lib/theme';
 
 // Lazy-loaded pages for performance
 const Index = lazy(() => import('./pages/Index'));
@@ -32,6 +33,10 @@ const ClimateDashboard = lazy(() => import('./pages/ClimateDashboard'));
 const EcoMarket = lazy(() => import('./pages/EcoMarket'));
 const Predictions = lazy(() => import('./pages/Predictions'));
 const EcoNFT = lazy(() => import('./pages/EcoNFT'));
+const Messages = lazy(() => import('./pages/Messages'));
+const ProjectTracking = lazy(() => import('./pages/ProjectTracking'));
+const Badges = lazy(() => import('./pages/Badges'));
+const Community = lazy(() => import('./pages/Community'));
 
 const queryClient = new QueryClient();
 
@@ -74,12 +79,18 @@ const AppRoutes = () => (
       <Route path="/eco-market" element={<EcoMarket />} />
       <Route path="/predictions" element={<Predictions />} />
       <Route path="/eco-nft" element={<EcoNFT />} />
+      <Route path="/messages" element={<Messages />} />
+      <Route path="/project-tracking" element={<ProjectTracking />} />
+      <Route path="/badges" element={<Badges />} />
+      <Route path="/community" element={<Community />} />
     </Routes>
   </Suspense>
 );
 
 const App = () => {
   useEffect(() => {
+    // Apply saved theme on mount
+    applyTheme();
     // Auto-authenticate if inside Pi Browser to detect Pioneer's username immediately
     if (isInPiBrowser()) {
       autoAuthenticate().catch((err) => {

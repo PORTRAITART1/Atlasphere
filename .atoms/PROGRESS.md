@@ -92,7 +92,16 @@ Build PiDAO - A decentralized governance platform for Pi Network Pioneers where 
 - [x] Phase 8: Formulaire de feedback beta intégré
 - [x] Phase 8: Boutons de partage social (Twitter/X, WhatsApp, Telegram)
 
+## Task Breakdown (Phase 9 - Social & Gamification)
+- [x] Système de messagerie privée (chat 1-à-1 et groupes de projet)
+- [x] Tableau de bord suivi projets financés (jalons, preuves, rapports)
+- [x] Système de badges et achievements gamifié (déverrouillage, animations, profil)
+- [x] Page Communauté / Forum (discussions par catégorie, fils, réactions)
+- [x] Notifications push réelles (Service Worker push, permissions)
+- [x] Mode sombre/clair avec toggle (thème adaptatif, persistance)
+
 ## Progress Log
+- 2026-08-01: Phase 9 complete - Messagerie privée (/messages), Suivi projets financés (/project-tracking), Badges & Achievements (/badges), Communauté/Forum (/community), Notifications push (composant PushNotifications avec permissions), Mode sombre/clair (ThemeToggle avec persistance localStorage). Lint & build OK.
 - 2026-05-24: Plan approved, starting PiDAO development
 - 2026-06-21: Frontend connected to backend APIs (proposals, voting, funding, dashboard, notifications)
 - 2026-06-21: Starting Phase 2 - Auth, Payments, Quests, Social features integration
