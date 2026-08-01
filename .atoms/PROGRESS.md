@@ -10,6 +10,14 @@ Build PiDAO - A decentralized governance platform for Pi Network Pioneers where 
 - As a Pioneer, I can track my votes, contributions, and reputation
 - As a Pioneer, I can comment and discuss proposals
 
+## Task Breakdown (UI/Presentation Fix)
+- [x] Navbar: regrouper les 11 liens en menu principal + sous-menu déroulant EcoChain
+- [x] Logo: retirer rounded-lg, utiliser object-contain pour fond transparent
+- [x] Menu mobile: séparer en sections (Navigation, EcoChain AI, Secondaire)
+- [x] Footer: intégrer le logo transparent + améliorer la mise en page
+- [x] Bouton connexion: agrandir et ajouter shadow pour meilleur contraste
+- [x] Lint & build: vérification OK
+
 ## Task Breakdown (EcoChain AI Fusion)
 - [x] Create eco-data.ts (ECO token logic, climate data, rewards system)
 - [x] Create EcoWallet page (Pi + ECO balances, transactions, rewards)

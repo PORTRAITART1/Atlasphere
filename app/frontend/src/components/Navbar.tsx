@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { getCurrentUser, authenticate, logout, subscribe, type PiUser } from '@/lib/pi-sdk';
 import { t, subscribeI18n } from '@/lib/i18n';
@@ -10,8 +10,10 @@ export default function Navbar() {
   const [user, setUser] = useState<PiUser | null>(getCurrentUser());
   const [loading, setLoading] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [ecoDropdown, setEcoDropdown] = useState(false);
   const [, setLangTick] = useState(0);
   const location = useLocation();
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     return subscribe(() => setUser(getCurrentUser()));
@@ -21,10 +23,26 @@ export default function Navbar() {
     return subscribeI18n(() => setLangTick((n) => n + 1));
   }, []);
 
+  // Close dropdown on outside click
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setEcoDropdown(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  // Close mobile menu on route change
+  useEffect(() => {
+    setMobileOpen(false);
+    setEcoDropdown(false);
+  }, [location.pathname]);
+
   const handleAuth = async () => {
     setLoading(true);
     try {
-      // Authenticate directly - Pi SDK handles both Pi Browser and sandbox modes
       await authenticate();
     } catch (err) {
       console.error('[Atlasphere] Authentication failed:', err);
@@ -33,37 +51,102 @@ export default function Navbar() {
     }
   };
 
-  const navLinks = [
+  const mainLinks = [
     { path: '/', label: t('nav.home') },
     { path: '/proposals', label: t('nav.proposals') },
     { path: '/funding', label: t('nav.funding') },
-    { path: '/eco-wallet', label: '🌿 EcoWallet' },
-    { path: '/climate', label: '🌍 Climat' },
-    { path: '/eco-market', label: '🛒 EcoMarket' },
-    { path: '/predictions', label: '🤖 Prédictions' },
-    { path: '/eco-nft', label: '🎨 EcoNFT' },
     { path: '/quests', label: `🎯 ${t('nav.quests')}` },
+  ];
+
+  const ecoLinks = [
+    { path: '/eco-wallet', label: '🌿 EcoWallet', desc: 'Portefeuille écologique' },
+    { path: '/climate', label: '🌍 Climat', desc: 'Tableau de bord climatique' },
+    { path: '/eco-market', label: '🛒 EcoMarket', desc: 'Marketplace données' },
+    { path: '/predictions', label: '🤖 Prédictions', desc: 'IA & Prévisions' },
+    { path: '/eco-nft', label: '🎨 EcoNFT', desc: 'NFT environnementaux' },
+  ];
+
+  const secondaryLinks = [
     { path: '/dashboard', label: t('nav.dashboard') },
     { path: '/admin', label: '🛡️ Admin' },
   ];
+
+  const isEcoActive = ecoLinks.some((l) => location.pathname === l.path);
 
   return (
     <nav className="sticky top-0 z-50 bg-slate-900/95 backdrop-blur-md border-b border-indigo-500/20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
-          <Link to="/" className="flex items-center gap-2">
+          {/* Logo */}
+          <Link to="/" className="flex items-center gap-2 shrink-0">
             <img
               src="/assets/logo-atlasphere-transparent.png"
               alt="Atlasphere Logo"
-              className="w-10 h-10 rounded-lg object-cover"
+              className="w-9 h-9 object-contain"
             />
-            <span className="text-xl font-bold bg-gradient-to-r from-amber-400 to-yellow-500 bg-clip-text text-transparent">
+            <span className="text-xl font-bold bg-gradient-to-r from-amber-400 to-yellow-500 bg-clip-text text-transparent hidden sm:inline">
               Atlasphere
             </span>
           </Link>
 
-          <div className="hidden md:flex items-center gap-1">
-            {navLinks.map((link) => (
+          {/* Desktop Navigation */}
+          <div className="hidden lg:flex items-center gap-1">
+            {mainLinks.map((link) => (
+              <Link
+                key={link.path}
+                to={link.path}
+                className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                  location.pathname === link.path
+                    ? 'bg-indigo-600/20 text-indigo-300'
+                    : 'text-gray-300 hover:text-white hover:bg-white/5'
+                }`}
+              >
+                {link.label}
+              </Link>
+            ))}
+
+            {/* EcoChain Dropdown */}
+            <div className="relative" ref={dropdownRef}>
+              <button
+                onClick={() => setEcoDropdown(!ecoDropdown)}
+                className={`flex items-center gap-1 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                  isEcoActive
+                    ? 'bg-emerald-600/20 text-emerald-300'
+                    : 'text-gray-300 hover:text-white hover:bg-white/5'
+                }`}
+              >
+                <span>🌱 EcoChain</span>
+                <svg
+                  className={`w-3.5 h-3.5 transition-transform ${ecoDropdown ? 'rotate-180' : ''}`}
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+
+              {ecoDropdown && (
+                <div className="absolute top-full left-0 mt-1 w-56 bg-slate-800 border border-slate-700/50 rounded-xl shadow-xl shadow-black/20 overflow-hidden z-50">
+                  {ecoLinks.map((link) => (
+                    <Link
+                      key={link.path}
+                      to={link.path}
+                      className={`flex flex-col px-4 py-2.5 transition-colors ${
+                        location.pathname === link.path
+                          ? 'bg-emerald-600/15 text-emerald-300'
+                          : 'text-gray-300 hover:text-white hover:bg-white/5'
+                      }`}
+                    >
+                      <span className="text-sm font-medium">{link.label}</span>
+                      <span className="text-xs text-gray-500">{link.desc}</span>
+                    </Link>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {secondaryLinks.map((link) => (
               <Link
                 key={link.path}
                 to={link.path}
@@ -78,6 +161,7 @@ export default function Navbar() {
             ))}
           </div>
 
+          {/* Right side actions */}
           <div className="flex items-center gap-2">
             <GlobalSearch />
             <LanguageSelector />
@@ -116,24 +200,27 @@ export default function Navbar() {
               <button
                 onClick={handleAuth}
                 disabled={loading}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-gradient-to-r from-indigo-600 to-purple-600 text-white text-xs font-medium hover:from-indigo-500 hover:to-purple-500 transition-all disabled:opacity-50"
+                className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-gradient-to-r from-indigo-600 to-purple-600 text-white text-sm font-medium hover:from-indigo-500 hover:to-purple-500 transition-all disabled:opacity-50 shadow-lg shadow-indigo-500/20"
               >
                 {loading ? (
                   <>
-                    <div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    <div className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
                     <span>{t('auth.connecting')}</span>
                   </>
                 ) : (
                   <>
-                    <span>π</span>
+                    <span className="text-base">π</span>
                     <span>{t('nav.connect')}</span>
                   </>
                 )}
               </button>
             )}
+
+            {/* Mobile menu button */}
             <button
               onClick={() => setMobileOpen(!mobileOpen)}
-              className="md:hidden text-gray-300 hover:text-white"
+              className="lg:hidden text-gray-300 hover:text-white p-1.5 rounded-lg hover:bg-white/5 transition-colors"
+              aria-label="Menu"
             >
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 {mobileOpen ? (
@@ -146,22 +233,61 @@ export default function Navbar() {
           </div>
         </div>
 
+        {/* Mobile Navigation */}
         {mobileOpen && (
-          <div className="md:hidden pb-4 space-y-1">
-            {navLinks.map((link) => (
-              <Link
-                key={link.path}
-                to={link.path}
-                onClick={() => setMobileOpen(false)}
-                className={`block px-3 py-2 rounded-lg text-sm font-medium ${
-                  location.pathname === link.path
-                    ? 'bg-indigo-600/20 text-indigo-300'
-                    : 'text-gray-300 hover:text-white hover:bg-white/5'
-                }`}
-              >
-                {link.label}
-              </Link>
-            ))}
+          <div className="lg:hidden pb-4 border-t border-slate-700/50 mt-2 pt-3">
+            {/* Main links */}
+            <div className="space-y-1 mb-3">
+              <p className="px-3 py-1 text-xs font-semibold text-gray-500 uppercase tracking-wider">Navigation</p>
+              {mainLinks.map((link) => (
+                <Link
+                  key={link.path}
+                  to={link.path}
+                  className={`block px-3 py-2.5 rounded-lg text-sm font-medium ${
+                    location.pathname === link.path
+                      ? 'bg-indigo-600/20 text-indigo-300'
+                      : 'text-gray-300 hover:text-white hover:bg-white/5'
+                  }`}
+                >
+                  {link.label}
+                </Link>
+              ))}
+            </div>
+
+            {/* EcoChain section */}
+            <div className="space-y-1 mb-3">
+              <p className="px-3 py-1 text-xs font-semibold text-emerald-500 uppercase tracking-wider">🌱 EcoChain AI</p>
+              {ecoLinks.map((link) => (
+                <Link
+                  key={link.path}
+                  to={link.path}
+                  className={`block px-3 py-2.5 rounded-lg text-sm font-medium ${
+                    location.pathname === link.path
+                      ? 'bg-emerald-600/15 text-emerald-300'
+                      : 'text-gray-300 hover:text-white hover:bg-white/5'
+                  }`}
+                >
+                  {link.label}
+                </Link>
+              ))}
+            </div>
+
+            {/* Secondary links */}
+            <div className="space-y-1 pt-2 border-t border-slate-700/50">
+              {secondaryLinks.map((link) => (
+                <Link
+                  key={link.path}
+                  to={link.path}
+                  className={`block px-3 py-2.5 rounded-lg text-sm font-medium ${
+                    location.pathname === link.path
+                      ? 'bg-indigo-600/20 text-indigo-300'
+                      : 'text-gray-300 hover:text-white hover:bg-white/5'
+                  }`}
+                >
+                  {link.label}
+                </Link>
+              ))}
+            </div>
           </div>
         )}
       </div>
