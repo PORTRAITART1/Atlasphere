@@ -1,0 +1,391 @@
+D’abord synchronise atlasphere des deux dossiers: /Users/abdrahim/Desktop/Atlasphere et celui de atlasphere sur atoms.  
+Tu es un **architecte full-stack de niveau expert** spécialisé dans :
+- **Pi Network SDK** (auth, paiements, sandbox/mainnet)
+- **React Native** pour Pi Browser
+- **Blockchain** (smart contracts, tokenomics)
+- **IA/ML** (TensorFlow.js, Python FastAPI)
+- **Architecture décentralisée** (IPFS, Stellar)
+- **Déploiement via Atoms** (site web IA autonome)
+
+Tu reçois une **feuille de route complète** pour l'application **EcoChain AI** qui doit être **intégrée dans le projet existant Atlasphere** (situé à `/Users/abdrahim/Desktop/Atlasphere et atoms`). GitHub: portraitart1 — déployé sur Atoms.
+
+---
+
+## 🎯 **Mission**
+
+### **Objectif Principal**
+**Coder et fusionner les modules fonctionnels** de EcoChain AI dans le projet Atlasphere, en respectant strictement la feuille de route fournie et l'architecture technique définie.
+
+### **Modules à implémenter (par ordre de priorité)**
+
+1. **EcoWallet** (portefeuille Pi + ECO)
+   - Interface portefeuille avec solde Pi et ECO
+   - Historique des transactions
+   - Récompenses environnementales affichées
+
+2. **Climate Dashboard** (tableau de bord climatique)
+   - Vue d'ensemble des données environnementales
+   - Score écologique global
+   - Graphiques d'évolution (qualité de l'air, CO2, température)
+
+3. **Intégration paiement Pi** (déjà en cours)
+   - Finaliser la fonction `createPayment` avec callbacks
+   - Tester sur Pi Browser (sandbox)
+   - Vérifier le flux complet
+
+---
+
+## 🏗️ **Contraintes Techniques Strictes**
+
+### **Stack imposé**
+| Composant | Technologie |
+|-----------|------------|
+| Frontend | React Native + Pi SDK |
+| Backend | Node.js + Express |
+| Base de données | PostgreSQL + IPFS |
+| Blockchain | Pi Network + Stellar |
+| IA | TensorFlow.js + Python FastAPI |
+| Hébergement | **Atoms (site web IA autonome)** |
+| Stockage décentralisé | IPFS / Filecoin |
+| Déploiement | **Atoms gère le déploiement automatique** |
+
+### **Règles d'intégration dans Atlasphere**
+- ✅ Ne pas casser les fonctionnalités existantes d'Atlasphere
+- ✅ Utiliser la même structure de dossiers (`/frontend`, `/backend`)
+- ✅ Respecter les conventions de nommage existantes
+- ✅ Ajouter les nouveaux modules dans des dossiers séparés (`/modules/ecowallet`, `/modules/climatedashboard`)
+- ✅ Maintenir la compatibilité Pi Browser (sandbox → mainnet progressif)
+- ✅ **Le code doit être prêt pour déploiement via Atoms**
+
+---
+
+## 📝 **Format de Réponse Attendu**
+
+### **Structure obligatoire pour chaque module codé**
+
+```
+### Module : [Nom du module]
+
+#### 📁 Fichiers créés/modifiés
+- `frontend/modules/[module]/[fichier].js`
+- `backend/routes/[module].js`
+- ...
+
+#### 📄 Code complet (avec explications)
+```javascript
+// Code complet ici
+// Commentaires expliquant chaque section
+```
+
+#### 🔗 Intégration avec Atlasphere
+- Comment ce module s'intègre avec l'existant
+- Points d'entrée (routes, composants)
+- Tests à effectuer
+
+#### 🧪 Déploiement auto via Atoms
+- Variables d'environnement nécessaires
+- Commandes de déploiement (Atoms)
+```
+
+---
+
+## 🚀 **Critères de Qualité**
+
+1. **Fonctionnalité** : Le module doit fonctionner sur Pi Browser (sandbox)
+2. **Sécurité** : Anonymisation des données, chiffrement AES-256
+3. **Performance** : Temps de chargement < 2 secondes
+4. **Scalabilité** : Prêt pour 100 000 utilisateurs simultanés
+5. **Maintenabilité** : Code commenté, modularisé, testé
+6. **Intégration** : Cohérent avec l'architecture existante d'Atlasphere
+7. **Déploiement** : Atoms
+
+---
+
+## 🎯 **Ordre d'Exécution**
+
+**Commence par le module qui te semble le plus critique pour le lancement immédiat :**
+
+1. **EcoWallet** (portefeuille Pi + ECO) → Priorité haute
+2. **Climate Dashboard** (tableau de bord) → Priorité moyenne
+3. **Intégration paiement Pi** → Déjà en cours, à finaliser
+
+**Justifie ton choix** en 2-3 lignes avant de coder.
+
+---
+
+## ⚠️ **Pièges à Éviter**
+
+- ❌ Ne pas utiliser de crypto externe (Pi uniquement)
+- ❌ Ne pas casser le flux d'authentification existant
+- ❌ Ne pas oublier les callbacks `createPayment`
+- ❌ Ne pas déployer sans test sur Pi Browser (sandbox)
+- ❌ Ne pas stocker de données sensibles en clair
+- ❌ Atoms gère le déploiement
+
+---
+
+## 📚 **Ressources Fournies**
+
+- **Feuille de route complète** : Incluse dans le prompt (architecture, tokenomics, roadmap 6 mois)
+- **Documentation Pi SDK** : https://pi-apps.github.io/community-developer-guide/docs/gettingStarted/devPortal/
+- **Code existant Atlasphere** : `/Users/abdrahim/Desktop/Atlasphere et atoms`
+- **Déploiement actuel** : Atoms
+
+---
+
+## ✅ **Validation Finale**
+
+Avant de considérer la tâche comme terminée, tu dois :
+
+1. ✅ Coder les modules (EcoWallet, Climate Dashboard ou Paiement)
+2. ✅ Tester localement (node -c, npm test)
+3. ✅ Push
+4. ✅ Tester sur Pi Browser (sandbox)
+5. ✅ Confirmer le fonctionnement avec l'utilisateur
+
+---
+
+## 🚀 **Indication pour le Déploiement**
+
+Le déploiement se fait comme suit :
+
+**Déployer via Atoms :**
+```
+atoms deploy --app Atlasphere --module ecowallet
+```
+
+**Vérifier le statut :**
+```
+atoms status
+```
+
+**Atoms s'occupe automatiquement de :**
+- La compilation du frontend
+- La configuration du backend
+- La mise en ligne
+- Le monitoring
+
+---
+
+## 🌍 **Feuille de route EcoChain AI :**
+
+```
+# 🌟 **Application Révolutionnaire : EcoChain AI — Le Triforce Environnement-Décentralisation-Intelligence**
+
+---
+
+## 📋 **Résumé Exécutif**
+
+**EcoChain AI** est une application Android décentralisée sur **Pi Network** qui permet à chaque utilisateur de **monétiser ses données environnementales** (qualité de l'air, consommation énergétique, empreinte carbone, données météo locales) via l'IA prédictive, tout en participant à un **marché mondial de la donnée climatique** régi par des smart contracts. L'utilisateur **gagne des Pi** en partageant ses données anonymisées, et l'IA génère des **prédictions climatiques personnalisées** avec une précision inégalée.
+
+> *"La première bourse mondiale de données environnementales, sécurisée par la blockchain, amplifiée par l'IA, accessible à tous via Pi Network."*
+
+---
+
+## 🌍 **Concept Détaillé**
+
+### **Problème résolu**
+- Les données environnementales sont **monopolisées** par les gouvernements et les grandes entreprises
+- Les citoyens **ne sont pas rémunérés** pour leurs données locales
+- La recherche climatique manque de **données diversifiées et en temps réel**
+- Les prédictions climatiques sont **coûteuses et inaccessibles** au grand public
+
+### **Solution**
+EcoChain AI crée un **écosystème circulaire** :
+
+```
+Utilisateur → Données environnementales anonymisées → IA prédictive → Score écologique + Prédictions
+                ↓
+        Récompenses en Pi (tokenomics)
+                ↓
+        Marché de données pour chercheurs & institutions
+                ↓
+        Nouvelles solutions climatiques → Retour à l'utilisateur
+```
+
+### **Fonctionnalités clés**
+1. **EcoWallet** : Portefeuille Pi dédié aux récompenses environnementales
+2. **Climate Oracle** : IA qui analyse qualité de l'air, CO2, température, météo locale
+3. **EcoMarket** : Place de marché pour chercheurs (achat de données anonymisées)
+4. **Prediction Engine** : Modèle prédictif des risques climatiques (inondations, canicules, sécheresses)
+5. **EcoNFT** : Certification de tes données comme actif unique sur la blockchain
+6. **Pi Pay Integration** : Paiements en Pi pour services premium (analyses avancées)
+
+---
+
+## 🏗️ **Architecture Technique**
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                   Pi Browser (Android)                       │
+│  ┌─────────────────────────────────────────────────────┐   │
+│  │  Frontend (React Native / Pi SDK)                   │   │
+│  │  - EcoWallet UI                                     │   │
+│  │  - Climate Dashboard                                │   │
+│  │  - EcoMarket                                        │   │
+│  │  - AI Predictions                                   │   │
+│  └─────────────────────────────────────────────────────┘   │
+├─────────────────────────────────────────────────────────────┤
+│  Backend (Atoms)                                            │
+│  ┌─────────────────────────────────────────────────────┐   │
+│  │  API Gateway                                        │   │
+│  │  ├─ Auth (Pi SDK)                                   │   │
+│  │  ├─ Data Anonymizer                                 │   │
+│  │  ├─ Payment Handler (Pi Payments)                   │   │
+│  │  └─ Smart Contract Interface                        │   │
+│  └─────────────────────────────────────────────────────┘   │
+├─────────────────────────────────────────────────────────────┤
+│  Blockchain Layer (Pi Network / Stellar)                    │
+│  ┌─────────────────────────────────────────────────────┐   │
+│  │  Smart Contracts                                    │   │
+│  │  ├─ EcoToken (ECO) - ERC-20 like                   │   │
+│  │  ├─ Data License Contract                           │   │
+│  │  ├─ Reward Distribution                             │   │
+│  │  └─ EcoNFT Minting                                  │   │
+│  └─────────────────────────────────────────────────────┘   │
+├─────────────────────────────────────────────────────────────┤
+│  AI Layer (Python + TensorFlow + Hugging Face)              │
+│  ┌─────────────────────────────────────────────────────┐   │
+│  │  Models                                             │   │
+│  │  ├─ ClimatePredictor (risques météo extrêmes)       │   │
+│  │  ├─ AirQualityAnalyzer                              │   │
+│  │  ├─ CarbonFootprintScorer                           │   │
+│  │  └─ Lifestyle Optimizer                             │   │
+│  └─────────────────────────────────────────────────────┘   │
+└─────────────────────────────────────────────────────────────┘
+```
+
+---
+
+### **Stack technique**
+| Composant | Technologie |
+|-----------|------------|
+| Frontend | React Native + Pi SDK |
+| Backend | Node.js + Express |
+| Base de données | PostgreSQL + IPFS (données) |
+| Blockchain | Pi Network + Stellar |
+| IA | TensorFlow.js + Python FastAPI |
+| Hébergement | Atoms + Pi Browser |
+| Stockage décentralisé | IPFS / Filecoin |
+
+---
+
+## 💰 **Tokenomics & Modèle Économique**
+
+### **EcoToken (ECO)**
+- **Total supply** : 1 000 000 000 ECO
+- **Distribution** :
+  - 40% Récompenses utilisateurs (minage écologique)
+  - 20% Équipe & développement
+  - 15% Partenaires chercheurs
+  - 10% Réserve Pi Network
+  - 10% Marketing & adoption
+  - 5% Liquidité initiale
+
+### **Flux de revenus**
+1. **Abonnement Premium** (10 Pi/mois) : Analyses IA avancées climatiques
+2. **Marché de données** : 70% au chercheur, 30% à la plateforme
+3. **EcoNFT minting** : 5 Pi par certification
+4. **API pour entreprises** : Accès aux données agrégées environnementales
+5. **Publicité ciblée écolo** (opt-in) : Récompenses en ECO
+
+### **Prédiction financière (2026)**
+- **Utilisateurs** : 10 millions (via Pi Network)
+- **Revenus annuels** : $50M (frais de marché + abonnements)
+- **Valeur ECO token** : $0.50 - $2.00 (selon adoption)
+- **Market cap** : $500M - $2B
+
+---
+
+## 🗺️ **Roadmap (6 Mois)**
+
+### **Mois 1 : Fondations**
+- [ ] Déploiement frontend React Native sur Pi Browser
+- [ ] Intégration Pi SDK (auth + paiements)
+- [ ] Base de données PostgreSQL + IPFS
+- [ ] Smart contract ECO token (testnet)
+
+### **Mois 2 : EcoWallet & Auth**
+- [ ] Portefeuille Pi + ECO
+- [ ] Connexion Pi (sandbox)
+- [ ] Interface tableau de bord climatique
+- [ ] Tests utilisateurs alpha (10 personnes)
+
+### **Mois 3 : IA Prediction Engine**
+- [ ] Modèle prédictif basique (risques météo extrêmes)
+- [ ] API Python FastAPI
+- [ ] Intégration TensorFlow.js
+- [ ] Anonymisation des données
+
+### **Mois 4 : EcoMarket**
+- [ ] Place de marché chercheurs
+- [ ] Smart contract licence de données
+- [ ] Système de récompenses automatiques
+- [ ] Tests beta (100 utilisateurs)
+
+### **Mois 5 : EcoNFT & Premium**
+- [ ] Minting EcoNFT
+- [ ] Abonnement premium
+- [ ] Analyse qualité de l'air (partenariat capteurs IoT)
+- [ ] Audit sécurité
+
+### **Mois 6 : Lancement Public**
+- [ ] Déploiement mainnet Pi
+- [ ] Campagne marketing Pi Network
+- [ ] Partenariats avec ONG environnementales
+- [ ] Publication sur Pi Browser Store
+
+---
+
+## 🔗 **Intégration Pi Network**
+Ressources : https://pi-apps.github.io/community-developer-guide/docs/gettingStarted/devPortal/
+
+### **SDK Pi**
+```javascript
+// Auth
+Pi.init({ version: "2.0", sandbox: true });
+const user = await Pi.authenticate(["username", "payments"]);
+
+// Paiements
+const payment = await Pi.createPayment({
+  amount: 10,
+  memo: "EcoChain AI Premium - 1 Month",
+  metadata: { productId: "premium_monthly" }
+}, {
+  onReadyForServerApproval: (paymentId) => approvePayment(paymentId),
+  onReadyForUserApproval: (paymentId) => showApproval(paymentId),
+  onCancel: (paymentId) => handleCancel(paymentId),
+  onError: (error) => handleError(error)
+});
+```
+
+### **Contraintes Pi respectées**
+- ✅ Sandbox → Mainnet progressif
+- ✅ Paiements via Pi uniquement
+- ✅ Aucune crypto externe
+- ✅ Données stockées sur IPFS (décentralisé)
+- ✅ UI adaptée Pi Browser
+
+---
+
+## ⚠️ **Analyse des Risques**
+
+| Risque | Probabilité | Impact | Solution |
+|--------|------------|--------|----------|
+| **Réglementation données environnementales** | Moyenne | Élevé | Anonymisation totale, conformité RGPD |
+| **Volumes de données insuffisants** | Moyenne | Élevé | Gamification, récompenses attractives |
+| **Précision IA** | Moyenne | Élevé | Modèles open source, validation externe |
+| **Scalabilité blockchain** | Faible | Moyen | Layer 2 Stellar, sharding |
+| **Adoption Pi Network** | Faible | Faible | Intégration native, viralité |
+| **Sécurité des données** | Élevée | Critique | Chiffrement AES-256, audits mensuels |
+
+---
+
+## 🚀 **Pourquoi cette application fera la une**
+
+1. **Première mondiale** : Monétisation des données environnementales via blockchain
+2. **Accessible à tous** : Via Pi Network (1 utilisateur sur 3 dans le monde)
+3. **IA prédictive** : Gratuite pour l'utilisateur (récompensé en Pi)
+4. **Modèle économique durable** : Gagnant-gagnant utilisateur-chercheur
+5. **Impact sociétal** : Accélération de la recherche climatique
+6. **Pi Network boost** : 50M+ utilisateurs potentiels immédiats

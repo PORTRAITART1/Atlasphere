@@ -27,6 +27,10 @@ const Privacy = lazy(() => import('./pages/Privacy'));
 const Terms = lazy(() => import('./pages/Terms'));
 const Subscriptions = lazy(() => import('./pages/Subscriptions'));
 const Settings = lazy(() => import('./pages/Settings'));
+const EcoWallet = lazy(() => import('./pages/EcoWallet'));
+const ClimateDashboard = lazy(() => import('./pages/ClimateDashboard'));
+const EcoMarket = lazy(() => import('./pages/EcoMarket'));
+const Predictions = lazy(() => import('./pages/Predictions'));
 
 const queryClient = new QueryClient();
 
@@ -64,6 +68,10 @@ const AppRoutes = () => (
       <Route path="/privacy" element={<Privacy />} />
       <Route path="/terms" element={<Terms />} />
       <Route path="/settings" element={<Settings />} />
+      <Route path="/eco-wallet" element={<EcoWallet />} />
+      <Route path="/climate" element={<ClimateDashboard />} />
+      <Route path="/eco-market" element={<EcoMarket />} />
+      <Route path="/predictions" element={<Predictions />} />
     </Routes>
   </Suspense>
 );

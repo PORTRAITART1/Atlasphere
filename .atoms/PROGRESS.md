@@ -10,7 +10,16 @@ Build PiDAO - A decentralized governance platform for Pi Network Pioneers where 
 - As a Pioneer, I can track my votes, contributions, and reputation
 - As a Pioneer, I can comment and discuss proposals
 
-## Task Breakdown
+## Task Breakdown (EcoChain AI Fusion)
+- [x] Create eco-data.ts (ECO token logic, climate data, rewards system)
+- [x] Create EcoWallet page (Pi + ECO balances, transactions, rewards)
+- [x] Create ClimateDashboard page (eco score, air quality, CO2, temperature charts)
+- [x] Create EcoMarket page (marketplace for environmental data)
+- [x] Create Predictions page (AI climate predictions via Atoms Cloud)
+- [x] Update App.tsx routes + Navbar with EcoChain menu
+- [x] Lint & build verification
+
+## Previous Task Breakdown
 - [x] Generate 4 images for the platform
 - [x] Create Pi SDK simulation and data store (pi-sdk.ts, store.ts)
 - [x] Build Navbar and Footer components
