@@ -17,6 +17,7 @@ Build PiDAO - A decentralized governance platform for Pi Network Pioneers where 
 - [x] Footer: intégrer le logo transparent + améliorer la mise en page
 - [x] Bouton connexion: agrandir et ajouter shadow pour meilleur contraste
 - [x] Lint & build: vérification OK
+- [x] Logo transparent régénéré (PNG RGBA 1024x1024) et corrigé (permissions 644)
 
 ## Task Breakdown (EcoChain AI Fusion)
 - [x] Create eco-data.ts (ECO token logic, climate data, rewards system)

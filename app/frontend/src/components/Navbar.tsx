@@ -82,7 +82,7 @@ export default function Navbar() {
             <img
               src="/assets/logo-atlasphere-transparent.png"
               alt="Atlasphere Logo"
-              className="w-9 h-9 object-contain"
+              className="w-10 h-10 object-contain"
             />
             <span className="text-xl font-bold bg-gradient-to-r from-amber-400 to-yellow-500 bg-clip-text text-transparent hidden sm:inline">
               Atlasphere

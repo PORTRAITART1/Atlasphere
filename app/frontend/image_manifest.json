@@ -87,10 +87,17 @@
       "url": "https://mgx-backend-cdn.metadl.com/generate/images/317314/2026-07-31/tso536yaajta/logo-atlasphere-transparent.png",
       "path": "https://mgx-backend-cdn.metadl.com/generate/images/317314/2026-07-31/tso536yaajta/logo-atlasphere-transparent.png",
       "absolute_path": "https://mgx-backend-cdn.metadl.com/generate/images/317314/2026-07-31/tso536yaajta/logo-atlasphere-transparent.png"
+    },
+    {
+      "status": "success",
+      "filename": "logo-atlasphere-transparent_2.png",
+      "url": "https://mgx-backend-cdn.metadl.com/generate/images/317314/2026-07-31/tsptrsqaajra/logo-atlasphere-transparent_2.png",
+      "path": "https://mgx-backend-cdn.metadl.com/generate/images/317314/2026-07-31/tsptrsqaajra/logo-atlasphere-transparent_2.png",
+      "absolute_path": "https://mgx-backend-cdn.metadl.com/generate/images/317314/2026-07-31/tsptrsqaajra/logo-atlasphere-transparent_2.png"
     }
   ],
-  "success_count": 9,
+  "success_count": 10,
   "failed_count": 0,
   "running_count": 0,
-  "message": "Generated 9/9 images total"
+  "message": "Generated 10/10 images total"
 }
