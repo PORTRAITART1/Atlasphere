@@ -18,6 +18,7 @@ Build PiDAO - A decentralized governance platform for Pi Network Pioneers where 
 - [x] Bouton connexion: agrandir et ajouter shadow pour meilleur contraste
 - [x] Lint & build: vérification OK
 - [x] Logo transparent régénéré (PNG RGBA 1024x1024) et corrigé (permissions 644)
+- [x] Logo fusionné (PoliGov globe/gouvernance + Atlasphere) - style minimaliste pro, fond transparent, icônes PWA mises à jour
 
 ## Task Breakdown (EcoChain AI Fusion)
 - [x] Create eco-data.ts (ECO token logic, climate data, rewards system)

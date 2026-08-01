@@ -94,10 +94,17 @@
       "url": "https://mgx-backend-cdn.metadl.com/generate/images/317314/2026-07-31/tsptrsqaajra/logo-atlasphere-transparent_2.png",
       "path": "https://mgx-backend-cdn.metadl.com/generate/images/317314/2026-07-31/tsptrsqaajra/logo-atlasphere-transparent_2.png",
       "absolute_path": "https://mgx-backend-cdn.metadl.com/generate/images/317314/2026-07-31/tsptrsqaajra/logo-atlasphere-transparent_2.png"
+    },
+    {
+      "status": "success",
+      "filename": "logo-atlasphere-globe-governance.png",
+      "url": "https://mgx-backend-cdn.metadl.com/generate/images/317314/2026-07-31/tsqbipiaajta/logo-atlasphere-globe-governance.png",
+      "path": "https://mgx-backend-cdn.metadl.com/generate/images/317314/2026-07-31/tsqbipiaajta/logo-atlasphere-globe-governance.png",
+      "absolute_path": "https://mgx-backend-cdn.metadl.com/generate/images/317314/2026-07-31/tsqbipiaajta/logo-atlasphere-globe-governance.png"
     }
   ],
-  "success_count": 10,
+  "success_count": 11,
   "failed_count": 0,
   "running_count": 0,
-  "message": "Generated 10/10 images total"
+  "message": "Generated 11/11 images total"
 }
