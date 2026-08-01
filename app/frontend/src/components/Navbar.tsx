@@ -70,6 +70,11 @@ export default function Navbar() {
     { path: '/eco-market', label: '🛒 EcoMarket', desc: 'Marketplace données' },
     { path: '/predictions', label: '🤖 Prédictions', desc: 'IA & Prévisions' },
     { path: '/eco-nft', label: '🎨 EcoNFT', desc: 'NFT environnementaux' },
+    { path: '/eco-sensors', label: '📡 Capteurs IoT', desc: 'Collecte & anonymisation' },
+    { path: '/lifestyle', label: '✨ Optimizer', desc: 'Recommandations IA' },
+    { path: '/eco-leaderboard', label: '🏆 Classement', desc: 'Leaderboard écologique' },
+    { path: '/eco-premium', label: '👑 Premium', desc: 'Plans & abonnements' },
+    { path: '/eco-api', label: '🔗 API', desc: 'Accès chercheurs' },
   ];
 
   const secondaryLinks = [

@@ -215,3 +215,162 @@ export function getSeverityColor(severity: string): string {
     default: return 'text-gray-400 bg-gray-500/10 border-gray-500/30';
   }
 }
+
+// --- IoT Sensors & Data Collection ---
+
+export interface IoTSensor {
+  id: string;
+  name: string;
+  type: 'air_quality' | 'energy' | 'water' | 'temperature' | 'noise' | 'solar';
+  status: 'active' | 'inactive' | 'paused';
+  lastReading: string;
+  dataPoints: number;
+  ecoEarned: number;
+  location: string;
+  accuracy: number;
+}
+
+export function getIoTSensors(): IoTSensor[] {
+  return [
+    { id: 's1', name: 'Capteur Air Salon', type: 'air_quality', status: 'active', lastReading: '2026-08-01T10:30:00Z', dataPoints: 12480, ecoEarned: 312, location: 'Domicile', accuracy: 94 },
+    { id: 's2', name: 'Compteur Énergie', type: 'energy', status: 'active', lastReading: '2026-08-01T10:29:00Z', dataPoints: 8640, ecoEarned: 216, location: 'Domicile', accuracy: 98 },
+    { id: 's3', name: 'Sonde Eau Jardin', type: 'water', status: 'active', lastReading: '2026-08-01T09:00:00Z', dataPoints: 4320, ecoEarned: 108, location: 'Jardin', accuracy: 91 },
+    { id: 's4', name: 'Thermomètre Extérieur', type: 'temperature', status: 'paused', lastReading: '2026-07-30T18:00:00Z', dataPoints: 6720, ecoEarned: 168, location: 'Balcon', accuracy: 96 },
+    { id: 's5', name: 'Panneau Solaire', type: 'solar', status: 'active', lastReading: '2026-08-01T10:28:00Z', dataPoints: 5040, ecoEarned: 252, location: 'Toit', accuracy: 99 },
+  ];
+}
+
+export interface DataContribution {
+  id: string;
+  sensorId: string;
+  dataPoints: number;
+  anonymized: boolean;
+  sharedAt: string;
+  ecoReward: number;
+  buyer?: string;
+}
+
+export function getDataContributions(): DataContribution[] {
+  return [
+    { id: 'dc1', sensorId: 's1', dataPoints: 2880, anonymized: true, sharedAt: '2026-07-31T00:00:00Z', ecoReward: 72, buyer: 'EcoSensors Paris' },
+    { id: 'dc2', sensorId: 's2', dataPoints: 1440, anonymized: true, sharedAt: '2026-07-30T00:00:00Z', ecoReward: 36 },
+    { id: 'dc3', sensorId: 's3', dataPoints: 720, anonymized: true, sharedAt: '2026-07-29T00:00:00Z', ecoReward: 18, buyer: 'AquaData Africa' },
+    { id: 'dc4', sensorId: 's5', dataPoints: 1440, anonymized: true, sharedAt: '2026-07-28T00:00:00Z', ecoReward: 72, buyer: 'GreenHome Analytics' },
+  ];
+}
+
+// --- Lifestyle Optimizer ---
+
+export interface LifestyleRecommendation {
+  id: string;
+  category: 'transport' | 'energy' | 'food' | 'waste' | 'water';
+  title: string;
+  description: string;
+  impact: 'low' | 'medium' | 'high';
+  ecoSaving: number; // kg CO2 per month
+  difficulty: 'easy' | 'medium' | 'hard';
+  adopted: boolean;
+  progress: number; // 0-100
+}
+
+export function getLifestyleRecommendations(): LifestyleRecommendation[] {
+  return [
+    { id: 'lr1', category: 'transport', title: 'Vélo pour trajets < 5km', description: 'Remplacez la voiture par le vélo pour les trajets courts. Économisez 2.6 kg CO2 par trajet.', impact: 'high', ecoSaving: 52, difficulty: 'medium', adopted: true, progress: 78 },
+    { id: 'lr2', category: 'energy', title: 'Éteindre les appareils en veille', description: 'Les appareils en veille consomment 10% de votre électricité. Utilisez des multiprises avec interrupteur.', impact: 'medium', ecoSaving: 15, difficulty: 'easy', adopted: true, progress: 90 },
+    { id: 'lr3', category: 'food', title: 'Réduire la viande rouge à 1x/semaine', description: 'La production de bœuf émet 27 kg CO2/kg. Remplacez par des légumineuses ou du poulet.', impact: 'high', ecoSaving: 40, difficulty: 'medium', adopted: false, progress: 35 },
+    { id: 'lr4', category: 'waste', title: 'Compostage des déchets organiques', description: 'Compostez vos épluchures et restes alimentaires. Réduit les déchets de 30%.', impact: 'medium', ecoSaving: 12, difficulty: 'easy', adopted: true, progress: 100 },
+    { id: 'lr5', category: 'water', title: 'Douche de 5 minutes max', description: 'Réduisez votre temps de douche. Économisez 60L d\'eau par douche raccourcie.', impact: 'medium', ecoSaving: 8, difficulty: 'easy', adopted: false, progress: 50 },
+    { id: 'lr6', category: 'transport', title: 'Covoiturage domicile-travail', description: 'Partagez vos trajets avec des collègues. Divisez votre empreinte par 2 à 4.', impact: 'high', ecoSaving: 65, difficulty: 'medium', adopted: false, progress: 20 },
+    { id: 'lr7', category: 'energy', title: 'Thermostat intelligent (-2°C)', description: 'Baissez le chauffage de 2°C. Économisez 14% sur votre facture et 300 kg CO2/an.', impact: 'high', ecoSaving: 25, difficulty: 'easy', adopted: true, progress: 100 },
+    { id: 'lr8', category: 'food', title: 'Acheter local et de saison', description: 'Les produits importés parcourent en moyenne 3000 km. Privilégiez les circuits courts.', impact: 'medium', ecoSaving: 18, difficulty: 'medium', adopted: false, progress: 45 },
+  ];
+}
+
+export interface WeeklyGoal {
+  id: string;
+  title: string;
+  target: number;
+  current: number;
+  unit: string;
+  category: 'transport' | 'energy' | 'food' | 'waste' | 'water';
+  ecoReward: number;
+}
+
+export function getWeeklyGoals(): WeeklyGoal[] {
+  return [
+    { id: 'wg1', title: 'Km en vélo', target: 30, current: 22, unit: 'km', category: 'transport', ecoReward: 50 },
+    { id: 'wg2', title: 'Repas végétariens', target: 5, current: 3, unit: 'repas', category: 'food', ecoReward: 30 },
+    { id: 'wg3', title: 'Jours sans voiture', target: 4, current: 4, unit: 'jours', category: 'transport', ecoReward: 40 },
+    { id: 'wg4', title: 'Litres d\'eau économisés', target: 200, current: 145, unit: 'L', category: 'water', ecoReward: 25 },
+  ];
+}
+
+// --- Leaderboard ---
+
+export interface LeaderboardEntry {
+  rank: number;
+  username: string;
+  avatar: string;
+  ecoScore: number;
+  region: string;
+  badges: number;
+  trend: 'up' | 'down' | 'stable';
+  trendValue: number;
+}
+
+export function getLeaderboard(region?: string): LeaderboardEntry[] {
+  const all: LeaderboardEntry[] = [
+    { rank: 1, username: 'GreenMaster', avatar: '🌍', ecoScore: 982, region: 'Paris', badges: 18, trend: 'stable', trendValue: 0 },
+    { rank: 2, username: 'EcoWarrior42', avatar: '🌿', ecoScore: 956, region: 'Lyon', badges: 15, trend: 'up', trendValue: 3 },
+    { rank: 3, username: 'SolarPioneer', avatar: '☀️', ecoScore: 934, region: 'Marseille', badges: 14, trend: 'up', trendValue: 1 },
+    { rank: 4, username: 'BikeCommuter', avatar: '🚲', ecoScore: 912, region: 'Paris', badges: 12, trend: 'down', trendValue: 2 },
+    { rank: 5, username: 'ZeroWasteLife', avatar: '♻️', ecoScore: 898, region: 'Bordeaux', badges: 13, trend: 'up', trendValue: 5 },
+    { rank: 6, username: 'pioneer_dao', avatar: '🧑', ecoScore: 742, region: 'Paris', badges: 10, trend: 'up', trendValue: 8 },
+    { rank: 7, username: 'OceanGuard', avatar: '🐋', ecoScore: 728, region: 'Nice', badges: 9, trend: 'stable', trendValue: 0 },
+    { rank: 8, username: 'TreeHugger', avatar: '🌳', ecoScore: 715, region: 'Toulouse', badges: 11, trend: 'down', trendValue: 1 },
+    { rank: 9, username: 'CleanAirFan', avatar: '🌬️', ecoScore: 698, region: 'Lille', badges: 8, trend: 'up', trendValue: 4 },
+    { rank: 10, username: 'EcoNovice', avatar: '🌱', ecoScore: 650, region: 'Nantes', badges: 6, trend: 'up', trendValue: 12 },
+  ];
+  if (region && region !== 'all') return all.filter((e) => e.region.toLowerCase().includes(region.toLowerCase()));
+  return all;
+}
+
+export interface CommunityChallenge {
+  id: string;
+  title: string;
+  description: string;
+  participants: number;
+  target: number;
+  current: number;
+  unit: string;
+  endsAt: string;
+  reward: number;
+  category: string;
+}
+
+export function getCommunityChallenge(): CommunityChallenge[] {
+  return [
+    { id: 'cc1', title: 'Défi Zéro Voiture Août', description: 'Collectivement, parcourons 100 000 km sans voiture ce mois-ci !', participants: 2847, target: 100000, current: 67500, unit: 'km', endsAt: '2026-08-31', reward: 500, category: 'transport' },
+    { id: 'cc2', title: 'Plantation Communautaire', description: 'Plantons 10 000 arbres ensemble avant la fin de l\'été', participants: 1523, target: 10000, current: 7820, unit: 'arbres', endsAt: '2026-09-21', reward: 300, category: 'biodiversity' },
+    { id: 'cc3', title: 'Économie d\'Eau Collective', description: 'Économisons 1 million de litres d\'eau en août', participants: 4210, target: 1000000, current: 420000, unit: 'litres', endsAt: '2026-08-31', reward: 200, category: 'water' },
+  ];
+}
+
+// --- Premium Plans ---
+
+export interface PremiumPlan {
+  id: string;
+  name: string;
+  price: number; // Pi/month
+  features: string[];
+  popular: boolean;
+  current: boolean;
+}
+
+export function getPremiumPlans(): PremiumPlan[] {
+  return [
+    { id: 'free', name: 'Gratuit', price: 0, features: ['Score écologique de base', 'Prédictions météo simples', '3 capteurs max', 'Leaderboard lecture seule', 'Récompenses ECO standard'], popular: false, current: true },
+    { id: 'pro', name: 'Pro', price: 10, features: ['Analyses IA avancées', 'Prédictions détaillées 30 jours', 'Capteurs illimités', 'Lifestyle Optimizer personnalisé', 'Accès prioritaire EcoMarket', 'Badge Pro exclusif', 'Support prioritaire'], popular: true, current: false },
+    { id: 'enterprise', name: 'Entreprise', price: 50, features: ['API accès complet', 'Données agrégées en temps réel', 'Dashboard personnalisé', 'Rapports mensuels PDF', 'Intégration IoT avancée', 'Account manager dédié', 'SLA 99.9%', 'Audit conformité RGPD'], popular: false, current: false },
+  ];
+}

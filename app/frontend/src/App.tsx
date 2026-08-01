@@ -37,6 +37,11 @@ const Messages = lazy(() => import('./pages/Messages'));
 const ProjectTracking = lazy(() => import('./pages/ProjectTracking'));
 const Badges = lazy(() => import('./pages/Badges'));
 const Community = lazy(() => import('./pages/Community'));
+const EcoSensors = lazy(() => import('./pages/EcoSensors'));
+const LifestyleOptimizer = lazy(() => import('./pages/LifestyleOptimizer'));
+const EcoPremium = lazy(() => import('./pages/EcoPremium'));
+const EcoLeaderboard = lazy(() => import('./pages/EcoLeaderboard'));
+const EcoApi = lazy(() => import('./pages/EcoApi'));
 
 const queryClient = new QueryClient();
 
@@ -83,6 +88,11 @@ const AppRoutes = () => (
       <Route path="/project-tracking" element={<ProjectTracking />} />
       <Route path="/badges" element={<Badges />} />
       <Route path="/community" element={<Community />} />
+      <Route path="/eco-sensors" element={<EcoSensors />} />
+      <Route path="/lifestyle" element={<LifestyleOptimizer />} />
+      <Route path="/eco-premium" element={<EcoPremium />} />
+      <Route path="/eco-leaderboard" element={<EcoLeaderboard />} />
+      <Route path="/eco-api" element={<EcoApi />} />
     </Routes>
   </Suspense>
 );
