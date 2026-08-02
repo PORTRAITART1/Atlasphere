@@ -225,8 +225,11 @@ export default function Settings() {
               <CardTitle className="text-white">🔑 Variables d&apos;Environnement</CardTitle>
             </CardHeader>
             <CardContent>
+              <div className="bg-amber-900/30 border border-amber-500/50 rounded-lg p-3 mb-3">
+                <p className="text-amber-300 text-xs font-medium">⚠️ Sécurité : Ne jamais exposer vos clés réelles dans le code frontend. Les valeurs ci-dessous sont des exemples de format. Stockez vos vraies clés uniquement côté serveur (variables d'environnement backend).</p>
+              </div>
               <pre className="bg-slate-900 p-4 rounded-lg text-xs text-gray-300 overflow-x-auto">
-{`# Pi Network
+{`# Pi Network (⚠️ EXEMPLES DE FORMAT — remplacez par vos vraies clés côté SERVEUR uniquement)
 PI_API_KEY=${config.network === 'mainnet' ? 'mainnet_xxxxxxxx' : 'testnet_xxxxxxxx'}
 DEVELOPER_PUBLIC_KEY=GXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 DEVELOPER_SECRET_SEED=SXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX

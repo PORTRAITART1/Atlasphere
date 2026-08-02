@@ -198,9 +198,42 @@ export function setCurrentUser(user: PiUser | null): void {
 
 // Handle incomplete payments found during authentication
 // Per Pi SDK spec, this is called when an unfinished payment is detected
-function onIncompletePaymentFound(payment: APIPayment) {
+async function onIncompletePaymentFound(payment: APIPayment) {
   console.log('[Atlasphere] Incomplete payment found:', payment.identifier, payment.status);
-  // TODO: Resume incomplete payment via server-side completion
+
+  try {
+    // Case 1: Payment was cancelled — nothing to do
+    if (payment.status.cancelled) {
+      console.log('[Atlasphere] Payment was cancelled, skipping:', payment.identifier);
+      return;
+    }
+
+    // Case 2: Payment not yet approved by server — approve it first
+    if (!payment.status.developer_approved) {
+      console.log('[Atlasphere] Approving incomplete payment:', payment.identifier);
+      await getClient().apiCall.invoke({
+        url: '/api/v1/pi-payments/approve',
+        method: 'POST',
+        data: { payment_id: payment.identifier },
+      });
+    }
+
+    // Case 3: Payment approved + transaction verified but not completed — complete it
+    if (payment.status.developer_approved && payment.transaction?.verified && !payment.status.developer_completed) {
+      console.log('[Atlasphere] Completing incomplete payment:', payment.identifier);
+      await getClient().apiCall.invoke({
+        url: '/api/v1/pi-payments/complete',
+        method: 'POST',
+        data: {
+          payment_id: payment.identifier,
+          txid: payment.transaction.txid,
+        },
+      });
+      console.log('[Atlasphere] Incomplete payment completed successfully:', payment.identifier);
+    }
+  } catch (error) {
+    console.error('[Atlasphere] Failed to resume incomplete payment:', payment.identifier, error);
+  }
 }
 
 // Verify Pi token with backend and get/create profile
