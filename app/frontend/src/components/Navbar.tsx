@@ -90,7 +90,11 @@ export default function Navbar() {
   const secondaryLinks = [
     { path: '/my-dashboard', label: '📊 Mon Board' },
     { path: '/rewards', label: '🎁 Récompenses' },
-    { path: '/badges', label: '🏅 Badges' },
+    { path: '/profile', label: '👤 Profil' },
+    { path: '/referral', label: '👥 Parrainage' },
+    { path: '/partners', label: '🤝 Partenaires' },
+    { path: '/eco-ads', label: '📺 Éco-Pubs' },
+    { path: '/ipfs-storage', label: '💾 IPFS' },
     { path: '/notification-settings', label: '🔔 Notifs' },
     { path: '/admin', label: '🛡️ Admin' },
   ];

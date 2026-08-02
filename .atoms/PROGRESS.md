@@ -117,12 +117,20 @@ Build PiDAO - A decentralized governance platform for Pi Network Pioneers where 
 - [x] Saisons & Événements (saisons trimestrielles, missions temporaires, countdown)
 - [x] Crédits carbone tokenisés (marketplace, achat/vente Pi, certification)
 
+## Task Breakdown (Phase 17 - IPFS, Parrainage, Partenaires, Éco-Pubs, Profil)
+- [x] Stockage décentralisé IPFS (/ipfs-storage) - gestion fichiers, CID, épinglage, stats
+- [x] Système de parrainage (/referral) - code, tiers, récompenses, liste filleuls
+- [x] Partenaires & ONG (/partners) - organisations vérifiées, impact, contributions Pi
+- [x] Éco-publicités opt-in (/eco-ads) - vidéos/sondages/actions, récompenses ECO
+- [x] Profil utilisateur enrichi (/profile) - stats complètes, XP, badges, accès rapide
+
 ## Task Breakdown (Phase 16 - Notifications, Dashboard Personnalisé, Récompenses)
 - [x] Notifications personnalisées (/notification-settings) - préférences par catégorie, canaux push/email/in-app
 - [x] Tableau de bord personnalisable (/my-dashboard) - widgets activables/désactivables, grille responsive
 - [x] Système de récompenses (/rewards) - XP, streak, actions quotidiennes/hebdomadaires/jalons, niveaux
 
 ## Progress Log
+- 2026-08-01: Phase 17 complete - Stockage IPFS (/ipfs-storage), Parrainage (/referral), Partenaires ONG (/partners), Éco-publicités (/eco-ads), Profil utilisateur (/profile). Navigation mise à jour. Lint & build OK.
 - 2026-08-01: Phase 16 complete - Notifications personnalisées (/notification-settings), Dashboard personnalisable (/my-dashboard), Système de récompenses (/rewards). Navigation mise à jour. Lint & build OK.
 - 2026-08-01: Phases 11-15 complete - Gouvernance quadratique (/quadratic-voting), Comités thématiques (/committees), Trésorerie communautaire (/treasury), Chatbot EcoAssistant IA (widget flottant global), Détection anomalies IoT (/iot-anomalies), Guildes écologiques (/guilds), Saisons & Événements (/seasons), Crédits carbone tokenisés (/carbon-credits). Menu DAO ajouté dans Navbar. Lint & build OK.
 - 2026-08-01: Phase 10 complete - EcoChain AI Complétion: Capteurs IoT & Anonymisation (/eco-sensors), Lifestyle Optimizer IA (/lifestyle), Abonnement Premium (/eco-premium), Leaderboard Écologique (/eco-leaderboard), API Entreprises (/eco-api). Lint & build OK.

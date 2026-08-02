@@ -53,6 +53,11 @@ const IoTAnomalies = lazy(() => import('./pages/IoTAnomalies'));
 const Guilds = lazy(() => import('./pages/Guilds'));
 const Seasons = lazy(() => import('./pages/Seasons'));
 const CarbonCredits = lazy(() => import('./pages/CarbonCredits'));
+const IPFSStorage = lazy(() => import('./pages/IPFSStorage'));
+const ReferralPage = lazy(() => import('./pages/Referral'));
+const Partners = lazy(() => import('./pages/Partners'));
+const EcoAdsPage = lazy(() => import('./pages/EcoAds'));
+const UserProfile = lazy(() => import('./pages/UserProfile'));
 
 const queryClient = new QueryClient();
 
@@ -114,6 +119,11 @@ const AppRoutes = () => (
       <Route path="/guilds" element={<Guilds />} />
       <Route path="/seasons" element={<Seasons />} />
       <Route path="/carbon-credits" element={<CarbonCredits />} />
+      <Route path="/ipfs-storage" element={<IPFSStorage />} />
+      <Route path="/referral" element={<ReferralPage />} />
+      <Route path="/partners" element={<Partners />} />
+      <Route path="/eco-ads" element={<EcoAdsPage />} />
+      <Route path="/profile" element={<UserProfile />} />
     </Routes>
   </Suspense>
 );
