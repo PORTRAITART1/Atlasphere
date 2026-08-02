@@ -88,9 +88,10 @@ export default function Navbar() {
   ];
 
   const secondaryLinks = [
-    { path: '/dashboard', label: t('nav.dashboard') },
+    { path: '/my-dashboard', label: '📊 Mon Board' },
+    { path: '/rewards', label: '🎁 Récompenses' },
     { path: '/badges', label: '🏅 Badges' },
-    { path: '/project-tracking', label: '📋 Suivi' },
+    { path: '/notification-settings', label: '🔔 Notifs' },
     { path: '/admin', label: '🛡️ Admin' },
   ];
 

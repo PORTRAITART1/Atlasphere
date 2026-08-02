@@ -43,6 +43,9 @@ const LifestyleOptimizer = lazy(() => import('./pages/LifestyleOptimizer'));
 const EcoPremium = lazy(() => import('./pages/EcoPremium'));
 const EcoLeaderboard = lazy(() => import('./pages/EcoLeaderboard'));
 const EcoApi = lazy(() => import('./pages/EcoApi'));
+const NotificationSettings = lazy(() => import('./pages/NotificationSettings'));
+const CustomDashboard = lazy(() => import('./pages/CustomDashboard'));
+const Rewards = lazy(() => import('./pages/Rewards'));
 const QuadraticVoting = lazy(() => import('./pages/QuadraticVoting'));
 const Committees = lazy(() => import('./pages/Committees'));
 const Treasury = lazy(() => import('./pages/Treasury'));
@@ -101,6 +104,9 @@ const AppRoutes = () => (
       <Route path="/eco-premium" element={<EcoPremium />} />
       <Route path="/eco-leaderboard" element={<EcoLeaderboard />} />
       <Route path="/eco-api" element={<EcoApi />} />
+      <Route path="/notification-settings" element={<NotificationSettings />} />
+      <Route path="/my-dashboard" element={<CustomDashboard />} />
+      <Route path="/rewards" element={<Rewards />} />
       <Route path="/quadratic-voting" element={<QuadraticVoting />} />
       <Route path="/committees" element={<Committees />} />
       <Route path="/treasury" element={<Treasury />} />
