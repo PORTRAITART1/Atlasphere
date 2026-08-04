@@ -336,7 +336,7 @@ export default function Navbar() {
           </div>
 
           {/* Right side actions */}
-          <div className="flex items-center gap-1 sm:gap-1.5 overflow-hidden">
+          <div className="flex items-center gap-1 sm:gap-1.5">
             <div className="hidden sm:block">
               <GlobalSearch />
             </div>
