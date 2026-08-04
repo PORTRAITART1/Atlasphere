@@ -133,7 +133,15 @@ Build PiDAO - A decentralized governance platform for Pi Network Pioneers where 
 - [x] Refonte complète de la Navbar - design premium avec mega-menus, glassmorphism, animations fluides
 - [x] Lint & build OK
 
+## Task Breakdown (i18n Homepage Fix)
+- [x] Ajouter clés home.* dans i18n.ts pour fr/en/es/pt/zh/ar
+- [x] Convertir Index.tsx pour utiliser t() + useI18nRerender()
+- [x] Intégrer branded-hero-governance-globe.png dans le hero
+- [x] Corriger erreur runtime (contribRes hors scope)
+- [x] Lint & build OK
+
 ## Progress Log
+- 2026-08-04: i18n homepage complet — Index.tsx utilise t() pour tous les textes (badge, heading, description, stats, how-it-works, proposals). Image branded-hero-governance-globe.png intégrée comme background du hero. Logo transparent en overlay. Clés home.* ajoutées pour les 6 langues (fr/en/es/pt/zh/ar). Lint & build OK.
 - 2026-08-03: Navbar redesign complet — menu principal épuré (5 liens), mega-menus déroulants (EcoChain 12 items en grille 2 colonnes, DAO 6 items, Plus 14 items en grille), ligne d'accent gradient en haut, glassmorphism, animations hover/open, menu mobile restructuré par sections. Lint & build OK.
 - 2026-08-01: Phase 17 complete - Stockage IPFS (/ipfs-storage), Parrainage (/referral), Partenaires ONG (/partners), Éco-publicités (/eco-ads), Profil utilisateur (/profile). Navigation mise à jour. Lint & build OK.
 - 2026-08-01: Phase 16 complete - Notifications personnalisées (/notification-settings), Dashboard personnalisable (/my-dashboard), Système de récompenses (/rewards). Navigation mise à jour. Lint & build OK.
