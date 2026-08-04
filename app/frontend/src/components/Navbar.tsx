@@ -336,15 +336,17 @@ export default function Navbar() {
           </div>
 
           {/* Right side actions */}
-          <div className="flex items-center gap-1.5">
-            <GlobalSearch />
+          <div className="flex items-center gap-1 sm:gap-1.5 overflow-hidden">
+            <div className="hidden sm:block">
+              <GlobalSearch />
+            </div>
 
             <Link
               to="/messages"
-              className="relative p-2 rounded-lg text-gray-400 hover:text-white hover:bg-white/[0.06] transition-all duration-200"
+              className="relative p-1.5 sm:p-2 rounded-lg text-gray-400 hover:text-white hover:bg-white/[0.06] transition-all duration-200"
               title="Messages"
             >
-              <svg className="w-[18px] h-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-4 h-4 sm:w-[18px] sm:h-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
               </svg>
               {unreadMessages > 0 && (
@@ -354,22 +356,22 @@ export default function Navbar() {
               )}
             </Link>
 
-            <ThemeToggle />
-            <PushNotifications />
-            <LanguageSelector />
+            <div className="hidden sm:block"><ThemeToggle /></div>
+            <div className="hidden sm:block"><PushNotifications /></div>
+            <div className="hidden md:block"><LanguageSelector /></div>
             <NotificationBell />
 
             {user ? (
-              <div className="flex items-center gap-1.5 ml-1">
+              <div className="flex items-center gap-1 sm:gap-1.5 ml-0.5 sm:ml-1">
                 <div className="hidden sm:flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-amber-500/10 border border-amber-500/20">
                   <span className="text-amber-400 text-sm font-semibold">{user.piBalance.toFixed(1)}</span>
                   <span className="text-amber-500/70 text-sm">π</span>
                 </div>
                 <Link
                   to="/dashboard"
-                  className="flex items-center gap-2 px-2 py-1.5 rounded-xl hover:bg-white/[0.06] transition-all duration-200 group"
+                  className="flex items-center gap-1.5 sm:gap-2 px-1.5 sm:px-2 py-1.5 rounded-xl hover:bg-white/[0.06] transition-all duration-200 group"
                 >
-                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white text-sm font-bold ring-2 ring-indigo-500/30 group-hover:ring-indigo-400/50 transition-all">
+                  <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white text-xs sm:text-sm font-bold ring-2 ring-indigo-500/30 group-hover:ring-indigo-400/50 transition-all">
                     {user.username.charAt(0).toUpperCase()}
                   </div>
                   <div className="hidden sm:flex flex-col">
@@ -381,7 +383,7 @@ export default function Navbar() {
                 </Link>
                 <button
                   onClick={logout}
-                  className="p-1.5 rounded-lg text-gray-500 hover:text-red-400 hover:bg-red-500/10 transition-all duration-200"
+                  className="hidden sm:block p-1.5 rounded-lg text-gray-500 hover:text-red-400 hover:bg-red-500/10 transition-all duration-200"
                   title={t('nav.disconnect')}
                 >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -393,16 +395,17 @@ export default function Navbar() {
               <button
                 onClick={handleAuth}
                 disabled={loading}
-                className="flex items-center gap-1.5 px-4 py-2 ml-1 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 text-white text-sm font-semibold hover:from-indigo-500 hover:to-purple-500 transition-all duration-200 disabled:opacity-50 shadow-lg shadow-indigo-600/25 hover:shadow-indigo-500/40 hover:scale-[1.02] active:scale-[0.98]"
+                className="flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-4 py-1.5 sm:py-2 ml-0.5 sm:ml-1 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 text-white text-xs sm:text-sm font-semibold hover:from-indigo-500 hover:to-purple-500 transition-all duration-200 disabled:opacity-50 shadow-lg shadow-indigo-600/25 hover:shadow-indigo-500/40 hover:scale-[1.02] active:scale-[0.98] shrink-0 whitespace-nowrap"
               >
                 {loading ? (
                   <>
-                    <div className="w-3.5 h-3.5 border-2 border-white/80 border-t-transparent rounded-full animate-spin" />
-                    <span>{t('auth.connecting')}</span>
+                    <div className="w-3 h-3 sm:w-3.5 sm:h-3.5 border-2 border-white/80 border-t-transparent rounded-full animate-spin" />
+                    <span className="hidden sm:inline">{t('auth.connecting')}</span>
+                    <span className="sm:hidden">...</span>
                   </>
                 ) : (
                   <>
-                    <span className="text-base font-bold">π</span>
+                    <span className="text-sm sm:text-base font-bold">π</span>
                     <span>{t('nav.connect')}</span>
                   </>
                 )}
