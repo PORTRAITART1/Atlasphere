@@ -356,9 +356,9 @@ export default function Navbar() {
               )}
             </Link>
 
+            <LanguageSelector />
             <div className="hidden sm:block"><ThemeToggle /></div>
             <div className="hidden sm:block"><PushNotifications /></div>
-            <div className="hidden md:block"><LanguageSelector /></div>
             <NotificationBell />
 
             {user ? (
