@@ -62,8 +62,9 @@ export interface AuthResult {
   user: APIUser;
 }
 
-/** Available SDK scopes */
-export type APIScopes = ['username', 'payments'];
+/** Available SDK scopes (per Pi SDK docs: payments, username, roles, wallet_address) */
+export type APIScope = 'payments' | 'username' | 'roles' | 'wallet_address';
+export type APIScopes = APIScope[];
 
 // --- Atlasphere User Profile (extends Pi user with app-specific data) ---
 
@@ -127,21 +128,34 @@ export const PIRC2_CONTRACT_ID = 'CCUF75B6W3HRJTJD6O7OXNI72HGJ7DERZ5MUNOMFMSK23M
 export const PI_TESTNET_RPC = 'https://rpc.testnet.minepi.com';
 export const PI_NETWORK_PASSPHRASE = 'Pi Testnet';
 
-// --- Declare Pi SDK global type (aligned with official SDK) ---
+// --- Declare Pi SDK global type (aligned with official Pi SDK docs) ---
+// Reference: https://pi-apps.github.io/pi-sdk-docs/pi-sdk/Core
 declare global {
   interface Window {
     Pi?: {
-      init: (config: { version: string; sandbox?: boolean }) => void;
+      // Core - must await init() before any other call
+      init: (config: { version: string; sandbox?: boolean }) => Promise<void>;
       authenticate: (
         scopes: APIScopes,
-        onIncompletePaymentFound: (payment: APIPayment) => void
+        onIncompletePaymentFound?: (payment: APIPayment) => void
       ) => Promise<AuthResult>;
       createPayment: (
         paymentData: APIPartialPayment,
         callbacks: PaymentCallbacks
       ) => Promise<void>;
+      // Utilities
       openShareDialog: (title: string, sharingMessage: string) => void;
       openConversation: (conversationId: number) => void;
+      nativeFeaturesList: () => Promise<string[]>;
+      requestPermission: (permission: string) => Promise<boolean>;
+      copyText: (text: string) => void;
+      openUrlInSystemBrowser: (url: string) => void;
+      // Ads
+      Ads?: {
+        isAdReady: (adType: string) => Promise<boolean>;
+        requestAd: (adType: string) => Promise<void>;
+        showAd: (adType: string) => Promise<{ completed: boolean }>;
+      };
     };
   }
 }
@@ -160,19 +174,26 @@ export function isInPiBrowser(): boolean {
   return isPiBrowser && !!window.Pi;
 }
 
-// Initialize Pi SDK
-export function initPiSdk(): void {
+// Initialize Pi SDK — Pi.init() returns a Promise per official docs.
+// MUST await this before calling Pi.authenticate() or Pi.createPayment().
+let _piInitPromise: Promise<void> | null = null;
+
+export async function initPiSdk(): Promise<void> {
   if (piSdkInitialized) return;
 
   if (window.Pi) {
-    const isProduction = window.location.hostname.includes('.pi') ||
-                         window.location.hostname.includes('mainnet');
-    window.Pi.init({
-      version: '2.0',
-      sandbox: !isProduction
-    });
-    piSdkInitialized = true;
-    console.log('[Atlasphere] Pi SDK initialized', { sandbox: !isProduction });
+    if (!_piInitPromise) {
+      const isProduction = window.location.hostname.includes('.pi') ||
+                           window.location.hostname.includes('mainnet');
+      _piInitPromise = window.Pi.init({
+        version: '2.0',
+        sandbox: !isProduction
+      }).then(() => {
+        piSdkInitialized = true;
+        console.log('[Atlasphere] Pi SDK initialized', { sandbox: !isProduction });
+      });
+    }
+    await _piInitPromise;
   } else {
     console.log('[Atlasphere] Pi SDK not available - running in standalone mode');
   }
@@ -319,16 +340,17 @@ function withTimeout<T>(promise: Promise<T>, ms: number, fallbackMsg: string): P
 
 // Authenticate with Pi Network (real SDK or sandbox simulation)
 export async function authenticate(): Promise<PiUser> {
-  // Ensure Pi SDK is initialized before authenticating
-  initPiSdk();
+  // Ensure Pi SDK is fully initialized (await Promise) before authenticating
+  await initPiSdk();
 
   if (isInPiBrowser() && window.Pi) {
     // Real Pi SDK authentication inside Pi Browser
     try {
-      const scopes: APIScopes = ['username', 'payments'];
+      // Scopes per Pi SDK docs: payments (required), username, wallet_address
+      const scopes: APIScopes = ['payments', 'username', 'wallet_address'];
       const auth = await withTimeout(
         window.Pi.authenticate(scopes, onIncompletePaymentFound),
-        3000,
+        15000,
         'Pi authentication timeout'
       );
 
@@ -703,11 +725,12 @@ export async function autoAuthenticate(): Promise<PiUser | null> {
     return currentUser;
   }
 
-  // Initialize Pi SDK first
-  initPiSdk();
+  // Initialize Pi SDK first — await the Promise per official docs
+  await initPiSdk();
 
   try {
-    const scopes: APIScopes = ['username', 'payments'];
+    // Scopes per Pi SDK docs: payments (required), username, wallet_address
+    const scopes: APIScopes = ['payments', 'username', 'wallet_address'];
     const auth = await window.Pi!.authenticate(scopes, onIncompletePaymentFound);
 
     // Store token
@@ -819,10 +842,10 @@ export function isSubscriptionActive(subscription: PiRC2Subscription): boolean {
 // Initialize on module load
 if (typeof window !== 'undefined') {
   restoreSession();
-  // Try to init Pi SDK after DOM is ready
+  // Try to init Pi SDK after DOM is ready (fire-and-forget, authenticate() will await it)
   if (document.readyState === 'complete') {
-    initPiSdk();
+    void initPiSdk();
   } else {
-    window.addEventListener('load', initPiSdk);
+    window.addEventListener('load', () => void initPiSdk());
   }
 }

@@ -1,0 +1,44 @@
+Vous êtes un développeur expert en Pi Network full-stack.
+
+Contexte
+Je fournis la documentation officielle Pi Developers ici :
+
+https://pi-apps.github.io/pi-sdk-docs/
+Votre mission est d’aligner Atlasphere avec ce que demande Pi Network / Pi SDK.
+
+Exigence principale (règles strictes)
+Implémentez dès maintenant l’authentification utilisateur Pi Network dans ce code source :
+modifiez directement les fichiers, sans fournir de guide ni d’explications.
+Référence : https://pi-apps.github.io/pi-sdk-docs/quick-start/genai/Authentication
+N’oubliez pas d’intégrer pirc2 pi tel que expliqué dans la documentation Pi Developers.
+Objectif additionnel : langue + affichage username en haut
+Permettre de choisir n’importe quelle langue et afficher toute l’application dans cette langue.
+Lorsqu’un utilisateur se connecte :
+le pseudo Pi doit être détecté automatiquement
+affiché en haut de l’application
+rester affiché jusqu’à ce que l’utilisateur se déconnecte.
+Comportement requis (impératifs)
+Déclencher automatiquement l’authentification Pi au chargement de l’application (ajouter également un bouton de connexion pour permettre à l’utilisateur de se connecter manuellement).
+
+Traiter Pi.init(...) comme une promesse ; attendre sa résolution complète avant d’appeler Pi.authenticate(...).
+
+Utiliser le scope « username ».
+
+Envoyer le jeton d’accès reçu au serveur, qui doit le valider en appelant
+GET https://api.minepi.com/v2/me avec Authorization: Bearer <accessToken> avant d’établir une session.
+Aucune clé API Pi Network n’est requise pour ce processus.
+
+Intégrer pirc2 conformément à la documentation Pi Developers.
+
+Critères d’acceptation
+L’auth Pi se lance automatiquement au chargement ET via bouton manuel.
+Pi.authenticate n’est jamais appelé avant la résolution complète de Pi.init.
+Scope username appliqué.
+Le serveur valide via GET https://api.minepi.com/v2/me avec Bearer token avant toute création de session.
+Aucune clé API Pi n’est utilisée pour ce processus.
+pirc2 est intégré comme documenté.
+Le pseudo Pi est détecté automatiquement et affiché en haut après connexion, puis retiré à la déconnexion.
+Toute l’application s’affiche dans la langue choisie.
+Instructions finales (obligatoires)
+Ne fournir aucune explication ni guide
+Ne fournir que des modifications de code nécessaires à l’implémentation demandée.
