@@ -1,0 +1,82 @@
+Tu es un spécialiste marketing web3 + copywriting et un designer marketing senior. Tu maîtrises les audiences Pi Pioneers, les bonnes pratiques de Fireside/Corpfm/communautés Pi, et la création d’actifs marketing performants (images, bannières, CTA).
+
+Mission
+Génère un pack marketing complet pour l’application Atlasphere, destiné à la communauté des Pi Network Pioneers afin de :
+
+encourager un test massif (beta / phase pionniers),
+augmenter la conversion “essai → feedback → adoption”,
+maximiser les chances d’être admis au Mainnet.
+Livrables obligatoires ✅
+1) Texte promotionnel par destination (en FR)
+Crée un message séparé (copier-coller prêt) pour chaque destination ci-dessous, avec un ton convaincant, clair, et orienté “test en grand nombre” :
+
+🗣️ Fireside (message FR)
+🏢 Corptime / Corpfm (message FR)
+📣 Chat communautaire Pi (message FR)
+📩 Annonce “appel aux pionniers” (FR)
+👉 Chaque message doit contenir :
+
+un accroche courte
+une promesse / bénéfice (ce que l’app aide à faire)
+un CTA (“Testez / Essayez maintenant”)
+un appel au feedback (comment et où donner le feedback)
+une phrase d’urgence ou “early adopter”
+des émoticônes dosées (pas trop)
+2) Images (10) + Bannière pub (8) — contraintes de langue
+🖼️ 10 images professionnelles : ENGLISH
+🧷 8 bannières publicitaires : ENGLISH
+Le reste (textes autour, messages, copies) : FRANÇAIS
+Chaque image/bannière doit être conçue pour être marketing-friendly :
+
+style propre, moderne, premium
+mise en page claire
+texte lisible en anglais
+1 idée forte par visuel
+3) Formats animés et non animés
+🎞️ 4 bannières animées
+🧩 4 bannières non animées
+Pour chaque bannière animée, fournir :
+
+la description précise de l’animation (ex: slide-in, pulse CTA, parallax léger)
+la structure frame par frame (au moins 3 “étapes”)
+le texte final affiché (EN)
+Pour chaque bannière non animée, fournir :
+
+le layout (titre, sous-titre, CTA)
+les éléments visuels proposés
+Palette & branding
+Avant de produire, propose un mini brand kit (en FR) :
+
+2 variantes de style (ex: “space-tech”, “clean neon”)
+couleurs principales + codes HEX
+typographies recommandées (sans accès à polices exactes, donne des suggestions)
+icônes/éléments graphiques à réutiliser
+Contenu créatif (à générer)
+Pour les visuels (EN), crée pour Atlasphere :
+
+un slogan principal
+3 taglines alternatives
+6 CTA (ex: “Join the Pioneers”, “Try Atlasphere”, etc.)
+5 idées d’angles marketing (ex: “community-first”, “easy onboarding”, “pi rewards”, etc.)
+Utilise les angles qui rendent l’app attrayante pour “pionniers Pi”.
+
+Données à utiliser / à compléter
+Si tu ne sais pas ce qu’est Atlasphere, ne pas inventer des features précises.
+Dans ce cas, utilise des champs “à compléter” sous forme de placeholders (ex: {FEATURE_1}, {USE_CASE}, {LINK}, {SCREENSHOT_1}).
+
+Format de sortie attendu ����
+Organise la réponse en sections claires :
+
+🎯 Positionnement + Brand Kit (FR)
+🗣️ Messages Fireside (FR)
+🏢 Messages Corptime (FR)
+💬 Messages Chat Pi (FR)
+📣 Annonce “Call aux pionniers” (FR)
+🖼️ Images (10) — EN :
+Titre du visuel
+Texte exact à mettre sur l’image (EN)
+Description design (layout)
+🧷 Bannières (8) — EN :
+4 animées : animation steps + texte final
+4 non animées : layout + CTA
+🔗 Checklist “prêt à poster” (FR)
