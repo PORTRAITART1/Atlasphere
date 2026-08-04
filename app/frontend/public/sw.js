@@ -26,9 +26,39 @@ self.addEventListener('activate', (event) => {
   self.clients.claim();
 });
 
-// Fetch event - network first, fallback to cache
+// Fetch event - network first, fallback to cache, SPA navigation fallback
 self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') return;
+  
+  const url = new URL(event.request.url);
+  
+  // For navigation requests (HTML pages), always try network first then fallback to index.html
+  if (event.request.mode === 'navigate') {
+    event.respondWith(
+      fetch(event.request)
+        .then((response) => {
+          // If we get a 404 for a navigation request, serve index.html instead (SPA fallback)
+          if (response.status === 404) {
+            return caches.match('/') || fetch('/');
+          }
+          // Cache successful navigation responses
+          if (response.status === 200) {
+            const responseClone = response.clone();
+            caches.open(CACHE_NAME).then((cache) => {
+              cache.put(event.request, responseClone);
+            });
+          }
+          return response;
+        })
+        .catch(() => {
+          // Offline: serve cached index.html for SPA routing
+          return caches.match('/').then((cached) => {
+            return cached || new Response('Offline', { status: 503 });
+          });
+        })
+    );
+    return;
+  }
   
   event.respondWith(
     fetch(event.request)
