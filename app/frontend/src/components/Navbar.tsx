@@ -73,49 +73,49 @@ export default function Navbar() {
     { path: '/', label: t('nav.home'), icon: '🏠' },
     { path: '/proposals', label: t('nav.proposals'), icon: '📋' },
     { path: '/funding', label: t('nav.funding'), icon: '💎' },
-    { path: '/community', label: 'Communauté', icon: '💬' },
+    { path: '/community', label: t('nav.community'), icon: '💬' },
     { path: '/quests', label: t('nav.quests'), icon: '🎯' },
   ];
 
   const ecoLinks = [
-    { path: '/eco-wallet', label: 'EcoWallet', icon: '🌿', desc: 'Portefeuille écologique' },
-    { path: '/climate', label: 'Climat', icon: '🌍', desc: 'Tableau de bord climatique' },
-    { path: '/eco-market', label: 'EcoMarket', icon: '🛒', desc: 'Marketplace données' },
-    { path: '/predictions', label: 'Prédictions IA', icon: '🤖', desc: 'Prévisions climatiques' },
-    { path: '/eco-nft', label: 'EcoNFT', icon: '🎨', desc: 'NFT environnementaux' },
-    { path: '/eco-sensors', label: 'Capteurs IoT', icon: '📡', desc: 'Collecte & anonymisation' },
-    { path: '/lifestyle', label: 'Optimizer', icon: '✨', desc: 'Recommandations IA' },
-    { path: '/eco-leaderboard', label: 'Classement', icon: '🏆', desc: 'Leaderboard écologique' },
-    { path: '/eco-premium', label: 'Premium', icon: '👑', desc: 'Plans & abonnements' },
-    { path: '/eco-api', label: 'API', icon: '🔗', desc: 'Accès chercheurs' },
-    { path: '/iot-anomalies', label: 'Anomalies', icon: '🚨', desc: 'Détection intelligente' },
-    { path: '/carbon-credits', label: 'Carbone', icon: '🌱', desc: 'Crédits carbone' },
+    { path: '/eco-wallet', label: t('nav.eco.wallet'), icon: '🌿', desc: t('nav.eco.wallet_desc') },
+    { path: '/climate', label: t('nav.eco.climate'), icon: '🌍', desc: t('nav.eco.climate_desc') },
+    { path: '/eco-market', label: t('nav.eco.market'), icon: '🛒', desc: t('nav.eco.market_desc') },
+    { path: '/predictions', label: t('nav.eco.predictions'), icon: '🤖', desc: t('nav.eco.predictions_desc') },
+    { path: '/eco-nft', label: t('nav.eco.nft'), icon: '🎨', desc: t('nav.eco.nft_desc') },
+    { path: '/eco-sensors', label: t('nav.eco.sensors'), icon: '📡', desc: t('nav.eco.sensors_desc') },
+    { path: '/lifestyle', label: t('nav.eco.optimizer'), icon: '✨', desc: t('nav.eco.optimizer_desc') },
+    { path: '/eco-leaderboard', label: t('nav.eco.leaderboard'), icon: '🏆', desc: t('nav.eco.leaderboard_desc') },
+    { path: '/eco-premium', label: t('nav.eco.premium'), icon: '👑', desc: t('nav.eco.premium_desc') },
+    { path: '/eco-api', label: t('nav.eco.api'), icon: '🔗', desc: t('nav.eco.api_desc') },
+    { path: '/iot-anomalies', label: t('nav.eco.anomalies'), icon: '🚨', desc: t('nav.eco.anomalies_desc') },
+    { path: '/carbon-credits', label: t('nav.eco.carbon'), icon: '🌱', desc: t('nav.eco.carbon_desc') },
   ];
 
   const daoLinks = [
-    { path: '/quadratic-voting', label: 'Vote Quadratique', icon: '📐', desc: 'Gouvernance équitable' },
-    { path: '/committees', label: 'Comités', icon: '🏛️', desc: 'Sous-DAOs thématiques' },
-    { path: '/treasury', label: 'Trésorerie', icon: '💰', desc: 'Fonds communautaires' },
-    { path: '/guilds', label: 'Guildes', icon: '🛡️', desc: 'Équipes écologiques' },
-    { path: '/seasons', label: 'Saisons', icon: '🌊', desc: 'Événements & missions' },
-    { path: '/delegation', label: 'Délégation', icon: '🤝', desc: 'Déléguer vos votes' },
+    { path: '/quadratic-voting', label: t('nav.dao.quadratic'), icon: '📐', desc: t('nav.dao.quadratic_desc') },
+    { path: '/committees', label: t('nav.dao.committees'), icon: '🏛️', desc: t('nav.dao.committees_desc') },
+    { path: '/treasury', label: t('nav.dao.treasury'), icon: '💰', desc: t('nav.dao.treasury_desc') },
+    { path: '/guilds', label: t('nav.dao.guilds'), icon: '🛡️', desc: t('nav.dao.guilds_desc') },
+    { path: '/seasons', label: t('nav.dao.seasons'), icon: '🌊', desc: t('nav.dao.seasons_desc') },
+    { path: '/delegation', label: t('nav.dao.delegation'), icon: '🤝', desc: t('nav.dao.delegation_desc') },
   ];
 
   const moreLinks = [
-    { path: '/my-dashboard', label: 'Mon Tableau de bord', icon: '📊', desc: 'Vue personnalisée' },
-    { path: '/rewards', label: 'Récompenses', icon: '🎁', desc: 'XP & streaks' },
-    { path: '/badges', label: 'Badges', icon: '🏅', desc: 'Achievements' },
-    { path: '/profile', label: 'Profil', icon: '👤', desc: 'Mon profil complet' },
-    { path: '/referral', label: 'Parrainage', icon: '👥', desc: 'Inviter des amis' },
-    { path: '/partners', label: 'Partenaires', icon: '🤝', desc: 'ONG & organisations' },
-    { path: '/eco-ads', label: 'Éco-Pubs', icon: '📺', desc: 'Publicités opt-in' },
-    { path: '/ipfs-storage', label: 'IPFS', icon: '💾', desc: 'Stockage décentralisé' },
-    { path: '/analytics', label: 'Analytics', icon: '📈', desc: 'Statistiques avancées' },
-    { path: '/map', label: 'Carte', icon: '🗺️', desc: 'Projets géolocalisés' },
-    { path: '/notification-settings', label: 'Notifications', icon: '🔔', desc: 'Préférences' },
-    { path: '/marketing-download', label: 'Marketing', icon: '📦', desc: 'Pack téléchargeable' },
-    { path: '/settings', label: 'Paramètres', icon: '⚙️', desc: 'Configuration' },
-    { path: '/admin', label: 'Admin', icon: '🛡️', desc: 'Modération & gestion' },
+    { path: '/my-dashboard', label: t('nav.more.dashboard'), icon: '📊', desc: t('nav.more.dashboard_desc') },
+    { path: '/rewards', label: t('nav.more.rewards'), icon: '🎁', desc: t('nav.more.rewards_desc') },
+    { path: '/badges', label: t('nav.more.badges'), icon: '🏅', desc: t('nav.more.badges_desc') },
+    { path: '/profile', label: t('nav.more.profile'), icon: '👤', desc: t('nav.more.profile_desc') },
+    { path: '/referral', label: t('nav.more.referral'), icon: '👥', desc: t('nav.more.referral_desc') },
+    { path: '/partners', label: t('nav.more.partners'), icon: '🤝', desc: t('nav.more.partners_desc') },
+    { path: '/eco-ads', label: t('nav.more.ads'), icon: '📺', desc: t('nav.more.ads_desc') },
+    { path: '/ipfs-storage', label: t('nav.more.ipfs'), icon: '💾', desc: t('nav.more.ipfs_desc') },
+    { path: '/analytics', label: t('nav.more.analytics'), icon: '📈', desc: t('nav.more.analytics_desc') },
+    { path: '/map', label: t('nav.more.map'), icon: '🗺️', desc: t('nav.more.map_desc') },
+    { path: '/notification-settings', label: t('nav.more.notifications'), icon: '🔔', desc: t('nav.more.notifications_desc') },
+    { path: '/marketing-download', label: t('nav.more.marketing'), icon: '📦', desc: t('nav.more.marketing_desc') },
+    { path: '/settings', label: t('nav.more.settings'), icon: '⚙️', desc: t('nav.more.settings_desc') },
+    { path: '/admin', label: t('nav.more.admin'), icon: '🛡️', desc: t('nav.more.admin_desc') },
   ];
 
   const isEcoActive = ecoLinks.some((l) => location.pathname === l.path);
@@ -196,8 +196,8 @@ export default function Navbar() {
                 <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-[420px] bg-slate-800/95 backdrop-blur-xl border border-white/[0.08] rounded-2xl shadow-2xl shadow-black/40 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200 z-50">
                   <div className="p-2">
                     <div className="px-3 py-2 mb-1">
-                      <p className="text-xs font-semibold text-emerald-400 uppercase tracking-wider">EcoChain AI</p>
-                      <p className="text-[11px] text-gray-500 mt-0.5">Intelligence écologique décentralisée</p>
+                      <p className="text-xs font-semibold text-emerald-400 uppercase tracking-wider">{t('nav.ecochain')} AI</p>
+                      <p className="text-[11px] text-gray-500 mt-0.5">{t('nav.ecochain_desc')}</p>
                     </div>
                     <div className="grid grid-cols-2 gap-0.5">
                       {ecoLinks.map((link) => (
@@ -252,8 +252,8 @@ export default function Navbar() {
                 <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-[280px] bg-slate-800/95 backdrop-blur-xl border border-white/[0.08] rounded-2xl shadow-2xl shadow-black/40 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200 z-50">
                   <div className="p-2">
                     <div className="px-3 py-2 mb-1">
-                      <p className="text-xs font-semibold text-purple-400 uppercase tracking-wider">Gouvernance DAO</p>
-                      <p className="text-[11px] text-gray-500 mt-0.5">Décisions décentralisées</p>
+                      <p className="text-xs font-semibold text-purple-400 uppercase tracking-wider">{t('nav.dao_desc')}</p>
+                      <p className="text-[11px] text-gray-500 mt-0.5">{t('nav.dao_decisions')}</p>
                     </div>
                     <div className="space-y-0.5">
                       {daoLinks.map((link) => (
@@ -292,7 +292,7 @@ export default function Navbar() {
                     : 'text-gray-400 hover:text-amber-300'
                 }`}
               >
-                <span>Plus</span>
+                <span>{t('nav.more')}</span>
                 <svg
                   className={`w-3 h-3 transition-transform duration-200 ${activeDropdown === 'more' ? 'rotate-180' : ''}`}
                   fill="none"
@@ -307,8 +307,8 @@ export default function Navbar() {
                 <div className="absolute top-full right-0 mt-2 w-[480px] bg-slate-800/95 backdrop-blur-xl border border-white/[0.08] rounded-2xl shadow-2xl shadow-black/40 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200 z-50">
                   <div className="p-2">
                     <div className="px-3 py-2 mb-1">
-                      <p className="text-xs font-semibold text-amber-400 uppercase tracking-wider">Explorer</p>
-                      <p className="text-[11px] text-gray-500 mt-0.5">Toutes les fonctionnalités</p>
+                      <p className="text-xs font-semibold text-amber-400 uppercase tracking-wider">{t('nav.explore')}</p>
+                      <p className="text-[11px] text-gray-500 mt-0.5">{t('nav.explore_desc')}</p>
                     </div>
                     <div className="grid grid-cols-2 gap-0.5">
                       {moreLinks.map((link) => (
@@ -434,7 +434,7 @@ export default function Navbar() {
           <div className="lg:hidden pb-4 border-t border-white/[0.06] mt-2 pt-4 max-h-[80vh] overflow-y-auto">
             {/* Main links */}
             <div className="space-y-0.5 mb-4">
-              <p className="px-3 py-1.5 text-[10px] font-bold text-gray-500 uppercase tracking-widest">Navigation</p>
+              <p className="px-3 py-1.5 text-[10px] font-bold text-gray-500 uppercase tracking-widest">{t('nav.navigation')}</p>
               {mainLinks.map((link) => (
                 <Link
                   key={link.path}
@@ -453,7 +453,7 @@ export default function Navbar() {
 
             {/* EcoChain section */}
             <div className="space-y-0.5 mb-4">
-              <p className="px-3 py-1.5 text-[10px] font-bold text-emerald-500 uppercase tracking-widest">🌱 EcoChain AI</p>
+              <p className="px-3 py-1.5 text-[10px] font-bold text-emerald-500 uppercase tracking-widest">🌱 {t('nav.ecochain')} AI</p>
               <div className="grid grid-cols-2 gap-0.5">
                 {ecoLinks.map((link) => (
                   <Link
@@ -474,7 +474,7 @@ export default function Navbar() {
 
             {/* DAO section */}
             <div className="space-y-0.5 mb-4">
-              <p className="px-3 py-1.5 text-[10px] font-bold text-purple-400 uppercase tracking-widest">🏛️ Gouvernance DAO</p>
+              <p className="px-3 py-1.5 text-[10px] font-bold text-purple-400 uppercase tracking-widest">🏛️ {t('nav.dao_desc')}</p>
               {daoLinks.map((link) => (
                 <Link
                   key={link.path}
@@ -493,25 +493,25 @@ export default function Navbar() {
 
             {/* Social section */}
             <div className="space-y-0.5 mb-4">
-              <p className="px-3 py-1.5 text-[10px] font-bold text-blue-400 uppercase tracking-widest">💬 Social</p>
+              <p className="px-3 py-1.5 text-[10px] font-bold text-blue-400 uppercase tracking-widest">💬 {t('nav.social')}</p>
               <Link to="/messages" className={`flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${location.pathname === '/messages' ? 'bg-white/[0.08] text-white' : 'text-gray-400 hover:text-white hover:bg-white/[0.04]'}`}>
                 <span>💌</span>
-                <span>Messages</span>
+                <span>{t('nav.messages')}</span>
                 {unreadMessages > 0 && <span className="ml-auto bg-red-500 text-white text-[10px] px-1.5 py-0.5 rounded-full font-bold">{unreadMessages}</span>}
               </Link>
               <Link to="/badges" className={`flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${location.pathname === '/badges' ? 'bg-white/[0.08] text-white' : 'text-gray-400 hover:text-white hover:bg-white/[0.04]'}`}>
                 <span>🏅</span>
-                <span>Badges</span>
+                <span>{t('nav.badges')}</span>
               </Link>
               <Link to="/project-tracking" className={`flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${location.pathname === '/project-tracking' ? 'bg-white/[0.08] text-white' : 'text-gray-400 hover:text-white hover:bg-white/[0.04]'}`}>
                 <span>📋</span>
-                <span>Suivi Projets</span>
+                <span>{t('nav.project_tracking')}</span>
               </Link>
             </div>
 
             {/* More section */}
             <div className="space-y-0.5 pt-3 border-t border-white/[0.06]">
-              <p className="px-3 py-1.5 text-[10px] font-bold text-amber-400 uppercase tracking-widest">⚡ Plus</p>
+              <p className="px-3 py-1.5 text-[10px] font-bold text-amber-400 uppercase tracking-widest">⚡ {t('nav.more')}</p>
               <div className="grid grid-cols-2 gap-0.5">
                 {moreLinks.map((link) => (
                   <Link
