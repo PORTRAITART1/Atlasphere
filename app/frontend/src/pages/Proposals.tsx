@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import PageTransition from '@/components/PageTransition';
+import { t, subscribeI18n } from '@/lib/i18n';
 import {
   fetchAllProjects,
   type Project,
@@ -22,6 +23,11 @@ export default function Proposals() {
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
   const [total, setTotal] = useState(0);
+  const [, setLangTick] = useState(0);
+
+  useEffect(() => {
+    return subscribeI18n(() => setLangTick((n) => n + 1));
+  }, []);
 
   useEffect(() => {
     loadProjects();
@@ -54,21 +60,21 @@ export default function Proposals() {
   }, [projects, search, statusFilter, categoryFilter]);
 
   const statuses: { value: StatusFilter; label: string }[] = [
-    { value: 'all', label: 'Tous' },
-    { value: 'voting', label: '🗳️ En Vote' },
-    { value: 'approved', label: '✅ Approuvé' },
-    { value: 'funding', label: '💰 En Financement' },
-    { value: 'funded', label: '🎉 Financé' },
-    { value: 'completed', label: '🏆 Terminé' },
+    { value: 'all', label: t('proposals.filter.all') },
+    { value: 'voting', label: t('proposals.filter.voting') },
+    { value: 'approved', label: t('proposals.filter.approved') },
+    { value: 'funding', label: t('proposals.filter.funding') },
+    { value: 'funded', label: t('proposals.filter.funded') },
+    { value: 'completed', label: t('proposals.filter.completed') },
   ];
 
   const categories: { value: CategoryFilter; label: string }[] = [
-    { value: 'all', label: 'Toutes' },
-    { value: 'education', label: '📚 Éducation' },
-    { value: 'commerce', label: '🛍️ Commerce' },
-    { value: 'technology', label: '💻 Technologie' },
-    { value: 'social', label: '🤝 Social' },
-    { value: 'environment', label: '🌍 Environnement' },
+    { value: 'all', label: t('proposals.cat.all') },
+    { value: 'education', label: t('proposals.cat.education') },
+    { value: 'commerce', label: t('proposals.cat.commerce') },
+    { value: 'technology', label: t('proposals.cat.technology') },
+    { value: 'social', label: t('proposals.cat.social') },
+    { value: 'environment', label: t('proposals.cat.environment') },
   ];
 
   return (
@@ -83,9 +89,9 @@ export default function Proposals() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4 }}
           >
-            <h1 className="text-3xl font-bold text-white mb-2">Propositions</h1>
+            <h1 className="text-3xl font-bold text-white mb-2">{t('proposals.title')}</h1>
             <p className="text-gray-400">
-              Explorez et votez sur les projets de la communauté Pi ({total} au total)
+              {t('proposals.subtitle')} ({total} {t('proposals.total')})
             </p>
           </motion.div>
 
@@ -98,7 +104,7 @@ export default function Proposals() {
           >
             <input
               type="text"
-              placeholder="Rechercher un projet..."
+              placeholder={t('proposals.search')}
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="w-full px-4 py-2.5 rounded-lg bg-slate-900/50 border border-slate-700 text-white placeholder-gray-500 focus:outline-none focus:border-indigo-500 transition-colors"
@@ -142,7 +148,7 @@ export default function Proposals() {
             animate={{ opacity: 1 }}
             transition={{ delay: 0.2 }}
           >
-            {loading ? 'Chargement...' : `${filtered.length} proposition(s) trouvée(s)`}
+            {loading ? t('proposals.loading') : `${filtered.length} ${t('proposals.results')}`}
           </motion.div>
 
           {loading ? (
@@ -172,7 +178,7 @@ export default function Proposals() {
               transition={{ duration: 0.3 }}
             >
               <div className="text-4xl mb-4">🔍</div>
-              <p className="text-gray-400">Aucune proposition trouvée avec ces filtres.</p>
+              <p className="text-gray-400">{t('proposals.no_results')}</p>
             </motion.div>
           )}
         </main>

@@ -140,7 +140,7 @@ export default function Navbar() {
               />
               <div className="absolute inset-0 rounded-full bg-amber-400/20 blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
             </div>
-            <span className="text-lg font-bold bg-gradient-to-r from-amber-300 via-yellow-400 to-amber-500 bg-clip-text text-transparent hidden sm:inline tracking-tight">
+            <span className="text-lg font-bold bg-gradient-to-r from-amber-300 via-yellow-400 to-amber-500 bg-clip-text text-transparent tracking-tight">
               Atlasphere
             </span>
           </Link>
@@ -344,7 +344,7 @@ export default function Navbar() {
             <Link
               to="/messages"
               className="relative p-1.5 sm:p-2 rounded-lg text-gray-400 hover:text-white hover:bg-white/[0.06] transition-all duration-200"
-              title="Messages"
+              title={t('nav.messages')}
             >
               <svg className="w-4 h-4 sm:w-[18px] sm:h-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
@@ -416,7 +416,7 @@ export default function Navbar() {
             <button
               onClick={() => setMobileOpen(!mobileOpen)}
               className="lg:hidden text-gray-400 hover:text-white p-2 rounded-lg hover:bg-white/[0.06] transition-all duration-200 ml-1"
-              aria-label="Menu"
+              aria-label={t('nav.menu')}
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 {mobileOpen ? (

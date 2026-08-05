@@ -5,6 +5,7 @@ import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import PageTransition from '@/components/PageTransition';
 import PiPaymentButton from '@/components/PiPaymentButton';
+import { t, subscribeI18n } from '@/lib/i18n';
 import {
   fetchAllProjects,
   createContribution,
@@ -18,9 +19,14 @@ export default function Funding() {
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
   const [contributedIds, setContributedIds] = useState<Set<number>>(new Set());
+  const [, setLangTick] = useState(0);
 
   useEffect(() => {
     return subscribe(() => setUser(getCurrentUser()));
+  }, []);
+
+  useEffect(() => {
+    return subscribeI18n(() => setLangTick((n) => n + 1));
   }, []);
 
   useEffect(() => {
@@ -81,8 +87,8 @@ export default function Funding() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4 }}
           >
-            <h1 className="text-3xl font-bold text-white mb-2">Financement Participatif</h1>
-            <p className="text-gray-400">Contribuez en Pi aux projets approuvés par la communauté</p>
+            <h1 className="text-3xl font-bold text-white mb-2">{t('funding.title')}</h1>
+            <p className="text-gray-400">{t('funding.subtitle')}</p>
           </motion.div>
 
           {/* Banner */}
@@ -95,9 +101,9 @@ export default function Funding() {
             <div className="w-full h-48 bg-gradient-to-r from-amber-900/40 to-purple-900/40" />
             <div className="absolute inset-0 bg-gradient-to-r from-slate-950/90 to-slate-950/40 flex items-center px-8">
               <div>
-                <h2 className="text-2xl font-bold text-white mb-2">Investissez dans l&apos;Avenir</h2>
+                <h2 className="text-2xl font-bold text-white mb-2">{t('funding.invest_title')}</h2>
                 <p className="text-gray-300 text-sm max-w-md">
-                  Chaque Pi investi soutient un projet qui change la vie des Pionniers dans le monde entier.
+                  {t('funding.banner_desc')}
                 </p>
               </div>
             </div>
@@ -152,9 +158,9 @@ export default function Funding() {
                         <div className="space-y-2">
                           <div className="flex justify-between text-sm">
                             <span className="text-amber-400 font-medium">
-                              {(p.raised || 0).toLocaleString()} π collectés
+                              {(p.raised || 0).toLocaleString()} π {t('funding.collected')}
                             </span>
-                            <span className="text-gray-400">Objectif: {p.budget.toLocaleString()} π</span>
+                            <span className="text-gray-400">{t('funding.goal')}: {p.budget.toLocaleString()} π</span>
                           </div>
                           <div className="w-full h-3 bg-slate-700 rounded-full overflow-hidden">
                             <motion.div
@@ -166,7 +172,7 @@ export default function Funding() {
                           </div>
                           <div className="flex justify-between text-xs text-gray-500">
                             <span>{p.category}</span>
-                            <span>{percentage.toFixed(0)}% atteint</span>
+                            <span>{percentage.toFixed(0)}% {t('funding.reached')}</span>
                           </div>
                         </div>
                       </div>
@@ -178,31 +184,31 @@ export default function Funding() {
                               onClick={() => handleContribute(p, 10)}
                               className="px-4 py-2 rounded-lg bg-amber-600 text-white text-sm font-medium hover:bg-amber-500 transition-colors"
                             >
-                              Contribuer 10 π
+                              {t('funding.contribute_10')}
                             </button>
                             <button
                               onClick={() => handleContribute(p, 50)}
                               className="px-4 py-2 rounded-lg bg-amber-700 text-white text-sm font-medium hover:bg-amber-600 transition-colors"
                             >
-                              Contribuer 50 π
+                              {t('funding.contribute_50')}
                             </button>
                             <PiPaymentButton
                               amount={100}
                               projectId={p.id}
-                              memo={`Contribution à ${p.title}`}
+                              memo={`${t('funding.memo')} ${p.title}`}
                               onSuccess={() => loadFundingProjects()}
                               className="px-4 py-2 rounded-lg bg-gradient-to-r from-amber-600 to-amber-500 text-white text-sm font-medium hover:from-amber-500 hover:to-amber-400 transition-all"
                             >
-                              💎 100 π via Pi
+                              {t('funding.contribute_100')}
                             </PiPaymentButton>
                           </>
                         ) : hasContributed ? (
                           <div className="text-center text-amber-400 text-sm py-2">
-                            ✓ Merci pour votre contribution !
+                            {t('funding.thanks')}
                           </div>
                         ) : (
                           <div className="text-center text-gray-400 text-sm py-2">
-                            Connectez-vous pour contribuer
+                            {t('funding.login_to_contribute')}
                           </div>
                         )}
                       </div>
@@ -221,7 +227,7 @@ export default function Funding() {
               transition={{ duration: 0.3 }}
             >
               <div className="text-4xl mb-4">💰</div>
-              <p className="text-gray-400">Aucun projet en phase de financement pour le moment.</p>
+              <p className="text-gray-400">{t('funding.no_projects')}</p>
             </motion.div>
           )}
         </main>

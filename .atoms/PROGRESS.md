@@ -140,7 +140,19 @@ Build PiDAO - A decentralized governance platform for Pi Network Pioneers where 
 - [x] Corriger erreur runtime (contribRes hors scope)
 - [x] Lint & build OK
 
+## Task Breakdown (i18n Mobile Cohérence — Atlasphere)
+- [x] Navbar mobile : "Atlasphere" visible (suppression hidden sm:inline)
+- [x] Navbar : attributs title/aria-label traduits via t()
+- [x] Clé nav.menu ajoutée pour les 6 langues
+- [x] Page Proposals.tsx migrée en t() (titre, subtitle, filtres, catégories, résultats, état vide)
+- [x] Page Funding.tsx migrée en t() (titre, subtitle, banner, boutons, états, montants)
+- [x] Page Dashboard.tsx migrée en t() (login, stats, tabs, activité, résumé financier, votes, contributions)
+- [x] Clés proposals.*, funding.*, dashboard.* ajoutées pour FR/EN/ES/PT/ZH/AR
+- [x] Dates localisées (suppression du hardcode 'fr-FR')
+- [x] Lint & build OK
+
 ## Progress Log
+- 2026-08-05: i18n mobile cohérence complète — Pages Proposals, Funding, Dashboard entièrement migrées en t(). Clés ajoutées pour les 6 langues (FR/EN/ES/PT/ZH/AR). Navbar mobile affiche "Atlasphere" et tous les attributs sont traduits. Dates localisées. Lint & build OK.
 - 2026-08-04: i18n homepage complet — Index.tsx utilise t() pour tous les textes (badge, heading, description, stats, how-it-works, proposals). Image branded-hero-governance-globe.png intégrée comme background du hero. Logo transparent en overlay. Clés home.* ajoutées pour les 6 langues (fr/en/es/pt/zh/ar). Lint & build OK.
 - 2026-08-03: Navbar redesign complet — menu principal épuré (5 liens), mega-menus déroulants (EcoChain 12 items en grille 2 colonnes, DAO 6 items, Plus 14 items en grille), ligne d'accent gradient en haut, glassmorphism, animations hover/open, menu mobile restructuré par sections. Lint & build OK.
 - 2026-08-01: Phase 17 complete - Stockage IPFS (/ipfs-storage), Parrainage (/referral), Partenaires ONG (/partners), Éco-publicités (/eco-ads), Profil utilisateur (/profile). Navigation mise à jour. Lint & build OK.

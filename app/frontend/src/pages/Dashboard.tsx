@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import PageTransition from '@/components/PageTransition';
+import { t, subscribeI18n } from '@/lib/i18n';
 import { getCurrentUser, authenticate, subscribe, type PiUser } from '@/lib/pi-sdk';
 import {
   fetchMyProjects,
@@ -24,9 +25,14 @@ export default function Dashboard() {
   const [myProjects, setMyProjects] = useState<Project[]>([]);
   const [myVotes, setMyVotes] = useState<Vote[]>([]);
   const [myContributions, setMyContributions] = useState<Contribution[]>([]);
+  const [, setLangTick] = useState(0);
 
   useEffect(() => {
     return subscribe(() => setUser(getCurrentUser()));
+  }, []);
+
+  useEffect(() => {
+    return subscribeI18n(() => setLangTick((n) => n + 1));
   }, []);
 
   useEffect(() => {
@@ -74,14 +80,14 @@ export default function Dashboard() {
               transition={{ duration: 0.4 }}
             >
               <div className="text-5xl mb-4">🔐</div>
-              <h2 className="text-2xl font-bold text-white mb-2">Connectez-vous</h2>
-              <p className="text-gray-400 mb-6">Accédez à votre tableau de bord de gouvernance Pi</p>
+              <h2 className="text-2xl font-bold text-white mb-2">{t('dashboard.login')}</h2>
+              <p className="text-gray-400 mb-6">{t('dashboard.login_desc')}</p>
               <button
                 onClick={handleAuth}
                 disabled={loading}
                 className="px-6 py-3 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-semibold hover:from-indigo-500 hover:to-purple-500 transition-all disabled:opacity-50"
               >
-                {loading ? 'Connexion...' : '🔐 Connecter Pi Network'}
+                {loading ? t('dashboard.logging_in') : t('dashboard.login_btn')}
               </button>
             </motion.div>
           </div>
@@ -117,7 +123,7 @@ export default function Dashboard() {
               </motion.div>
               <div className="text-center sm:text-left flex-1">
                 <h1 className="text-2xl font-bold text-white">{user.displayName}</h1>
-                <p className="text-gray-400 text-sm">@{user.username} • Pionnier depuis {user.joinedDate}</p>
+                <p className="text-gray-400 text-sm">@{user.username} • {t('dashboard.pioneer_since')} {user.joinedDate}</p>
                 <div className="flex flex-wrap gap-2 mt-3 justify-center sm:justify-start">
                   {user.badges.map((badge, i) => (
                     <motion.span
@@ -139,7 +145,7 @@ export default function Dashboard() {
                 transition={{ duration: 0.4, delay: 0.2 }}
               >
                 <div className="text-3xl font-bold text-amber-400">{user.piBalance.toFixed(1)} π</div>
-                <div className="text-xs text-gray-400">Solde disponible</div>
+                <div className="text-xs text-gray-400">{t('dashboard.balance')}</div>
               </motion.div>
             </div>
           </motion.div>
@@ -147,10 +153,10 @@ export default function Dashboard() {
           {/* Stats Grid */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
             {[
-              { label: 'Mes Propositions', value: myProjects.length, icon: '📋', color: 'text-indigo-400' },
-              { label: 'Mes Votes', value: myVotes.length, icon: '🗳️', color: 'text-emerald-400' },
-              { label: 'Contributions', value: myContributions.length, icon: '💰', color: 'text-amber-400' },
-              { label: 'Total Contribué', value: `${totalContributed.toFixed(0)} π`, icon: '💎', color: 'text-purple-400' },
+              { label: t('dashboard.my_proposals'), value: myProjects.length, icon: '📋', color: 'text-indigo-400' },
+              { label: t('dashboard.my_votes'), value: myVotes.length, icon: '🗳️', color: 'text-emerald-400' },
+              { label: t('dashboard.contributions'), value: myContributions.length, icon: '💰', color: 'text-amber-400' },
+              { label: t('dashboard.total_contributed'), value: `${totalContributed.toFixed(0)} π`, icon: '💎', color: 'text-purple-400' },
             ].map((stat, i) => (
               <motion.div
                 key={stat.label}
@@ -183,12 +189,12 @@ export default function Dashboard() {
                 }`}
               >
                 {tab === 'overview'
-                  ? 'Aperçu'
+                  ? t('dashboard.tab_overview')
                   : tab === 'proposals'
-                    ? 'Mes Propositions'
+                    ? t('dashboard.tab_proposals')
                     : tab === 'votes'
-                      ? 'Mes Votes'
-                      : 'Mes Contributions'}
+                      ? t('dashboard.tab_votes')
+                      : t('dashboard.tab_contributions')}
               </button>
             ))}
           </motion.div>
@@ -196,7 +202,7 @@ export default function Dashboard() {
           {dataLoading ? (
             <div className="text-center py-12">
               <div className="animate-spin w-8 h-8 border-2 border-indigo-500 border-t-transparent rounded-full mx-auto mb-4" />
-              <p className="text-gray-400">Chargement de vos données...</p>
+              <p className="text-gray-400">{t('dashboard.loading_data')}</p>
             </div>
           ) : (
             <>
@@ -208,7 +214,7 @@ export default function Dashboard() {
                   transition={{ duration: 0.4 }}
                 >
                   <div className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-5">
-                    <h3 className="text-lg font-semibold text-white mb-4">Activité Récente</h3>
+                    <h3 className="text-lg font-semibold text-white mb-4">{t('dashboard.recent_activity')}</h3>
                     <div className="space-y-3">
                       {myVotes.slice(0, 5).map((v) => (
                         <div key={v.id} className="flex items-center gap-3 text-sm">
@@ -216,35 +222,35 @@ export default function Dashboard() {
                             {v.vote_type === 'for' ? '✓' : '✗'}
                           </span>
                           <Link to={`/proposal/${v.project_id}`} className="text-gray-300 truncate hover:text-indigo-300">
-                            Projet #{v.project_id}
+                            {t('dashboard.project')} #{v.project_id}
                           </Link>
                           <span className="text-xs text-gray-500 ml-auto">
-                            {v.created_at ? new Date(v.created_at).toLocaleDateString('fr-FR') : ''}
+                            {v.created_at ? new Date(v.created_at).toLocaleDateString() : ''}
                           </span>
                         </div>
                       ))}
                       {myVotes.length === 0 && (
-                        <p className="text-gray-500 text-sm">Aucun vote pour le moment.</p>
+                        <p className="text-gray-500 text-sm">{t('dashboard.no_votes')}</p>
                       )}
                     </div>
                   </div>
                   <div className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-5">
-                    <h3 className="text-lg font-semibold text-white mb-4">Résumé Financier</h3>
+                    <h3 className="text-lg font-semibold text-white mb-4">{t('dashboard.financial_summary')}</h3>
                     <div className="space-y-3">
                       <div className="flex justify-between text-sm">
-                        <span className="text-gray-400">Total Contribué</span>
+                        <span className="text-gray-400">{t('dashboard.total_contributed')}</span>
                         <span className="text-amber-400 font-medium">{totalContributed.toFixed(1)} π</span>
                       </div>
                       <div className="flex justify-between text-sm">
-                        <span className="text-gray-400">Projets Soutenus</span>
+                        <span className="text-gray-400">{t('dashboard.projects_supported')}</span>
                         <span className="text-white font-medium">{myContributions.length}</span>
                       </div>
                       <div className="flex justify-between text-sm">
-                        <span className="text-gray-400">Propositions Créées</span>
+                        <span className="text-gray-400">{t('dashboard.proposals_created')}</span>
                         <span className="text-white font-medium">{myProjects.length}</span>
                       </div>
                       <div className="flex justify-between text-sm">
-                        <span className="text-gray-400">Votes Exprimés</span>
+                        <span className="text-gray-400">{t('dashboard.votes_cast')}</span>
                         <span className="text-white font-medium">{myVotes.length}</span>
                       </div>
                     </div>
@@ -277,7 +283,7 @@ export default function Dashboard() {
                           <div className="flex-1">
                             <div className="text-white font-medium">{p.title}</div>
                             <div className="text-xs text-gray-400">
-                              {p.created_at ? new Date(p.created_at).toLocaleDateString('fr-FR') : ''}
+                              {p.created_at ? new Date(p.created_at).toLocaleDateString() : ''}
                             </div>
                           </div>
                           <span className="text-amber-400 font-medium text-sm">
@@ -290,12 +296,12 @@ export default function Dashboard() {
                   {myProjects.length === 0 && (
                     <div className="text-center py-12">
                       <div className="text-4xl mb-4">📋</div>
-                      <p className="text-gray-400 mb-4">Vous n&apos;avez pas encore créé de proposition.</p>
+                      <p className="text-gray-400 mb-4">{t('dashboard.no_proposals')}</p>
                       <Link
                         to="/create"
                         className="text-indigo-400 hover:text-indigo-300 font-medium"
                       >
-                        Créer ma première proposition →
+                        {t('dashboard.create_first')}
                       </Link>
                     </div>
                   )}
@@ -331,9 +337,9 @@ export default function Dashboard() {
                             {v.vote_type === 'for' ? '✓' : '✗'}
                           </span>
                           <div className="flex-1">
-                            <div className="text-white font-medium">Projet #{v.project_id}</div>
+                            <div className="text-white font-medium">{t('dashboard.project')} #{v.project_id}</div>
                             <div className="text-xs text-gray-400">
-                              Voté le {v.created_at ? new Date(v.created_at).toLocaleDateString('fr-FR') : ''}
+                              {t('dashboard.voted_on')} {v.created_at ? new Date(v.created_at).toLocaleDateString() : ''}
                             </div>
                           </div>
                           <span
@@ -343,7 +349,7 @@ export default function Dashboard() {
                                 : 'bg-red-500/10 text-red-400'
                             }`}
                           >
-                            {v.vote_type === 'for' ? 'Pour' : 'Contre'} (×{v.weight})
+                            {v.vote_type === 'for' ? t('dashboard.vote_for') : t('dashboard.vote_against')} (×{v.weight})
                           </span>
                         </div>
                       </Link>
@@ -352,7 +358,7 @@ export default function Dashboard() {
                   {myVotes.length === 0 && (
                     <div className="text-center py-12">
                       <div className="text-4xl mb-4">🗳️</div>
-                      <p className="text-gray-400">Vous n&apos;avez pas encore voté.</p>
+                      <p className="text-gray-400">{t('dashboard.no_votes_yet')}</p>
                     </div>
                   )}
                 </motion.div>
@@ -381,9 +387,9 @@ export default function Dashboard() {
                             π
                           </span>
                           <div className="flex-1">
-                            <div className="text-white font-medium">Projet #{c.project_id}</div>
+                            <div className="text-white font-medium">{t('dashboard.project')} #{c.project_id}</div>
                             <div className="text-xs text-gray-400">
-                              Contribué le {c.created_at ? new Date(c.created_at).toLocaleDateString('fr-FR') : ''}
+                              {t('dashboard.contributed_on')} {c.created_at ? new Date(c.created_at).toLocaleDateString() : ''}
                             </div>
                           </div>
                           <span className="text-amber-400 font-medium">{c.amount} π</span>
@@ -394,7 +400,7 @@ export default function Dashboard() {
                   {myContributions.length === 0 && (
                     <div className="text-center py-12">
                       <div className="text-4xl mb-4">💰</div>
-                      <p className="text-gray-400">Vous n&apos;avez pas encore contribué.</p>
+                      <p className="text-gray-400">{t('dashboard.no_contributions')}</p>
                     </div>
                   )}
                 </motion.div>
