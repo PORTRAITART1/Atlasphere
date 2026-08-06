@@ -19,6 +19,7 @@ Build PiDAO - A decentralized governance platform for Pi Network Pioneers where 
 - [x] Clés i18n ajoutées pour FR/EN/ES/PT/ZH/AR (detail.*, create.*, delegation.*, admin.*, ecowallet.*)
 - [x] Correction conflit nommage t/team dans ProposalDetail (team.map((t,...) → team.map((member,...))
 - [x] validation-key.txt créé dans public/ (accessible via /validation-key.txt)
+- [x] _redirects corrigé : ajout exception pour /validation-key.txt avant le catch-all SPA (/* → /index.html)
 - [x] Lint & build : ✅ OK
 
 ## Task Breakdown (UI/Presentation Fix)
