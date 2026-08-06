@@ -99,6 +99,11 @@ export default defineConfig(({ command }) => {
           target: `http://localhost:8000`,
           changeOrigin: true,
         },
+        '/validation-key.txt': {
+          target: `http://localhost:8000`,
+          changeOrigin: true,
+          rewrite: () => '/validation-key.txt',
+        },
       },
       watch: { usePolling: true, interval: 600 },
     },
