@@ -10,6 +10,15 @@ Build PiDAO - A decentralized governance platform for Pi Network Pioneers where 
 - As a Pioneer, I can track my votes, contributions, and reputation
 - As a Pioneer, I can comment and discuss proposals
 
+## Task Breakdown (i18n Partie B — Pages mobiles critiques)
+- [x] ProposalDetail.tsx — Migration complète en t() (tabs, vote, funding, info, milestones, team)
+- [x] CreateProposal.tsx — Migration complète en t() (formulaire, labels, placeholders, erreurs, succès)
+- [x] Delegation.tsx — Migration complète en t() (stats, délégations, historique, modal, how-it-works)
+- [x] Admin.tsx — Migration complète en t() (tabs, stats, modération, utilisateurs, logs)
+- [x] Clés i18n ajoutées pour FR/EN/ES/PT/ZH/AR (detail.*, create.*, delegation.*, admin.*)
+- [x] Correction conflit nommage t/team dans ProposalDetail (team.map((t,...) → team.map((member,...))
+- [x] Lint & build : ✅ OK
+
 ## Task Breakdown (UI/Presentation Fix)
 - [x] Navbar: regrouper les 11 liens en menu principal + sous-menu déroulant EcoChain
 - [x] Logo: retirer rounded-lg, utiliser object-contain pour fond transparent

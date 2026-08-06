@@ -20,6 +20,7 @@ import {
   parseTeam,
 } from '@/lib/api';
 import { getCurrentUser, subscribe, submitGovernanceVote, createPiPayment, shareProposal } from '@/lib/pi-sdk';
+import { t, subscribeI18n } from '@/lib/i18n';
 
 export default function ProposalDetail() {
   const { id } = useParams<{ id: string }>();
@@ -31,6 +32,11 @@ export default function ProposalDetail() {
   const [contributionAmount, setContributionAmount] = useState('10');
   const [contributing, setContributing] = useState(false);
   const [activeTab, setActiveTab] = useState<'overview' | 'milestones' | 'team'>('overview');
+  const [, setLang] = useState(0);
+
+  useEffect(() => {
+    return subscribeI18n(() => setLang((n) => n + 1));
+  }, []);
 
   useEffect(() => {
     return subscribe(() => setUser(getCurrentUser()));
@@ -129,7 +135,7 @@ export default function ProposalDetail() {
         <div className="flex-1 flex items-center justify-center">
           <div className="text-center">
             <div className="animate-spin w-8 h-8 border-2 border-indigo-500 border-t-transparent rounded-full mx-auto mb-4" />
-            <p className="text-gray-400">Chargement...</p>
+            <p className="text-gray-400">{t('proposals.loading')}</p>
           </div>
         </div>
         <Footer />
@@ -144,9 +150,9 @@ export default function ProposalDetail() {
         <div className="flex-1 flex items-center justify-center">
           <div className="text-center">
             <div className="text-4xl mb-4">❌</div>
-            <p className="text-gray-400 mb-4">Proposition introuvable</p>
+            <p className="text-gray-400 mb-4">{t('detail.not_found')}</p>
             <Link to="/proposals" className="text-indigo-400 hover:text-indigo-300">
-              ← Retour aux propositions
+              ← {t('detail.back_to_proposals')}
             </Link>
           </div>
         </div>
@@ -170,7 +176,7 @@ export default function ProposalDetail() {
       <PageTransition>
         <main className="flex-1 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <Link to="/proposals" className="text-indigo-400 hover:text-indigo-300 text-sm mb-6 inline-block">
-            ← Retour aux propositions
+            ← {t('detail.back_to_proposals')}
           </Link>
 
           {/* Header */}
@@ -186,7 +192,7 @@ export default function ProposalDetail() {
               </span>
               <span className="text-sm text-gray-400">{getCategoryLabel(project.category)}</span>
               <span className="text-xs text-gray-500 ml-auto">
-                Créé le {project.created_at ? new Date(project.created_at).toLocaleDateString('fr-FR') : 'N/A'}
+                {t('detail.created_on')} {project.created_at ? new Date(project.created_at).toLocaleDateString() : 'N/A'}
               </span>
             </div>
             <div className="flex items-start justify-between gap-4">
@@ -194,7 +200,7 @@ export default function ProposalDetail() {
               <button
                 onClick={() => shareProposal(project.title, project.id)}
                 className="shrink-0 p-2 rounded-lg bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white transition-colors"
-                title="Partager sur Pi"
+                title={t('detail.share_pi')}
               >
                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
               </button>
@@ -215,7 +221,7 @@ export default function ProposalDetail() {
                       activeTab === tab ? 'bg-indigo-600 text-white' : 'text-gray-400 hover:text-white'
                     }`}
                   >
-                    {tab === 'overview' ? 'Aperçu' : tab === 'milestones' ? 'Jalons' : 'Équipe'}
+                    {tab === 'overview' ? t('detail.tab_overview') : tab === 'milestones' ? t('detail.tab_milestones') : t('detail.tab_team')}
                   </button>
                 ))}
               </div>
@@ -226,28 +232,28 @@ export default function ProposalDetail() {
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                 >
-                  <h3 className="text-lg font-semibold text-white mb-4">Détails du Projet</h3>
+                  <h3 className="text-lg font-semibold text-white mb-4">{t('detail.project_details')}</h3>
                   <p className="text-gray-300 leading-relaxed">{project.description}</p>
                   {project.region && (
                     <div className="mt-4 text-sm text-gray-400">
-                      <span className="font-medium text-gray-300">Région:</span> {project.region}
+                      <span className="font-medium text-gray-300">{t('detail.region')}:</span> {project.region}
                     </div>
                   )}
                   <div className="mt-4 grid grid-cols-2 gap-4 text-sm">
                     <div className="bg-slate-900/50 rounded-lg p-3">
-                      <div className="text-gray-400">Budget</div>
+                      <div className="text-gray-400">{t('detail.budget')}</div>
                       <div className="text-amber-400 font-bold">{project.budget.toLocaleString()} π</div>
                     </div>
                     <div className="bg-slate-900/50 rounded-lg p-3">
-                      <div className="text-gray-400">Collecté</div>
+                      <div className="text-gray-400">{t('detail.collected')}</div>
                       <div className="text-emerald-400 font-bold">{(project.raised || 0).toLocaleString()} π</div>
                     </div>
                     <div className="bg-slate-900/50 rounded-lg p-3">
-                      <div className="text-gray-400">Votes Pour</div>
+                      <div className="text-gray-400">{t('detail.votes_for')}</div>
                       <div className="text-blue-400 font-bold">{project.votes_for || 0}</div>
                     </div>
                     <div className="bg-slate-900/50 rounded-lg p-3">
-                      <div className="text-gray-400">Votes Contre</div>
+                      <div className="text-gray-400">{t('detail.votes_against')}</div>
                       <div className="text-red-400 font-bold">{project.votes_against || 0}</div>
                     </div>
                   </div>
@@ -260,7 +266,7 @@ export default function ProposalDetail() {
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                 >
-                  <h3 className="text-lg font-semibold text-white mb-4">Jalons du Projet</h3>
+                  <h3 className="text-lg font-semibold text-white mb-4">{t('detail.milestones_title')}</h3>
                   {milestones.length > 0 ? (
                     <div className="space-y-4">
                       {milestones.map((m, i) => (
@@ -286,7 +292,7 @@ export default function ProposalDetail() {
                       ))}
                     </div>
                   ) : (
-                    <p className="text-gray-400 text-sm">Aucun jalon défini pour ce projet.</p>
+                    <p className="text-gray-400 text-sm">{t('detail.no_milestones')}</p>
                   )}
                 </motion.div>
               )}
@@ -297,24 +303,24 @@ export default function ProposalDetail() {
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                 >
-                  <h3 className="text-lg font-semibold text-white mb-4">Équipe</h3>
+                  <h3 className="text-lg font-semibold text-white mb-4">{t('detail.team_title')}</h3>
                   {team.length > 0 ? (
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      {team.map((t, i) => (
+                      {team.map((member, i) => (
                         <div
                           key={i}
                           className="bg-slate-900/50 border border-slate-700/50 rounded-xl p-4 flex items-center gap-3"
                         >
-                          <span className="text-2xl">{t.avatar}</span>
+                          <span className="text-2xl">{member.avatar}</span>
                           <div>
-                            <div className="font-medium text-white">{t.name}</div>
-                            <div className="text-sm text-gray-400">{t.role}</div>
+                            <div className="font-medium text-white">{member.name}</div>
+                            <div className="text-sm text-gray-400">{member.role}</div>
                           </div>
                         </div>
                       ))}
                     </div>
                   ) : (
-                    <p className="text-gray-400 text-sm">Aucune information d&apos;équipe disponible.</p>
+                    <p className="text-gray-400 text-sm">{t('detail.no_team')}</p>
                   )}
                 </motion.div>
               )}
@@ -328,7 +334,7 @@ export default function ProposalDetail() {
                   transition={{ delay: 0.2 }}
                 >
                   <h3 className="text-lg font-semibold text-white mb-4">
-                    Derniers Votes ({votes.length})
+                    {t('detail.recent_votes')} ({votes.length})
                   </h3>
                   <div className="space-y-2 max-h-48 overflow-y-auto">
                     {votes.slice(0, 10).map((v) => (
@@ -344,7 +350,7 @@ export default function ProposalDetail() {
                         </span>
                         <span className="text-gray-400 truncate">{v.pi_uid.slice(0, 8)}...</span>
                         <span className="text-xs text-gray-500 ml-auto">
-                          poids: {v.weight}
+                          {t('detail.weight')}: {v.weight}
                         </span>
                       </div>
                     ))}
@@ -363,19 +369,19 @@ export default function ProposalDetail() {
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: 0.1 }}
                 >
-                  <h3 className="text-lg font-semibold text-white mb-4">🗳️ Vote</h3>
+                  <h3 className="text-lg font-semibold text-white mb-4">🗳️ {t('detail.vote_title')}</h3>
                   <div className="space-y-3 mb-4">
                     <div className="flex justify-between text-sm">
-                      <span className="text-emerald-400">Pour: {project.votes_for || 0}</span>
-                      <span className="text-red-400">Contre: {project.votes_against || 0}</span>
+                      <span className="text-emerald-400">{t('detail.vote_for')}: {project.votes_for || 0}</span>
+                      <span className="text-red-400">{t('detail.vote_against')}: {project.votes_against || 0}</span>
                     </div>
                     <div className="w-full h-3 bg-slate-700 rounded-full overflow-hidden flex">
                       <div className="h-full bg-emerald-500" style={{ width: `${votePercentage}%` }} />
                       <div className="h-full bg-red-500" style={{ width: `${100 - votePercentage}%` }} />
                     </div>
                     <div className="text-xs text-gray-400 text-center">
-                      {project.voter_count || 0} votants
-                      {project.deadline && ` • Deadline: ${project.deadline}`}
+                      {project.voter_count || 0} {t('detail.voters')}
+                      {project.deadline && ` • ${t('detail.deadline')}: ${project.deadline}`}
                     </div>
                   </div>
                   {user && !voted ? (
@@ -384,19 +390,19 @@ export default function ProposalDetail() {
                         onClick={() => handleVote('for')}
                         className="flex-1 px-4 py-2 rounded-lg bg-emerald-600 text-white text-sm font-medium hover:bg-emerald-500 transition-colors"
                       >
-                        ✓ Pour
+                        {t('detail.vote_for')}
                       </button>
                       <button
                         onClick={() => handleVote('against')}
                         className="flex-1 px-4 py-2 rounded-lg bg-red-600 text-white text-sm font-medium hover:bg-red-500 transition-colors"
                       >
-                        ✗ Contre
+                        {t('detail.vote_against')}
                       </button>
                     </div>
                   ) : voted ? (
-                    <div className="text-center text-emerald-400 text-sm py-2">✓ Vote enregistré !</div>
+                    <div className="text-center text-emerald-400 text-sm py-2">{t('detail.vote_recorded')}</div>
                   ) : (
-                    <div className="text-center text-gray-400 text-sm py-2">Connectez-vous pour voter</div>
+                    <div className="text-center text-gray-400 text-sm py-2">{t('detail.login_to_vote')}</div>
                   )}
                 </motion.div>
               )}
@@ -409,13 +415,13 @@ export default function ProposalDetail() {
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: 0.1 }}
                 >
-                  <h3 className="text-lg font-semibold text-white mb-4">💰 Financement</h3>
+                  <h3 className="text-lg font-semibold text-white mb-4">{t('detail.funding_title')}</h3>
                   <div className="space-y-3 mb-4">
                     <div className="text-2xl font-bold text-amber-400">
                       {(project.raised || 0).toLocaleString()} π
                     </div>
                     <div className="text-sm text-gray-400">
-                      sur {project.budget.toLocaleString()} π objectif
+                      {t('detail.funding_goal')} {project.budget.toLocaleString()} π {t('detail.funding_goal_suffix')}
                     </div>
                     <div className="w-full h-3 bg-slate-700 rounded-full overflow-hidden">
                       <div
@@ -423,7 +429,7 @@ export default function ProposalDetail() {
                         style={{ width: `${Math.min(fundingPercentage, 100)}%` }}
                       />
                     </div>
-                    <div className="text-xs text-gray-400">{fundingPercentage.toFixed(0)}% atteint</div>
+                    <div className="text-xs text-gray-400">{fundingPercentage.toFixed(0)}% {t('detail.funding_reached')}</div>
                   </div>
                   {user ? (
                     <div className="space-y-2">
@@ -432,27 +438,27 @@ export default function ProposalDetail() {
                         value={contributionAmount}
                         onChange={(e) => setContributionAmount(e.target.value)}
                         className="w-full px-3 py-2 rounded-lg bg-slate-900 border border-slate-700 text-white text-sm focus:outline-none focus:border-amber-500"
-                        placeholder="Montant en Pi"
+                        placeholder={t('detail.amount_placeholder')}
                       />
                       <button
                         onClick={handleContribute}
                         disabled={contributing}
                         className="w-full px-4 py-2 rounded-lg bg-gradient-to-r from-amber-600 to-amber-500 text-white text-sm font-medium hover:from-amber-500 hover:to-amber-400 transition-all disabled:opacity-50"
                       >
-                        {contributing ? 'En cours...' : 'Contribuer en Pi'}
+                        {contributing ? t('detail.contributing') : t('detail.contribute_pi')}
                       </button>
                       <PiPaymentButton
                         amount={parseFloat(contributionAmount) || 10}
                         projectId={project.id}
-                        memo={`Contribution à ${project.title}`}
+                        memo={`${t('detail.memo')} ${project.title}`}
                         onSuccess={() => loadProject(project.id)}
                         className="w-full px-4 py-2 rounded-lg bg-gradient-to-r from-purple-600 to-indigo-600 text-white text-sm font-medium hover:from-purple-500 hover:to-indigo-500 transition-all"
                       >
-                        💎 Payer avec Pi Network
+                        {t('detail.pay_with_pi')}
                       </PiPaymentButton>
                     </div>
                   ) : (
-                    <div className="text-center text-gray-400 text-sm py-2">Connectez-vous pour contribuer</div>
+                    <div className="text-center text-gray-400 text-sm py-2">{t('detail.login_to_contribute')}</div>
                   )}
                 </motion.div>
               )}
@@ -464,31 +470,31 @@ export default function ProposalDetail() {
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.2 }}
               >
-                <h3 className="text-lg font-semibold text-white mb-3">Informations</h3>
+                <h3 className="text-lg font-semibold text-white mb-3">{t('detail.info_title')}</h3>
                 <div className="space-y-2 text-sm">
                   <div className="flex justify-between">
-                    <span className="text-gray-400">Catégorie</span>
+                    <span className="text-gray-400">{t('detail.category')}</span>
                     <span className="text-white">{getCategoryLabel(project.category)}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-400">Créé le</span>
+                    <span className="text-gray-400">{t('detail.created_on')}</span>
                     <span className="text-white">
-                      {project.created_at ? new Date(project.created_at).toLocaleDateString('fr-FR') : 'N/A'}
+                      {project.created_at ? new Date(project.created_at).toLocaleDateString() : 'N/A'}
                     </span>
                   </div>
                   {project.deadline && (
                     <div className="flex justify-between">
-                      <span className="text-gray-400">Deadline</span>
+                      <span className="text-gray-400">{t('detail.deadline')}</span>
                       <span className="text-white">{project.deadline}</span>
                     </div>
                   )}
                   <div className="flex justify-between">
-                    <span className="text-gray-400">Budget</span>
+                    <span className="text-gray-400">{t('detail.budget')}</span>
                     <span className="text-white">{project.budget.toLocaleString()} π</span>
                   </div>
                   {project.quorum && (
                     <div className="flex justify-between">
-                      <span className="text-gray-400">Quorum</span>
+                      <span className="text-gray-400">{t('detail.quorum')}</span>
                       <span className="text-white">{(project.quorum * 100).toFixed(0)}%</span>
                     </div>
                   )}

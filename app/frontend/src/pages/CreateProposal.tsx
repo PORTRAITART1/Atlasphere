@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import Navbar from '@/components/Navbar';
@@ -7,6 +7,7 @@ import AIAssistant from '@/components/AIAssistant';
 import PageTransition from '@/components/PageTransition';
 import { createProject } from '@/lib/api';
 import { getCurrentUser } from '@/lib/pi-sdk';
+import { t, subscribeI18n } from '@/lib/i18n';
 
 type Category = 'education' | 'commerce' | 'technology' | 'social' | 'environment';
 
@@ -25,6 +26,11 @@ export default function CreateProposal() {
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState('');
+  const [, setLang] = useState(0);
+
+  useEffect(() => {
+    return subscribeI18n(() => setLang((n) => n + 1));
+  }, []);
 
   const handleApplySuggestion = (field: string, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
@@ -33,7 +39,7 @@ export default function CreateProposal() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user) {
-      setError('Veuillez vous connecter avec Pi Network pour soumettre une proposition.');
+      setError(t('create.error_login'));
       return;
     }
 
@@ -58,9 +64,9 @@ export default function CreateProposal() {
         deadline: formData.deadline || undefined,
         team: teamArray.length > 0 ? JSON.stringify(teamArray) : undefined,
         milestones: JSON.stringify([
-          { title: 'Phase 1 - Lancement', description: 'Mise en place initiale', completed: false },
-          { title: 'Phase 2 - Développement', description: 'Développement principal', completed: false },
-          { title: 'Phase 3 - Livraison', description: 'Livraison finale', completed: false },
+          { title: 'Phase 1', description: 'Initial setup', completed: false },
+          { title: 'Phase 2', description: 'Main development', completed: false },
+          { title: 'Phase 3', description: 'Final delivery', completed: false },
         ]),
         status: 'voting',
       });
@@ -69,7 +75,7 @@ export default function CreateProposal() {
       setTimeout(() => navigate('/proposals'), 2000);
     } catch (err) {
       console.error('Failed to create project:', err);
-      setError('Erreur lors de la soumission. Veuillez réessayer.');
+      setError(t('create.error_submit'));
     } finally {
       setSubmitting(false);
     }
@@ -87,8 +93,8 @@ export default function CreateProposal() {
               animate={{ opacity: 1, scale: 1 }}
             >
               <div className="text-5xl mb-4">🔐</div>
-              <h2 className="text-2xl font-bold text-white mb-2">Connexion Requise</h2>
-              <p className="text-gray-400">Connectez-vous avec Pi Network pour créer une proposition.</p>
+              <h2 className="text-2xl font-bold text-white mb-2">{t('create.login_required')}</h2>
+              <p className="text-gray-400">{t('create.login_msg')}</p>
             </motion.div>
           </div>
         </PageTransition>
@@ -109,8 +115,8 @@ export default function CreateProposal() {
             transition={{ type: 'spring', stiffness: 200 }}
           >
             <div className="text-5xl mb-4">🎉</div>
-            <h2 className="text-2xl font-bold text-white mb-2">Proposition Soumise !</h2>
-            <p className="text-gray-400">Votre projet est maintenant en attente de vote par la communauté.</p>
+            <h2 className="text-2xl font-bold text-white mb-2">{t('create.submitted_title')}</h2>
+            <p className="text-gray-400">{t('create.submitted_desc')}</p>
           </motion.div>
         </div>
         <Footer />
@@ -125,9 +131,9 @@ export default function CreateProposal() {
       <PageTransition>
         <main className="flex-1 max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}>
-            <h1 className="text-3xl font-bold text-white mb-2">Créer une Proposition</h1>
+            <h1 className="text-3xl font-bold text-white mb-2">{t('create.title')}</h1>
             <p className="text-gray-400 mb-8">
-              Soumettez votre projet à la communauté pour un vote et un financement.
+              {t('create.subtitle')}
             </p>
           </motion.div>
 
@@ -161,58 +167,58 @@ export default function CreateProposal() {
               transition={{ delay: 0.1 }}
             >
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-1.5">Titre du Projet *</label>
+                <label className="block text-sm font-medium text-gray-300 mb-1.5">{t('create.label_title')}</label>
                 <input
                   type="text"
                   required
                   value={formData.title}
                   onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                   className="w-full px-4 py-2.5 rounded-lg bg-slate-900/50 border border-slate-700 text-white placeholder-gray-500 focus:outline-none focus:border-indigo-500 transition-colors"
-                  placeholder="Ex: PiHealth - Télémédecine Communautaire"
+                  placeholder={t('create.placeholder_title')}
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-1.5">Résumé Court *</label>
+                <label className="block text-sm font-medium text-gray-300 mb-1.5">{t('create.label_summary')}</label>
                 <input
                   type="text"
                   required
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                   className="w-full px-4 py-2.5 rounded-lg bg-slate-900/50 border border-slate-700 text-white placeholder-gray-500 focus:outline-none focus:border-indigo-500 transition-colors"
-                  placeholder="Description en une phrase"
+                  placeholder={t('create.placeholder_summary')}
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-1.5">Description Complète *</label>
+                <label className="block text-sm font-medium text-gray-300 mb-1.5">{t('create.label_description')}</label>
                 <textarea
                   required
                   rows={5}
                   value={formData.fullDescription}
                   onChange={(e) => setFormData({ ...formData, fullDescription: e.target.value })}
                   className="w-full px-4 py-2.5 rounded-lg bg-slate-900/50 border border-slate-700 text-white placeholder-gray-500 focus:outline-none focus:border-indigo-500 transition-colors resize-none"
-                  placeholder="Décrivez votre projet en détail : objectifs, impact, plan d'exécution..."
+                  placeholder={t('create.placeholder_description')}
                 />
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-1.5">Catégorie *</label>
+                  <label className="block text-sm font-medium text-gray-300 mb-1.5">{t('create.label_category')}</label>
                   <select
                     value={formData.category}
                     onChange={(e) => setFormData({ ...formData, category: e.target.value as Category })}
                     className="w-full px-4 py-2.5 rounded-lg bg-slate-900/50 border border-slate-700 text-white focus:outline-none focus:border-indigo-500 transition-colors"
                   >
-                    <option value="education">📚 Éducation</option>
-                    <option value="commerce">🛍️ Commerce</option>
-                    <option value="technology">💻 Technologie</option>
-                    <option value="social">🤝 Social</option>
-                    <option value="environment">🌍 Environnement</option>
+                    <option value="education">{t('create.cat_education')}</option>
+                    <option value="commerce">{t('create.cat_commerce')}</option>
+                    <option value="technology">{t('create.cat_technology')}</option>
+                    <option value="social">{t('create.cat_social')}</option>
+                    <option value="environment">{t('create.cat_environment')}</option>
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-1.5">Budget Demandé (Pi) *</label>
+                  <label className="block text-sm font-medium text-gray-300 mb-1.5">{t('create.label_budget')}</label>
                   <input
                     type="number"
                     required
@@ -226,7 +232,7 @@ export default function CreateProposal() {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-1.5">Deadline de Vote</label>
+                  <label className="block text-sm font-medium text-gray-300 mb-1.5">{t('create.label_deadline')}</label>
                   <input
                     type="date"
                     value={formData.deadline}
@@ -235,13 +241,13 @@ export default function CreateProposal() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-1.5">Membres de l&apos;Équipe</label>
+                  <label className="block text-sm font-medium text-gray-300 mb-1.5">{t('create.label_team')}</label>
                   <input
                     type="text"
                     value={formData.teamMembers}
                     onChange={(e) => setFormData({ ...formData, teamMembers: e.target.value })}
                     className="w-full px-4 py-2.5 rounded-lg bg-slate-900/50 border border-slate-700 text-white placeholder-gray-500 focus:outline-none focus:border-indigo-500 transition-colors"
-                    placeholder="Noms séparés par des virgules"
+                    placeholder={t('create.placeholder_team')}
                   />
                 </div>
               </div>
@@ -252,7 +258,7 @@ export default function CreateProposal() {
               disabled={submitting}
               className="w-full px-6 py-3 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-semibold hover:from-indigo-500 hover:to-purple-500 transition-all shadow-lg shadow-indigo-500/25 disabled:opacity-50"
             >
-              {submitting ? 'Soumission en cours...' : 'Soumettre la Proposition'}
+              {submitting ? t('create.submitting') : t('create.submit')}
             </button>
           </form>
         </main>

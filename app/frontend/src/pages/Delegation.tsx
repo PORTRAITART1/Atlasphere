@@ -91,7 +91,7 @@ export default function Delegation() {
       <div className="min-h-screen bg-gradient-to-br from-slate-950 via-indigo-950 to-slate-900">
         <Navbar />
         <div className="max-w-4xl mx-auto px-4 py-20 text-center">
-          <p className="text-gray-400 text-lg">🔒 Connectez-vous avec Pi Network pour gérer vos délégations.</p>
+          <p className="text-gray-400 text-lg">{t('delegation.login_required')}</p>
         </div>
         <Footer />
       </div>
@@ -106,41 +106,41 @@ export default function Delegation() {
         <div className="flex items-center justify-between mb-6">
           <div>
             <h1 className="text-3xl font-bold text-white mb-2">
-              🤝 {t('delegation.title') || 'Délégation de Votes'}
+              🤝 {t('delegation.title')}
             </h1>
-            <p className="text-gray-400">{t('delegation.subtitle') || 'Déléguez votre pouvoir de vote à des Pionniers de confiance'}</p>
+            <p className="text-gray-400">{t('delegation.subtitle')}</p>
           </div>
           <button
             onClick={() => setShowDelegateModal(true)}
             className="px-4 py-2 rounded-lg bg-indigo-600 text-white text-sm font-medium hover:bg-indigo-500 transition-colors"
           >
-            + Déléguer
+            {t('delegation.delegate_btn')}
           </button>
         </div>
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
           <div className="bg-slate-800/40 border border-slate-700/50 rounded-xl p-4">
-            <p className="text-xs text-gray-400">Poids disponible</p>
+            <p className="text-xs text-gray-400">{t('delegation.available_weight')}</p>
             <p className="text-2xl font-bold text-white">{availableWeight}%</p>
             <div className="w-full h-2 bg-slate-700 rounded-full mt-2">
               <div className="h-full bg-indigo-500 rounded-full" style={{ width: `${availableWeight}%` }} />
             </div>
           </div>
           <div className="bg-slate-800/40 border border-slate-700/50 rounded-xl p-4">
-            <p className="text-xs text-gray-400">Délégué (sortant)</p>
+            <p className="text-xs text-gray-400">{t('delegation.delegated_out')}</p>
             <p className="text-2xl font-bold text-amber-400">{totalDelegatedOut}%</p>
-            <p className="text-xs text-gray-500 mt-1">à {delegates.length} délégués</p>
+            <p className="text-xs text-gray-500 mt-1">{t('delegation.to_delegates').replace('{0}', String(delegates.length))}</p>
           </div>
           <div className="bg-slate-800/40 border border-slate-700/50 rounded-xl p-4">
-            <p className="text-xs text-gray-400">Reçu (entrant)</p>
+            <p className="text-xs text-gray-400">{t('delegation.received_in')}</p>
             <p className="text-2xl font-bold text-emerald-400">{totalReceivedIn}%</p>
-            <p className="text-xs text-gray-500 mt-1">de {receivedDelegations.length} délégants</p>
+            <p className="text-xs text-gray-500 mt-1">{t('delegation.from_delegators').replace('{0}', String(receivedDelegations.length))}</p>
           </div>
           <div className="bg-slate-800/40 border border-slate-700/50 rounded-xl p-4">
-            <p className="text-xs text-gray-400">Pouvoir total effectif</p>
+            <p className="text-xs text-gray-400">{t('delegation.effective_power')}</p>
             <p className="text-2xl font-bold text-purple-400">{availableWeight + totalReceivedIn}%</p>
-            <p className="text-xs text-gray-500 mt-1">personnel + reçu</p>
+            <p className="text-xs text-gray-500 mt-1">{t('delegation.personal_received')}</p>
           </div>
         </div>
 
@@ -148,9 +148,9 @@ export default function Delegation() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
           {/* Delegated Out */}
           <div className="bg-slate-800/40 border border-slate-700/50 rounded-xl p-6">
-            <h3 className="text-white font-semibold mb-4">📤 Mes délégations (sortantes)</h3>
+            <h3 className="text-white font-semibold mb-4">{t('delegation.my_delegations')}</h3>
             {delegates.length === 0 ? (
-              <p className="text-gray-500 text-sm text-center py-4">Aucune délégation active</p>
+              <p className="text-gray-500 text-sm text-center py-4">{t('delegation.no_delegations')}</p>
             ) : (
               <div className="space-y-3">
                 {delegates.map((d) => (
@@ -165,14 +165,14 @@ export default function Delegation() {
                     </div>
                     <div className="flex-1">
                       <p className="text-white text-sm font-medium">@{d.username}</p>
-                      <p className="text-xs text-gray-500">Rep: {d.reputation} • Depuis {d.since}</p>
+                      <p className="text-xs text-gray-500">{t('delegation.rep')}: {d.reputation} • {t('delegation.since')} {d.since}</p>
                     </div>
                     <span className="text-amber-400 font-bold text-sm">{d.delegatedWeight}%</span>
                     <button
                       onClick={() => handleRevoke(d.id)}
                       className="text-xs px-2 py-1 rounded bg-red-500/20 text-red-400 hover:bg-red-500/30 transition-colors"
                     >
-                      Révoquer
+                      {t('delegation.revoke')}
                     </button>
                   </motion.div>
                 ))}
@@ -182,9 +182,9 @@ export default function Delegation() {
 
           {/* Received */}
           <div className="bg-slate-800/40 border border-slate-700/50 rounded-xl p-6">
-            <h3 className="text-white font-semibold mb-4">📥 Délégations reçues</h3>
+            <h3 className="text-white font-semibold mb-4">{t('delegation.received_title')}</h3>
             {receivedDelegations.length === 0 ? (
-              <p className="text-gray-500 text-sm text-center py-4">Aucune délégation reçue</p>
+              <p className="text-gray-500 text-sm text-center py-4">{t('delegation.no_received')}</p>
             ) : (
               <div className="space-y-3">
                 {receivedDelegations.map((d) => (
@@ -199,7 +199,7 @@ export default function Delegation() {
                     </div>
                     <div className="flex-1">
                       <p className="text-white text-sm font-medium">@{d.username}</p>
-                      <p className="text-xs text-gray-500">Rep: {d.reputation} • Depuis {d.since}</p>
+                      <p className="text-xs text-gray-500">{t('delegation.rep')}: {d.reputation} • {t('delegation.since')} {d.since}</p>
                     </div>
                     <span className="text-emerald-400 font-bold text-sm">+{d.delegatedWeight}%</span>
                   </motion.div>
@@ -211,7 +211,7 @@ export default function Delegation() {
 
         {/* History */}
         <div className="bg-slate-800/40 border border-slate-700/50 rounded-xl p-6">
-          <h3 className="text-white font-semibold mb-4">📜 Historique des délégations</h3>
+          <h3 className="text-white font-semibold mb-4">{t('delegation.history_title')}</h3>
           <div className="space-y-2">
             {history.map((h) => (
               <div key={h.id} className="flex items-center gap-3 p-3 bg-slate-800/20 rounded-lg text-sm">
@@ -220,10 +220,10 @@ export default function Delegation() {
                   h.action === 'received' ? 'bg-emerald-500/20 text-emerald-400' :
                   'bg-red-500/20 text-red-400'
                 }`}>
-                  {h.action === 'delegated' ? '→ Délégué' : h.action === 'received' ? '← Reçu' : '✕ Révoqué'}
+                  {h.action === 'delegated' ? t('delegation.action_delegated') : h.action === 'received' ? t('delegation.action_received') : t('delegation.action_revoked')}
                 </span>
                 <span className="text-gray-300 flex-1">
-                  {h.action === 'received' ? `De @${h.from}` : `À @${h.to}`} — {h.weight}%
+                  {h.action === 'received' ? `${t('delegation.from')} @${h.from}` : `${t('delegation.to')} @${h.to}`} — {h.weight}%
                 </span>
                 <span className="text-xs text-gray-500">{h.date}</span>
               </div>
@@ -233,22 +233,22 @@ export default function Delegation() {
 
         {/* How it works */}
         <div className="mt-8 bg-indigo-600/10 border border-indigo-500/20 rounded-xl p-6">
-          <h3 className="text-white font-semibold mb-3">💡 Comment fonctionne la délégation ?</h3>
+          <h3 className="text-white font-semibold mb-3">{t('delegation.how_title')}</h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="text-center p-3">
               <span className="text-2xl block mb-2">🎯</span>
-              <p className="text-sm text-gray-300 font-medium">Choisissez un délégué</p>
-              <p className="text-xs text-gray-500 mt-1">Sélectionnez un Pioneer de confiance avec une bonne réputation</p>
+              <p className="text-sm text-gray-300 font-medium">{t('delegation.how_step1_title')}</p>
+              <p className="text-xs text-gray-500 mt-1">{t('delegation.how_step1_desc')}</p>
             </div>
             <div className="text-center p-3">
               <span className="text-2xl block mb-2">⚖️</span>
-              <p className="text-sm text-gray-300 font-medium">Définissez le poids</p>
-              <p className="text-xs text-gray-500 mt-1">Attribuez un pourcentage de votre pouvoir de vote (1-100%)</p>
+              <p className="text-sm text-gray-300 font-medium">{t('delegation.how_step2_title')}</p>
+              <p className="text-xs text-gray-500 mt-1">{t('delegation.how_step2_desc')}</p>
             </div>
             <div className="text-center p-3">
               <span className="text-2xl block mb-2">🔄</span>
-              <p className="text-sm text-gray-300 font-medium">Révoquez à tout moment</p>
-              <p className="text-xs text-gray-500 mt-1">Reprenez votre pouvoir de vote instantanément si nécessaire</p>
+              <p className="text-sm text-gray-300 font-medium">{t('delegation.how_step3_title')}</p>
+              <p className="text-xs text-gray-500 mt-1">{t('delegation.how_step3_desc')}</p>
             </div>
           </div>
         </div>
@@ -263,10 +263,10 @@ export default function Delegation() {
             animate={{ scale: 1, opacity: 1 }}
             onClick={(e) => e.stopPropagation()}
           >
-            <h3 className="text-white font-semibold text-lg mb-4">🤝 Nouvelle délégation</h3>
+            <h3 className="text-white font-semibold text-lg mb-4">{t('delegation.modal_title')}</h3>
             <div className="space-y-4">
               <div>
-                <label className="text-sm text-gray-400 block mb-1">Nom d'utilisateur du délégué</label>
+                <label className="text-sm text-gray-400 block mb-1">{t('delegation.modal_username')}</label>
                 <input
                   type="text"
                   value={delegateUsername}
@@ -276,7 +276,7 @@ export default function Delegation() {
                 />
               </div>
               <div>
-                <label className="text-sm text-gray-400 block mb-1">Poids à déléguer: {delegateWeight}%</label>
+                <label className="text-sm text-gray-400 block mb-1">{t('delegation.modal_weight')}: {delegateWeight}%</label>
                 <input
                   type="range"
                   min="1"
@@ -287,7 +287,7 @@ export default function Delegation() {
                 />
                 <div className="flex justify-between text-xs text-gray-500">
                   <span>1%</span>
-                  <span>Disponible: {availableWeight}%</span>
+                  <span>{t('delegation.modal_available')}: {availableWeight}%</span>
                 </div>
               </div>
               <div className="flex gap-3 pt-2">
@@ -295,14 +295,14 @@ export default function Delegation() {
                   onClick={() => setShowDelegateModal(false)}
                   className="flex-1 px-4 py-2 rounded-lg bg-slate-700 text-gray-300 text-sm hover:bg-slate-600 transition-colors"
                 >
-                  Annuler
+                  {t('delegation.modal_cancel')}
                 </button>
                 <button
                   onClick={handleDelegate}
                   disabled={!delegateUsername.trim() || delegateWeight <= 0}
                   className="flex-1 px-4 py-2 rounded-lg bg-indigo-600 text-white text-sm font-medium hover:bg-indigo-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  Confirmer
+                  {t('delegation.modal_confirm')}
                 </button>
               </div>
             </div>

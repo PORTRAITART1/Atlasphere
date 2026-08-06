@@ -127,10 +127,10 @@ export default function Admin() {
   }
 
   const tabs = [
-    { key: 'overview', label: '📊 Vue d\'ensemble', icon: '📊' },
-    { key: 'projects', label: '📋 Projets', icon: '📋' },
-    { key: 'users', label: '👥 Utilisateurs', icon: '👥' },
-    { key: 'logs', label: '📝 Logs', icon: '📝' },
+    { key: 'overview', label: t('admin.tab_overview') },
+    { key: 'projects', label: t('admin.tab_projects') },
+    { key: 'users', label: t('admin.tab_users') },
+    { key: 'logs', label: t('admin.tab_logs') },
   ] as const;
 
   if (!user) {
@@ -138,7 +138,7 @@ export default function Admin() {
       <div className="min-h-screen bg-gradient-to-br from-slate-950 via-indigo-950 to-slate-900">
         <Navbar />
         <div className="max-w-4xl mx-auto px-4 py-20 text-center">
-          <p className="text-gray-400 text-lg">🔒 Accès réservé aux administrateurs. Connectez-vous avec Pi Network.</p>
+          <p className="text-gray-400 text-lg">{t('admin.login_required')}</p>
         </div>
         <Footer />
       </div>
@@ -152,9 +152,9 @@ export default function Admin() {
         {/* Header */}
         <div className="mb-6">
           <h1 className="text-3xl font-bold text-white mb-2">
-            🛡️ {t('admin.title') || 'Administration Atlasphere'}
+            🛡️ {t('admin.title')}
           </h1>
-          <p className="text-gray-400">{t('admin.subtitle') || 'Modération, gestion des utilisateurs et statistiques'}</p>
+          <p className="text-gray-400">{t('admin.subtitle')}</p>
         </div>
 
         {/* Tabs */}
@@ -191,12 +191,12 @@ export default function Admin() {
                 <div className="space-y-6">
                   <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
                     {[
-                      { label: 'Projets', value: stats.total_projects, icon: '📋', color: 'indigo' },
-                      { label: 'Utilisateurs', value: stats.total_users, icon: '👥', color: 'purple' },
-                      { label: 'Votes', value: stats.total_votes, icon: '🗳️', color: 'emerald' },
-                      { label: 'Contributions', value: stats.total_contributions, icon: '💰', color: 'amber' },
-                      { label: 'Pi Collectés', value: `${stats.total_pi_raised.toLocaleString()} π`, icon: '💎', color: 'yellow' },
-                      { label: 'Actifs', value: stats.active_proposals, icon: '🔥', color: 'red' },
+                      { label: t('admin.stat_projects'), value: stats.total_projects, icon: '📋', color: 'indigo' },
+                      { label: t('admin.stat_users'), value: stats.total_users, icon: '👥', color: 'purple' },
+                      { label: t('admin.stat_votes'), value: stats.total_votes, icon: '🗳️', color: 'emerald' },
+                      { label: t('admin.stat_contributions'), value: stats.total_contributions, icon: '💰', color: 'amber' },
+                      { label: t('admin.stat_pi_raised'), value: `${stats.total_pi_raised.toLocaleString()} π`, icon: '💎', color: 'yellow' },
+                      { label: t('admin.stat_active'), value: stats.active_proposals, icon: '🔥', color: 'red' },
                     ].map((stat) => (
                       <motion.div
                         key={stat.label}
@@ -212,7 +212,7 @@ export default function Admin() {
 
                   {/* Recent Activity */}
                   <div className="bg-slate-800/40 border border-slate-700/50 rounded-xl p-6">
-                    <h3 className="text-white font-semibold mb-4">📈 Activité récente</h3>
+                    <h3 className="text-white font-semibold mb-4">{t('admin.recent_activity')}</h3>
                     <div className="space-y-3">
                       {logs.slice(0, 5).map((log) => (
                         <div key={log.id} className="flex items-center gap-3 text-sm">
@@ -235,8 +235,8 @@ export default function Admin() {
               {activeTab === 'projects' && (
                 <div className="space-y-4">
                   <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-white font-semibold">Modération des projets</h3>
-                    <span className="text-xs text-gray-400">{projects.length} projets au total</span>
+                    <h3 className="text-white font-semibold">{t('admin.moderation_title')}</h3>
+                    <span className="text-xs text-gray-400">{projects.length} {t('admin.projects_total')}</span>
                   </div>
                   {projects.map((project) => (
                     <motion.div
@@ -261,7 +261,7 @@ export default function Admin() {
                           <div className="flex items-center gap-4 mt-2 text-xs text-gray-500">
                             <span>📁 {project.category}</span>
                             <span>💰 {project.budget} π</span>
-                            <span>📈 {project.raised || 0} π collectés</span>
+                            <span>📈 {project.raised || 0} π {t('admin.collected')}</span>
                           </div>
                         </div>
                         <div className="flex gap-2">
@@ -271,13 +271,13 @@ export default function Admin() {
                                 onClick={() => handleModerate(project.id, 'voting')}
                                 className="px-3 py-1.5 rounded-lg bg-emerald-600 text-white text-xs font-medium hover:bg-emerald-500 transition-colors"
                               >
-                                ✅ Approuver
+                                {t('admin.approve')}
                               </button>
                               <button
                                 onClick={() => handleModerate(project.id, 'rejected')}
                                 className="px-3 py-1.5 rounded-lg bg-red-600 text-white text-xs font-medium hover:bg-red-500 transition-colors"
                               >
-                                ❌ Rejeter
+                                {t('admin.reject')}
                               </button>
                             </>
                           )}
@@ -286,7 +286,7 @@ export default function Admin() {
                               onClick={() => handleModerate(project.id, 'funding')}
                               className="px-3 py-1.5 rounded-lg bg-amber-600 text-white text-xs font-medium hover:bg-amber-500 transition-colors"
                             >
-                              💰 → Financement
+                              {t('admin.to_funding')}
                             </button>
                           )}
                         </div>
@@ -300,18 +300,18 @@ export default function Admin() {
               {activeTab === 'users' && (
                 <div className="space-y-4">
                   <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-white font-semibold">Gestion des utilisateurs</h3>
-                    <span className="text-xs text-gray-400">{users.length} utilisateurs</span>
+                    <h3 className="text-white font-semibold">{t('admin.users_title')}</h3>
+                    <span className="text-xs text-gray-400">{users.length} {t('admin.users_count')}</span>
                   </div>
                   <div className="bg-slate-800/40 border border-slate-700/50 rounded-xl overflow-hidden">
                     <table className="w-full text-sm">
                       <thead>
                         <tr className="border-b border-slate-700/50">
-                          <th className="text-left p-3 text-gray-400 font-medium">Utilisateur</th>
-                          <th className="text-left p-3 text-gray-400 font-medium">Pi UID</th>
-                          <th className="text-left p-3 text-gray-400 font-medium">Réputation</th>
-                          <th className="text-left p-3 text-gray-400 font-medium">VIP</th>
-                          <th className="text-left p-3 text-gray-400 font-medium">Actions</th>
+                          <th className="text-left p-3 text-gray-400 font-medium">{t('admin.col_user')}</th>
+                          <th className="text-left p-3 text-gray-400 font-medium">{t('admin.col_pi_uid')}</th>
+                          <th className="text-left p-3 text-gray-400 font-medium">{t('admin.col_reputation')}</th>
+                          <th className="text-left p-3 text-gray-400 font-medium">{t('admin.col_vip')}</th>
+                          <th className="text-left p-3 text-gray-400 font-medium">{t('admin.col_actions')}</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -324,9 +324,9 @@ export default function Admin() {
                             </td>
                             <td className="p-3">
                               {u.is_vip ? (
-                                <span className="text-xs px-2 py-0.5 rounded-full bg-purple-500/20 text-purple-400">💎 VIP</span>
+                                <span className="text-xs px-2 py-0.5 rounded-full bg-purple-500/20 text-purple-400">{t('admin.vip_label')}</span>
                               ) : (
-                                <span className="text-xs text-gray-500">Standard</span>
+                                <span className="text-xs text-gray-500">{t('admin.standard')}</span>
                               )}
                             </td>
                             <td className="p-3">
@@ -334,7 +334,7 @@ export default function Admin() {
                                 onClick={() => handleToggleVIP(u.id)}
                                 className={`text-xs px-2 py-1 rounded ${u.is_vip ? 'bg-red-500/20 text-red-400 hover:bg-red-500/30' : 'bg-purple-500/20 text-purple-400 hover:bg-purple-500/30'} transition-colors`}
                               >
-                                {u.is_vip ? 'Révoquer VIP' : 'Accorder VIP'}
+                                {u.is_vip ? t('admin.revoke_vip') : t('admin.grant_vip')}
                               </button>
                             </td>
                           </tr>
@@ -348,7 +348,7 @@ export default function Admin() {
               {/* Logs Tab */}
               {activeTab === 'logs' && (
                 <div className="space-y-4">
-                  <h3 className="text-white font-semibold mb-4">📝 Journal d'administration</h3>
+                  <h3 className="text-white font-semibold mb-4">{t('admin.logs_title')}</h3>
                   <div className="bg-slate-800/40 border border-slate-700/50 rounded-xl p-5 space-y-3">
                     {logs.map((log) => (
                       <div key={log.id} className="flex items-center gap-4 p-3 bg-slate-800/30 rounded-lg">
@@ -359,7 +359,7 @@ export default function Admin() {
                           'bg-blue-500/20 text-blue-400'
                         }`}>{log.action}</span>
                         <span className="text-sm text-gray-300 flex-1">{log.target}</span>
-                        <span className="text-xs text-gray-500">par {log.admin}</span>
+                        <span className="text-xs text-gray-500">{t('admin.by')} {log.admin}</span>
                         <span className="text-xs text-gray-600">{new Date(log.timestamp).toLocaleString()}</span>
                       </div>
                     ))}
