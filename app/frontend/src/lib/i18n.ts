@@ -265,6 +265,21 @@ const messages: Record<Locale, Translations> = {
     'admin.logs_title': '📝 Journal d\'administration',
     'admin.by': 'par',
 
+    // EcoWallet page
+    'ecowallet.title': '🌿 EcoWallet',
+    'ecowallet.subtitle': 'Votre portefeuille environnemental Pi + ECO',
+    'ecowallet.wallet_name': 'Portefeuille EcoChain',
+    'ecowallet.streak': 'Streak',
+    'ecowallet.streak_days': 'j',
+    'ecowallet.balance_eco': 'Solde ECO',
+    'ecowallet.balance_pi': 'Solde Pi',
+    'ecowallet.total_earned': 'Total gagné',
+    'ecowallet.next_level': 'Prochain niveau',
+    'ecowallet.tab_transactions': '📋 Transactions',
+    'ecowallet.tab_rewards': '🎁 Récompenses',
+    'ecowallet.claimed_on': '✅ Réclamé le',
+    'ecowallet.claim': 'Réclamer',
+
     // Nav EcoChain submenu
     'nav.eco.wallet': 'EcoWallet',
     'nav.eco.wallet_desc': 'Portefeuille écologique',
@@ -802,6 +817,21 @@ const messages: Record<Locale, Translations> = {
     'admin.logs_title': '📝 Admin log',
     'admin.by': 'by',
 
+    // EcoWallet page
+    'ecowallet.title': '🌿 EcoWallet',
+    'ecowallet.subtitle': 'Your environmental Pi + ECO wallet',
+    'ecowallet.wallet_name': 'EcoChain Wallet',
+    'ecowallet.streak': 'Streak',
+    'ecowallet.streak_days': 'd',
+    'ecowallet.balance_eco': 'ECO Balance',
+    'ecowallet.balance_pi': 'Pi Balance',
+    'ecowallet.total_earned': 'Total earned',
+    'ecowallet.next_level': 'Next level',
+    'ecowallet.tab_transactions': '📋 Transactions',
+    'ecowallet.tab_rewards': '🎁 Rewards',
+    'ecowallet.claimed_on': '✅ Claimed on',
+    'ecowallet.claim': 'Claim',
+
     // Nav EcoChain submenu
     'nav.eco.wallet': 'EcoWallet',
     'nav.eco.wallet_desc': 'Ecological wallet',
@@ -1324,6 +1354,21 @@ const messages: Record<Locale, Translations> = {
     'admin.grant_vip': 'Otorgar VIP',
     'admin.logs_title': '📝 Registro de administración',
     'admin.by': 'por',
+
+    // EcoWallet page
+    'ecowallet.title': '🌿 EcoWallet',
+    'ecowallet.subtitle': 'Tu billetera ambiental Pi + ECO',
+    'ecowallet.wallet_name': 'Billetera EcoChain',
+    'ecowallet.streak': 'Racha',
+    'ecowallet.streak_days': 'd',
+    'ecowallet.balance_eco': 'Saldo ECO',
+    'ecowallet.balance_pi': 'Saldo Pi',
+    'ecowallet.total_earned': 'Total ganado',
+    'ecowallet.next_level': 'Próximo nivel',
+    'ecowallet.tab_transactions': '📋 Transacciones',
+    'ecowallet.tab_rewards': '🎁 Recompensas',
+    'ecowallet.claimed_on': '✅ Reclamado el',
+    'ecowallet.claim': 'Reclamar',
 
     // Nav EcoChain submenu
     'nav.eco.wallet': 'EcoWallet',
@@ -1848,6 +1893,21 @@ const messages: Record<Locale, Translations> = {
     'admin.logs_title': '📝 Registro de administração',
     'admin.by': 'por',
 
+    // EcoWallet page
+    'ecowallet.title': '🌿 EcoWallet',
+    'ecowallet.subtitle': 'Sua carteira ambiental Pi + ECO',
+    'ecowallet.wallet_name': 'Carteira EcoChain',
+    'ecowallet.streak': 'Sequência',
+    'ecowallet.streak_days': 'd',
+    'ecowallet.balance_eco': 'Saldo ECO',
+    'ecowallet.balance_pi': 'Saldo Pi',
+    'ecowallet.total_earned': 'Total ganho',
+    'ecowallet.next_level': 'Próximo nível',
+    'ecowallet.tab_transactions': '📋 Transações',
+    'ecowallet.tab_rewards': '🎁 Recompensas',
+    'ecowallet.claimed_on': '✅ Resgatado em',
+    'ecowallet.claim': 'Resgatar',
+
     // Nav EcoChain submenu
     'nav.eco.wallet': 'EcoWallet',
     'nav.eco.wallet_desc': 'Carteira ecológica',
@@ -2370,6 +2430,21 @@ const messages: Record<Locale, Translations> = {
     'admin.grant_vip': '授予VIP',
     'admin.logs_title': '📝 管理日志',
     'admin.by': '由',
+
+    // EcoWallet page
+    'ecowallet.title': '🌿 EcoWallet',
+    'ecowallet.subtitle': '您的环保 Pi + ECO 钱包',
+    'ecowallet.wallet_name': 'EcoChain 钱包',
+    'ecowallet.streak': '连续',
+    'ecowallet.streak_days': '天',
+    'ecowallet.balance_eco': 'ECO 余额',
+    'ecowallet.balance_pi': 'Pi 余额',
+    'ecowallet.total_earned': '总收入',
+    'ecowallet.next_level': '下一等级',
+    'ecowallet.tab_transactions': '📋 交易记录',
+    'ecowallet.tab_rewards': '🎁 奖励',
+    'ecowallet.claimed_on': '✅ 已领取于',
+    'ecowallet.claim': '领取',
 
     // Nav EcoChain submenu
     'nav.eco.wallet': 'EcoWallet',
@@ -2894,6 +2969,21 @@ const messages: Record<Locale, Translations> = {
     'admin.grant_vip': 'منح VIP',
     'admin.logs_title': '📝 سجل الإدارة',
     'admin.by': 'بواسطة',
+
+    // EcoWallet page
+    'ecowallet.title': '🌿 EcoWallet',
+    'ecowallet.subtitle': 'محفظتك البيئية Pi + ECO',
+    'ecowallet.wallet_name': 'محفظة EcoChain',
+    'ecowallet.streak': 'سلسلة',
+    'ecowallet.streak_days': 'ي',
+    'ecowallet.balance_eco': 'رصيد ECO',
+    'ecowallet.balance_pi': 'رصيد Pi',
+    'ecowallet.total_earned': 'إجمالي المكتسب',
+    'ecowallet.next_level': 'المستوى التالي',
+    'ecowallet.tab_transactions': '📋 المعاملات',
+    'ecowallet.tab_rewards': '🎁 المكافآت',
+    'ecowallet.claimed_on': '✅ تم المطالبة في',
+    'ecowallet.claim': 'مطالبة',
 
     // Nav EcoChain submenu
     'nav.eco.wallet': 'EcoWallet',

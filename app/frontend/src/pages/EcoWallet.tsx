@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
+import { t, subscribeI18n } from '@/lib/i18n';
 import {
   getEcoBalance,
   getEcoTransactions,
@@ -24,26 +25,26 @@ function BalanceCard() {
       <div className="relative z-10">
         <div className="flex items-center justify-between mb-4">
           <div>
-            <p className="text-sm text-emerald-300/70">Portefeuille EcoChain</p>
+            <p className="text-sm text-emerald-300/70">{t('ecowallet.wallet_name')}</p>
             <div className="flex items-center gap-2 mt-1">
               <span className="text-lg">{level.icon}</span>
               <span className="text-sm font-medium text-emerald-300">{level.level}</span>
             </div>
           </div>
           <div className="flex items-center gap-1 bg-emerald-500/10 px-3 py-1 rounded-full">
-            <span className="text-xs text-emerald-400">🔥 Streak</span>
-            <span className="text-sm font-bold text-emerald-300">{balance.streak}j</span>
+            <span className="text-xs text-emerald-400">🔥 {t('ecowallet.streak')}</span>
+            <span className="text-sm font-bold text-emerald-300">{balance.streak}{t('ecowallet.streak_days')}</span>
           </div>
         </div>
 
         <div className="grid grid-cols-2 gap-4 mb-4">
           <div className="bg-black/20 rounded-xl p-4">
-            <p className="text-xs text-gray-400 mb-1">Solde ECO</p>
+            <p className="text-xs text-gray-400 mb-1">{t('ecowallet.balance_eco')}</p>
             <p className="text-2xl font-bold text-emerald-400">{formatEco(balance.eco)}</p>
             <p className="text-xs text-emerald-400/60 mt-1">≈ {formatEco(balance.eco * 0.02)} Pi</p>
           </div>
           <div className="bg-black/20 rounded-xl p-4">
-            <p className="text-xs text-gray-400 mb-1">Solde Pi</p>
+            <p className="text-xs text-gray-400 mb-1">{t('ecowallet.balance_pi')}</p>
             <p className="text-2xl font-bold text-amber-400">{formatEco(balance.pi)}</p>
             <p className="text-xs text-amber-400/60 mt-1">π Network</p>
           </div>
@@ -51,7 +52,7 @@ function BalanceCard() {
 
         <div className="bg-black/20 rounded-xl p-3">
           <div className="flex justify-between text-xs mb-1">
-            <span className="text-gray-400">Total gagné : {formatEco(balance.totalEarned)} ECO</span>
+            <span className="text-gray-400">{t('ecowallet.total_earned')} : {formatEco(balance.totalEarned)} ECO</span>
             <span className="text-emerald-400">{Math.min(Math.round(progress), 100)}%</span>
           </div>
           <div className="h-2 bg-gray-700 rounded-full overflow-hidden">
@@ -60,7 +61,7 @@ function BalanceCard() {
               style={{ width: `${Math.min(progress, 100)}%` }}
             />
           </div>
-          <p className="text-xs text-gray-500 mt-1">Prochain niveau : {formatEco(level.nextThreshold)} ECO</p>
+          <p className="text-xs text-gray-500 mt-1">{t('ecowallet.next_level')} : {formatEco(level.nextThreshold)} ECO</p>
         </div>
       </div>
     </div>
@@ -78,7 +79,7 @@ function TransactionItem({ tx }: { tx: EcoTransaction }) {
         <span className="text-lg">{icon}</span>
         <div>
           <p className="text-sm text-gray-200">{tx.description}</p>
-          <p className="text-xs text-gray-500">{new Date(tx.timestamp).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}</p>
+          <p className="text-xs text-gray-500">{new Date(tx.timestamp).toLocaleDateString(undefined, { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}</p>
         </div>
       </div>
       <span className={`text-sm font-semibold ${color}`}>
@@ -100,13 +101,13 @@ function RewardCard({ reward, onClaim }: { reward: EcoReward; onClaim: (id: stri
       <h4 className="text-sm font-semibold text-gray-200 mb-1">{reward.title}</h4>
       <p className="text-xs text-gray-400 mb-3">{reward.description}</p>
       {reward.claimed ? (
-        <span className="text-xs text-emerald-400/70">✅ Réclamé le {reward.claimedAt}</span>
+        <span className="text-xs text-emerald-400/70">{t('ecowallet.claimed_on')} {reward.claimedAt}</span>
       ) : (
         <button
           onClick={() => onClaim(reward.id)}
           className="w-full py-2 text-xs font-medium bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg transition-colors"
         >
-          Réclamer
+          {t('ecowallet.claim')}
         </button>
       )}
     </div>
@@ -117,6 +118,11 @@ export default function EcoWallet() {
   const [tab, setTab] = useState<'transactions' | 'rewards'>('transactions');
   const transactions = getEcoTransactions();
   const [rewards, setRewards] = useState<EcoReward[]>(getEcoRewards());
+  const [, setLang] = useState(0);
+
+  useEffect(() => {
+    return subscribeI18n(() => setLang((n) => n + 1));
+  }, []);
 
   const handleClaim = (id: string) => {
     setRewards((prev) =>
@@ -130,9 +136,9 @@ export default function EcoWallet() {
       <main className="max-w-4xl mx-auto px-4 py-8">
         <div className="mb-6">
           <h1 className="text-2xl font-bold text-white flex items-center gap-2">
-            🌿 EcoWallet
+            {t('ecowallet.title')}
           </h1>
-          <p className="text-sm text-gray-400 mt-1">Votre portefeuille environnemental Pi + ECO</p>
+          <p className="text-sm text-gray-400 mt-1">{t('ecowallet.subtitle')}</p>
         </div>
 
         <BalanceCard />
@@ -143,13 +149,13 @@ export default function EcoWallet() {
               onClick={() => setTab('transactions')}
               className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${tab === 'transactions' ? 'bg-emerald-600 text-white' : 'bg-slate-800 text-gray-400 hover:text-white'}`}
             >
-              📋 Transactions
+              {t('ecowallet.tab_transactions')}
             </button>
             <button
               onClick={() => setTab('rewards')}
               className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${tab === 'rewards' ? 'bg-emerald-600 text-white' : 'bg-slate-800 text-gray-400 hover:text-white'}`}
             >
-              🎁 Récompenses
+              {t('ecowallet.tab_rewards')}
             </button>
           </div>
 

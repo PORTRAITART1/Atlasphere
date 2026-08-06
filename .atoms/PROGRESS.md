@@ -15,8 +15,10 @@ Build PiDAO - A decentralized governance platform for Pi Network Pioneers where 
 - [x] CreateProposal.tsx — Migration complète en t() (formulaire, labels, placeholders, erreurs, succès)
 - [x] Delegation.tsx — Migration complète en t() (stats, délégations, historique, modal, how-it-works)
 - [x] Admin.tsx — Migration complète en t() (tabs, stats, modération, utilisateurs, logs)
-- [x] Clés i18n ajoutées pour FR/EN/ES/PT/ZH/AR (detail.*, create.*, delegation.*, admin.*)
+- [x] EcoWallet.tsx — Migration complète en t() (balance card, transactions, rewards, tabs, dates localisées)
+- [x] Clés i18n ajoutées pour FR/EN/ES/PT/ZH/AR (detail.*, create.*, delegation.*, admin.*, ecowallet.*)
 - [x] Correction conflit nommage t/team dans ProposalDetail (team.map((t,...) → team.map((member,...))
+- [x] validation-key.txt créé dans public/ (accessible via /validation-key.txt)
 - [x] Lint & build : ✅ OK
 
 ## Task Breakdown (UI/Presentation Fix)
