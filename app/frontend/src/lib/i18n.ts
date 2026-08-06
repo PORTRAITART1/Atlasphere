@@ -3313,7 +3313,7 @@ export function setLocale(locale: Locale): void {
 }
 
 export function t(key: string): string {
-  return messages[currentLocale]?.[key] || messages['fr']?.[key] || key;
+  return messages[currentLocale]?.[key] || messages['en']?.[key] || key;
 }
 
 // Detect browser language on init
@@ -3324,7 +3324,7 @@ function detectLocale(): Locale {
   const browserLang = navigator.language.split('-')[0] as Locale;
   if (locales.includes(browserLang)) return browserLang;
 
-  return 'fr';
+  return 'en';
 }
 
 // React hook to re-render on locale change
