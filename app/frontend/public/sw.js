@@ -32,6 +32,11 @@ self.addEventListener('fetch', (event) => {
   
   const url = new URL(event.request.url);
   
+  // Skip SPA fallback for validation-key.txt (Pi Network domain verification)
+  if (url.pathname === '/validation-key.txt') {
+    return; // Let the browser handle this request normally (serve static file)
+  }
+  
   // For navigation requests (HTML pages), always try network first then fallback to index.html
   if (event.request.mode === 'navigate') {
     event.respondWith(
