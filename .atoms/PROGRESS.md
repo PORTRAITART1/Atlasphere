@@ -20,7 +20,11 @@ Build PiDAO - A decentralized governance platform for Pi Network Pioneers where 
 - [x] Correction conflit nommage t/team dans ProposalDetail (team.map((t,...) → team.map((member,...))
 - [x] validation-key.txt créé dans public/ (accessible via /validation-key.txt)
 - [x] _redirects corrigé : ajout exception pour /validation-key.txt avant le catch-all SPA (/* → /index.html)
-- [x] Lint & build : ✅ OK
+- [x] Service Worker (sw.js) : exclusion de /validation-key.txt
+- [x] Backend FastAPI : route /validation-key.txt en PlainTextResponse (text/plain)
+- [x] Backend router pi_validation.py : /api/v1/pi/validation-key[.txt]
+- [x] Frontend fallback : composant ValidationKey.tsx + route React /validation-key.txt
+- [x] Build final vérifié : validation-key.txt présent dans dist/, lint OK, py_compile OK
 
 ## Task Breakdown (UI/Presentation Fix)
 - [x] Navbar: regrouper les 11 liens en menu principal + sous-menu déroulant EcoChain

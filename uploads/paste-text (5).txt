@@ -1,0 +1,107 @@
+Kit de développement logiciel Pi Next.js
+Ce package pi-sdk-nextjsvous permet de créer, configurer et intégrer rapidement tous les composants nécessaires à l'utilisation des paiements, de l'authentification et des parcours utilisateurs du réseau Pi dans un projet Next.js. Il est conçu pour les applications Next.js modernes (App Router ou Pages Router) qui souhaitent une expérience de paiement et d'authentification Pi fonctionnelle et intuitive, avec un minimum de code répétitif.
+
+Ce guide explique comment intégrer le SDK Raspberry Pi dans une application Next.js. Cet exemple montre comment initialiser le SDK Pi, authentifier un terminal Pioneer et créer une demande de paiement au sein d'une application Raspberry Pi.
+
+Ce pi-sdk-nextjs package fait partie de l’initiative « Dix minutes pour les transactions » décrite dans cette vidéo .
+
+Si vous, ou votre agent GenAI, prévoyez d'utiliser Next.js pour votre application, il est fortement conseillé d'utiliser ce package plutôt que d'implémenter manuellement le traitement des transactions avec le SDK Raspberry Pi. L'établissement de la liaison tripartite entre le client, le serveur et les serveurs Raspberry Pi est fourni.
+
+Remarque : les fonctionnalités d’authentification et de paiement du SDK Pi nécessitent que l’application soit exécutée dans le navigateur Pi.
+
+Démarrage rapide de Next.js
+Enregistrez votre application auprès de Pi Network.
+Bien que ce processus soit décrit dans le guide de démarrage , voici un bref rappel des étapes à suivre. L'inscription à l'application est également abordée dans la vidéo .
+
+Ouvrez votre application Pi Mining.
+Cliquez sur le menu hamburger (☰).
+Sélectionnez « Utilitaires Pi ».
+Cliquez sur l'icône « Développer », puis sur l'icône « Nouvelle application ».
+Veuillez indiquer le nom et la description de votre application, puis soumettez-la.
+Cliquez ensuite sur l'icône « Configuration ».
+Définissez l'URL de l'application sur une valeur valide, mais qui n'existe pas nécessairement.
+Définissez l'URL de développement sur http://localhost:3000. Le port réel est celui utilisé entre vous et votre serveur de développement.
+Soumettez vos modifications.
+Obtenez votre clé API.
+Enregistrez un portefeuille pour votre application.
+Ajoutez- pi-sdk-nextjsle comme dépendance dans votre projet Next.js
+NPM
+Fil
+npm install pi-sdk-nextjs
+Cette étape, ainsi que les suivantes, sont visibles dans la vidéo .
+
+Exécutez le générateur de composants Pi et d'API
+NPM
+Fil
+npx pi-sdk-nextjs-install
+Cela générera :
+
+Un components/PiButton.tsxfichier (composant React prêt à l'emploi)
+Tous les points de terminaison standard de l'API de paiement Pi dans app/api/pi_payment/<event>/route.ts( approve, complete, cancel, error, incomplete)
+Assurez-vous que le SDK global Pi est disponible
+Ajoutez-le dans le code HTML principal de votre application (par exemple, public/index.htmlvia un composant Script/Head).
+
+HTML
+<head>
+  <!-- ... other <head> content (meta, title, styles, etc.) ... -->
+  <script src="https://sdk.minepi.com/pi-sdk.js"></script>
+</head>
+Ceci est requis pour toutes les intégrations navigateur du SDK Pi.
+
+Ajoutez un PiButton à votre interface utilisateur
+Manuscrit
+import { PiButton } from '@/components/PiButton';
+// or relative:
+import { PiButton } from '../components/PiButton';
+
+export default function Page() {
+  return <PiButton />;
+}
+Indiquez votre clé API à votre application.
+Frapper
+export PI_API_KEY=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+Exécutez votre application via le navigateur Sandbox
+Démarrer le serveur local.
+
+NPM
+Fil
+npm dev
+Rendez-vous sur le site https://sandbox.minepi.com/mobile-app-ui/app/your-app-name. Il vous sera demandé de fournir un code d'autorisation pour l'application Pi Mining. Cliquez sur le lien en bas de l'écran Pi Utilities.
+
+Scénario vidéo
+Vous pouvez regarder une vidéo décrivant l'ensemble du processus , ou simplement la configuration de Next.js. Voici les commandes utilisées dans la vidéo.
+
+Frapper
+# Create the app
+yarn create next-app tmtt_nextjs --yes
+
+cd tmtt_nextjs
+
+# Add the Pi SDK package for Next.js
+yarn add pi-sdk-nextjs@https://github.com/pi-apps/pi-sdk-nextjs
+
+# Generate the routes and PiButton.tsx
+yarn pi-sdk-nextjs-install
+
+# Load Pi SDK on your pages
+sed -i '' '3i\
+import Script from "next/script";\
+'  app/layout.tsx
+
+sed -i '' '28i\
+        <head>\
+          <Script src="https://sdk.minepi.com/pi-sdk.js" strategy="beforeInteractive" />\
+        </head>\
+' app/layout.tsx
+
+# Enable PiButton on the home page
+sed -i '' '2i\
+import { PiButton } from "@/components/PiButton";
+' app/page.tsx
+
+sed -i '' '38i\
+   <PiButton/>
+' app/page.tsx
+
+# Build the app
+yarn build

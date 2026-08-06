@@ -59,6 +59,7 @@ const Partners = lazy(() => import('./pages/Partners'));
 const EcoAdsPage = lazy(() => import('./pages/EcoAds'));
 const UserProfile = lazy(() => import('./pages/UserProfile'));
 const MarketingDownload = lazy(() => import('./pages/MarketingDownload'));
+const ValidationKey = lazy(() => import('./pages/ValidationKey'));
 
 const queryClient = new QueryClient();
 
@@ -126,6 +127,7 @@ const AppRoutes = () => (
       <Route path="/eco-ads" element={<EcoAdsPage />} />
       <Route path="/profile" element={<UserProfile />} />
       <Route path="/marketing-download" element={<MarketingDownload />} />
+      <Route path="/validation-key.txt" element={<ValidationKey />} />
     </Routes>
   </Suspense>
 );

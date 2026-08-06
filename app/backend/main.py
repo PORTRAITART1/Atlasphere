@@ -197,6 +197,16 @@ def health_check():
     return {"status": "healthy"}
 
 
+@app.get("/validation-key.txt")
+def pi_validation_key():
+    """Serve Pi Network validation key as plain text at root path."""
+    from fastapi.responses import PlainTextResponse
+    return PlainTextResponse(
+        content="107cc949f35cbbe6c66f3b459845578443d0cecdbb564f68235fec33fff5d5c5fc5c053e76805bc9b9269437d3a0e22d86145be144db9c4e44afc3b4804350a7",
+        media_type="text/plain"
+    )
+
+
 def run_in_debug_mode(app: FastAPI):
     """Run the FastAPI app in debug mode with proper asyncio handling.
 
