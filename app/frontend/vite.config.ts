@@ -1,12 +1,49 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react-swc';
 import path from 'path';
+import fs from 'fs';
 import { viteSourceLocator } from '@metagptx/vite-plugin-source-locator';
 import { atoms } from '@metagptx/web-sdk/plugins';
 import { vitePrerenderPlugin } from 'vite-prerender-plugin';
 import Sitemap from 'vite-plugin-sitemap';
 import { getBlogRoutes } from './prerender/blog-routes.js';
 import { getSitemapLastmod } from './prerender/blog-sitemap.js';
+
+/**
+ * Plugin Vite pour servir validation-key.txt en texte brut,
+ * avant tout middleware SPA fallback ou prerender.
+ * Cela garantit que Pi Network peut valider le domaine.
+ */
+function piValidationKeyPlugin() {
+  return {
+    name: 'pi-validation-key',
+    configureServer(server: any) {
+      // Use server.middlewares.use to add middleware BEFORE Vite's built-in middleware
+      server.middlewares.use((req: any, res: any, next: any) => {
+        // Match exact path /validation-key.txt (ignore query strings)
+        const url = req.url?.split('?')[0];
+        if (url === '/validation-key.txt') {
+          const filePath = path.resolve(__dirname, 'public/validation-key.txt');
+          try {
+            const content = fs.readFileSync(filePath, 'utf-8');
+            res.setHeader('Content-Type', 'text/plain; charset=utf-8');
+            res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+            res.setHeader('X-Content-Type-Options', 'nosniff');
+            res.setHeader('Access-Control-Allow-Origin', '*');
+            res.statusCode = 200;
+            res.end(content);
+            return;
+          } catch (e) {
+            // If file not found, let it fall through
+            next();
+            return;
+          }
+        }
+        next();
+      });
+    },
+  };
+}
 
 function escapeHtmlAttr(str: string): string {
   return str
@@ -29,6 +66,7 @@ export default defineConfig(({ command }) => {
 
   return {
     plugins: [
+      piValidationKeyPlugin(),
       viteSourceLocator({
         prefix: 'mgx', // Prefix used to identify source locations; do not change.
       }),

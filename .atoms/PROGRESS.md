@@ -25,6 +25,8 @@ Build PiDAO - A decentralized governance platform for Pi Network Pioneers where 
 - [x] Backend router pi_validation.py : /api/v1/pi/validation-key[.txt]
 - [x] Frontend fallback : composant ValidationKey.tsx + route React /validation-key.txt
 - [x] Build final vérifié : validation-key.txt présent dans dist/, lint OK, py_compile OK
+- [x] Plugin Vite piValidationKeyPlugin() ajouté dans vite.config.ts — intercepte /validation-key.txt AVANT le SPA fallback, sert en text/plain avec headers nosniff/no-cache/CORS
+- [x] Vérification curl locale : HTTP 200, Content-Type text/plain, contenu exact 128 chars hex + newline
 
 ## Task Breakdown (UI/Presentation Fix)
 - [x] Navbar: regrouper les 11 liens en menu principal + sous-menu déroulant EcoChain
