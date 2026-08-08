@@ -5,7 +5,7 @@
         "tabs": {
             "00": {
                 "tab_id": "00",
-                "cwd": "/workspace/app/frontend",
+                "cwd": "/workspace/app/backend",
                 "observer": {
                     "block": "Terminal",
                     "uuid": "0c1256b3-7a96-413c-86d1-f071631f4091",
@@ -25,6 +25,6 @@
             "python -m http.server": "Use python -u -m http.server port_number instead."
         },
         "timeout": 300.0,
-        "working_dir": "/workspace/app/frontend"
+        "working_dir": "/workspace/app/backend"
     }
 }

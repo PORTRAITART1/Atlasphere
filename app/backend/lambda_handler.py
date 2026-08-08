@@ -242,17 +242,17 @@ def lambda_handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 "headers": {"Content-Type": "application/json", "Access-Control-Allow-Origin": "*"},
                 "body": json.dumps({"error": "Not found"}),
             }
-        elif path.endswith(
-            (".js", ".css", ".html", ".png", ".jpg", ".jpeg", ".gif", ".ico", ".svg", ".woff", ".woff2", ".ttf", ".eot")
-        ):
-            # Serve static files (includes .html for Google Search Console verification, etc.)
-            return serve_static_file(path)
-        
         elif path == "/sitemap.xml":
             return serve_sitemap(request_domain)
-        
+
         elif path == "/robots.txt":
             return serve_robots(request_domain)
+
+        elif path.endswith(
+            (".js", ".css", ".html", ".png", ".jpg", ".jpeg", ".gif", ".ico", ".svg", ".woff", ".woff2", ".ttf", ".eot", ".txt")
+        ):
+            # Serve static files (includes .html for Google Search Console verification, .txt for domain validation, etc.)
+            return serve_static_file(path)
         
         # Dynamically registered routes: SEO HTML pages (only if exact path is registered)
         # Normalize path by removing trailing slash for matching
@@ -377,6 +377,11 @@ def serve_static_file(path: str) -> Dict[str, Any]:
         ".gif": "image/gif",
         ".ico": "image/x-icon",
         ".svg": "image/svg+xml",
+        ".txt": "text/plain",
+        ".woff": "font/woff",
+        ".woff2": "font/woff2",
+        ".ttf": "font/ttf",
+        ".eot": "application/vnd.ms-fontobject",
     }
 
     # Get file extension
