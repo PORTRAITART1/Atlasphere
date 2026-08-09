@@ -470,6 +470,30 @@ const messages: Record<Locale, Translations> = {
 
     // Comments
     'comments.no_comments': 'Aucun commentaire pour le moment. Soyez le premier !',
+    'comments.login_to_comment': 'Connectez-vous pour participer à la discussion',
+
+    // Profile
+    'profile.reputation': 'Réputation',
+    'profile.proposals': 'Propositions',
+    'profile.votes': 'Votes',
+    'profile.contributions': 'Contributions',
+    'profile.referrals': 'Filleuls',
+    'profile.carbon_offset': 'CO2 compensé',
+    'profile.data_shared': 'Données partagées',
+    'profile.member_since': 'Membre depuis',
+    'profile.role': 'Rôle',
+    'profile.view_guild': 'Voir la guilde',
+    'profile.statistics': 'Statistiques',
+    'profile.quick_access': 'Accès rapide',
+    'profile.rewards': 'Récompenses',
+    'profile.referral': 'Parrainage',
+    'profile.invite_friends': 'Inviter des amis',
+    'profile.wallet': 'Portefeuille',
+    'profile.storage': 'Stockage IPFS',
+    'profile.my_data': 'Mes données',
+    'profile.my_board': 'Mon Board',
+    'profile.logout': 'Se déconnecter',
+    'profile.change_avatar': 'Changer la photo',
 
     // Auth
     'auth.connect_pi': 'Connecter avec Pi Network',
@@ -1014,6 +1038,30 @@ const messages: Record<Locale, Translations> = {
 
     // Comments
     'comments.no_comments': 'No comments yet. Be the first!',
+    'comments.login_to_comment': 'Log in to join the discussion',
+
+    // Profile
+    'profile.reputation': 'Reputation',
+    'profile.proposals': 'Proposals',
+    'profile.votes': 'Votes',
+    'profile.contributions': 'Contributions',
+    'profile.referrals': 'Referrals',
+    'profile.carbon_offset': 'CO2 offset',
+    'profile.data_shared': 'Data shared',
+    'profile.member_since': 'Member since',
+    'profile.role': 'Role',
+    'profile.view_guild': 'View guild',
+    'profile.statistics': 'Statistics',
+    'profile.quick_access': 'Quick access',
+    'profile.rewards': 'Rewards',
+    'profile.referral': 'Referral',
+    'profile.invite_friends': 'Invite friends',
+    'profile.wallet': 'Wallet',
+    'profile.storage': 'IPFS Storage',
+    'profile.my_data': 'My data',
+    'profile.my_board': 'My Board',
+    'profile.logout': 'Log out',
+    'profile.change_avatar': 'Change photo',
 
     'auth.connect_pi': 'Connect with Pi Network',
     'auth.connecting': 'Connecting...',
@@ -1555,6 +1603,30 @@ const messages: Record<Locale, Translations> = {
 
     // Comments
     'comments.no_comments': 'No hay comentarios aún. ¡Sé el primero!',
+    'comments.login_to_comment': 'Inicia sesión para participar en la discusión',
+
+    // Profile
+    'profile.reputation': 'Reputación',
+    'profile.proposals': 'Propuestas',
+    'profile.votes': 'Votos',
+    'profile.contributions': 'Contribuciones',
+    'profile.referrals': 'Referidos',
+    'profile.carbon_offset': 'CO2 compensado',
+    'profile.data_shared': 'Datos compartidos',
+    'profile.member_since': 'Miembro desde',
+    'profile.role': 'Rol',
+    'profile.view_guild': 'Ver gremio',
+    'profile.statistics': 'Estadísticas',
+    'profile.quick_access': 'Acceso rápido',
+    'profile.rewards': 'Recompensas',
+    'profile.referral': 'Referidos',
+    'profile.invite_friends': 'Invitar amigos',
+    'profile.wallet': 'Billetera',
+    'profile.storage': 'Almacenamiento IPFS',
+    'profile.my_data': 'Mis datos',
+    'profile.my_board': 'Mi Panel',
+    'profile.logout': 'Cerrar sesión',
+    'profile.change_avatar': 'Cambiar foto',
 
     'auth.connect_pi': 'Conectar con Pi Network',
     'auth.connecting': 'Conectando...',
@@ -2096,6 +2168,30 @@ const messages: Record<Locale, Translations> = {
 
     // Comments
     'comments.no_comments': 'Nenhum comentário ainda. Seja o primeiro!',
+    'comments.login_to_comment': 'Faça login para participar da discussão',
+
+    // Profile
+    'profile.reputation': 'Reputação',
+    'profile.proposals': 'Propostas',
+    'profile.votes': 'Votos',
+    'profile.contributions': 'Contribuições',
+    'profile.referrals': 'Indicações',
+    'profile.carbon_offset': 'CO2 compensado',
+    'profile.data_shared': 'Dados compartilhados',
+    'profile.member_since': 'Membro desde',
+    'profile.role': 'Função',
+    'profile.view_guild': 'Ver guilda',
+    'profile.statistics': 'Estatísticas',
+    'profile.quick_access': 'Acesso rápido',
+    'profile.rewards': 'Recompensas',
+    'profile.referral': 'Indicação',
+    'profile.invite_friends': 'Convidar amigos',
+    'profile.wallet': 'Carteira',
+    'profile.storage': 'Armazenamento IPFS',
+    'profile.my_data': 'Meus dados',
+    'profile.my_board': 'Meu Painel',
+    'profile.logout': 'Sair',
+    'profile.change_avatar': 'Alterar foto',
 
     'auth.connect_pi': 'Conectar com Pi Network',
     'auth.connecting': 'Conectando...',
@@ -2637,6 +2733,30 @@ const messages: Record<Locale, Translations> = {
 
     // Comments
     'comments.no_comments': '暂无评论。成为第一个评论者！',
+    'comments.login_to_comment': '登录以参与讨论',
+
+    // Profile
+    'profile.reputation': '声望',
+    'profile.proposals': '提案',
+    'profile.votes': '投票',
+    'profile.contributions': '贡献',
+    'profile.referrals': '推荐',
+    'profile.carbon_offset': 'CO2补偿',
+    'profile.data_shared': '共享数据',
+    'profile.member_since': '加入时间',
+    'profile.role': '角色',
+    'profile.view_guild': '查看公会',
+    'profile.statistics': '统计数据',
+    'profile.quick_access': '快速访问',
+    'profile.rewards': '奖励',
+    'profile.referral': '推荐',
+    'profile.invite_friends': '邀请朋友',
+    'profile.wallet': '钱包',
+    'profile.storage': 'IPFS存储',
+    'profile.my_data': '我的数据',
+    'profile.my_board': '我的面板',
+    'profile.logout': '退出登录',
+    'profile.change_avatar': '更换头像',
 
     'auth.connect_pi': '使用 Pi Network 连接',
     'auth.connecting': '连接中...',
@@ -3189,6 +3309,30 @@ const messages: Record<Locale, Translations> = {
 
     // Comments
     'comments.no_comments': 'لا توجد تعليقات بعد. كن أول من يعلق!',
+    'comments.login_to_comment': 'سجل الدخول للمشاركة في النقاش',
+
+    // Profile
+    'profile.reputation': 'السمعة',
+    'profile.proposals': 'المقترحات',
+    'profile.votes': 'الأصوات',
+    'profile.contributions': 'المساهمات',
+    'profile.referrals': 'الإحالات',
+    'profile.carbon_offset': 'تعويض CO2',
+    'profile.data_shared': 'البيانات المشتركة',
+    'profile.member_since': 'عضو منذ',
+    'profile.role': 'الدور',
+    'profile.view_guild': 'عرض النقابة',
+    'profile.statistics': 'الإحصائيات',
+    'profile.quick_access': 'وصول سريع',
+    'profile.rewards': 'المكافآت',
+    'profile.referral': 'الإحالة',
+    'profile.invite_friends': 'دعوة الأصدقاء',
+    'profile.wallet': 'المحفظة',
+    'profile.storage': 'تخزين IPFS',
+    'profile.my_data': 'بياناتي',
+    'profile.my_board': 'لوحتي',
+    'profile.logout': 'تسجيل الخروج',
+    'profile.change_avatar': 'تغيير الصورة',
 
     'auth.connect_pi': 'الاتصال بـ Pi Network',
     'auth.connecting': 'جاري الاتصال...',
