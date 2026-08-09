@@ -415,19 +415,6 @@ const messages: Record<Locale, Translations> = {
     'fund.contributors': 'Contributeurs',
     'fund.days_left': 'jours restants',
 
-    // Dashboard
-    'dashboard.title': 'Mon Tableau de Bord',
-    'dashboard.reputation': 'Réputation',
-    'dashboard.level': 'Niveau',
-    'dashboard.voting_power': 'Pouvoir de Vote',
-    'dashboard.contributions': 'Contributions',
-    'dashboard.votes_cast': 'Votes Exprimés',
-    'dashboard.streak': 'Jours Consécutifs',
-    'dashboard.badges': 'Badges',
-    'dashboard.overview': 'Aperçu',
-    'dashboard.my_votes': 'Mes Votes',
-    'dashboard.my_contributions': 'Mes Contributions',
-
     // Quests
     'quests.title': 'Quêtes & Récompenses',
     'quests.daily': 'Quotidienne',
@@ -988,18 +975,6 @@ const messages: Record<Locale, Translations> = {
     'fund.contributors': 'Contributors',
     'fund.days_left': 'days left',
 
-    'dashboard.title': 'My Dashboard',
-    'dashboard.reputation': 'Reputation',
-    'dashboard.level': 'Level',
-    'dashboard.voting_power': 'Voting Power',
-    'dashboard.contributions': 'Contributions',
-    'dashboard.votes_cast': 'Votes Cast',
-    'dashboard.streak': 'Streak Days',
-    'dashboard.badges': 'Badges',
-    'dashboard.overview': 'Overview',
-    'dashboard.my_votes': 'My Votes',
-    'dashboard.my_contributions': 'My Contributions',
-
     'quests.title': 'Quests & Rewards',
     'quests.daily': 'Daily',
     'quests.weekly': 'Weekly',
@@ -1552,18 +1527,6 @@ const messages: Record<Locale, Translations> = {
     'fund.progress': 'Progreso',
     'fund.contributors': 'Contribuyentes',
     'fund.days_left': 'días restantes',
-
-    'dashboard.title': 'Mi Panel',
-    'dashboard.reputation': 'Reputación',
-    'dashboard.level': 'Nivel',
-    'dashboard.voting_power': 'Poder de Voto',
-    'dashboard.contributions': 'Contribuciones',
-    'dashboard.votes_cast': 'Votos Emitidos',
-    'dashboard.streak': 'Días Consecutivos',
-    'dashboard.badges': 'Insignias',
-    'dashboard.overview': 'Resumen',
-    'dashboard.my_votes': 'Mis Votos',
-    'dashboard.my_contributions': 'Mis Contribuciones',
 
     'quests.title': 'Misiones y Recompensas',
     'quests.daily': 'Diaria',
@@ -2118,18 +2081,6 @@ const messages: Record<Locale, Translations> = {
     'fund.contributors': 'Contribuidores',
     'fund.days_left': 'dias restantes',
 
-    'dashboard.title': 'Meu Painel',
-    'dashboard.reputation': 'Reputação',
-    'dashboard.level': 'Nível',
-    'dashboard.voting_power': 'Poder de Voto',
-    'dashboard.contributions': 'Contribuições',
-    'dashboard.votes_cast': 'Votos Emitidos',
-    'dashboard.streak': 'Dias Consecutivos',
-    'dashboard.badges': 'Distintivos',
-    'dashboard.overview': 'Visão Geral',
-    'dashboard.my_votes': 'Meus Votos',
-    'dashboard.my_contributions': 'Minhas Contribuições',
-
     'quests.title': 'Missões e Recompensas',
     'quests.daily': 'Diária',
     'quests.weekly': 'Semanal',
@@ -2682,18 +2633,6 @@ const messages: Record<Locale, Translations> = {
     'fund.progress': '进度',
     'fund.contributors': '贡献者',
     'fund.days_left': '天剩余',
-
-    'dashboard.title': '我的仪表盘',
-    'dashboard.reputation': '声誉',
-    'dashboard.level': '等级',
-    'dashboard.voting_power': '投票权',
-    'dashboard.contributions': '贡献',
-    'dashboard.votes_cast': '已投票数',
-    'dashboard.streak': '连续天数',
-    'dashboard.badges': '徽章',
-    'dashboard.overview': '概览',
-    'dashboard.my_votes': '我的投票',
-    'dashboard.my_contributions': '我的贡献',
 
     'quests.title': '任务与奖励',
     'quests.daily': '每日',
@@ -3254,19 +3193,6 @@ const messages: Record<Locale, Translations> = {
     'fund.contributors': 'المساهمون',
     'fund.days_left': 'أيام متبقية',
 
-    // Dashboard
-    'dashboard.title': 'لوحة التحكم',
-    'dashboard.reputation': 'السمعة',
-    'dashboard.level': 'المستوى',
-    'dashboard.voting_power': 'قوة التصويت',
-    'dashboard.contributions': 'المساهمات',
-    'dashboard.votes_cast': 'الأصوات المسجلة',
-    'dashboard.streak': 'سلسلة النشاط',
-    'dashboard.badges': 'الشارات',
-    'dashboard.overview': 'نظرة عامة',
-    'dashboard.my_votes': 'أصواتي',
-    'dashboard.my_contributions': 'مساهماتي',
-
     // Quests
     'quests.title': 'المهام المجتمعية',
     'quests.daily': 'يومية',
@@ -3483,10 +3409,7 @@ function detectLocale(): Locale {
   const saved = localStorage.getItem('atlasphere_locale') as Locale | null;
   if (saved && locales.includes(saved)) return saved;
 
-  const browserLang = navigator.language.split('-')[0] as Locale;
-  if (locales.includes(browserLang)) return browserLang;
-
-  // Default language is English
+  // Default language is always English unless user explicitly changes it
   return 'en';
 }
 
