@@ -468,6 +468,9 @@ const messages: Record<Locale, Translations> = {
     'common.all': 'Tous',
     'common.back': 'Retour',
 
+    // Comments
+    'comments.no_comments': 'Aucun commentaire pour le moment. Soyez le premier !',
+
     // Auth
     'auth.connect_pi': 'Connecter avec Pi Network',
     'auth.connecting': 'Connexion...',
@@ -1009,6 +1012,9 @@ const messages: Record<Locale, Translations> = {
     'common.all': 'All',
     'common.back': 'Back',
 
+    // Comments
+    'comments.no_comments': 'No comments yet. Be the first!',
+
     'auth.connect_pi': 'Connect with Pi Network',
     'auth.connecting': 'Connecting...',
     'auth.login_required': 'Login Required',
@@ -1546,6 +1552,9 @@ const messages: Record<Locale, Translations> = {
     'common.sort': 'Ordenar',
     'common.all': 'Todos',
     'common.back': 'Volver',
+
+    // Comments
+    'comments.no_comments': 'No hay comentarios aún. ¡Sé el primero!',
 
     'auth.connect_pi': 'Conectar con Pi Network',
     'auth.connecting': 'Conectando...',
@@ -2085,6 +2094,9 @@ const messages: Record<Locale, Translations> = {
     'common.all': 'Todos',
     'common.back': 'Voltar',
 
+    // Comments
+    'comments.no_comments': 'Nenhum comentário ainda. Seja o primeiro!',
+
     'auth.connect_pi': 'Conectar com Pi Network',
     'auth.connecting': 'Conectando...',
     'auth.login_required': 'Login necessário',
@@ -2622,6 +2634,9 @@ const messages: Record<Locale, Translations> = {
     'common.sort': '排序',
     'common.all': '全部',
     'common.back': '返回',
+
+    // Comments
+    'comments.no_comments': '暂无评论。成为第一个评论者！',
 
     'auth.connect_pi': '使用 Pi Network 连接',
     'auth.connecting': '连接中...',
@@ -3172,6 +3187,9 @@ const messages: Record<Locale, Translations> = {
     'common.all': 'الكل',
     'common.back': 'رجوع',
 
+    // Comments
+    'comments.no_comments': 'لا توجد تعليقات بعد. كن أول من يعلق!',
+
     'auth.connect_pi': 'الاتصال بـ Pi Network',
     'auth.connecting': 'جاري الاتصال...',
     'auth.login_required': 'تسجيل الدخول مطلوب',
@@ -3282,7 +3300,7 @@ const messages: Record<Locale, Translations> = {
 };
 
 // State management
-let currentLocale: Locale = 'fr';
+let currentLocale: Locale = 'en';
 const i18nListeners: Set<() => void> = new Set();
 
 function notifyI18nListeners() {
@@ -3324,6 +3342,7 @@ function detectLocale(): Locale {
   const browserLang = navigator.language.split('-')[0] as Locale;
   if (locales.includes(browserLang)) return browserLang;
 
+  // Default language is English
   return 'en';
 }
 

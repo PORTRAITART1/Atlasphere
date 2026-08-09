@@ -394,12 +394,41 @@ export async function authenticate(): Promise<PiUser> {
     }
   }
 
-  // Sandbox mode - instant authentication (no network calls)
+  // Sandbox mode - try to get real user info from Atoms Cloud backend first
   {
+    let realUsername = '';
+    try {
+      const client = getClient();
+      const meResponse = await client.auth.me();
+      if (meResponse && typeof meResponse === 'object') {
+        const me = meResponse as { username?: string; name?: string; email?: string };
+        realUsername = me.username || me.name || '';
+      }
+    } catch {
+      // Atoms Cloud auth not available - use saved or generate
+    }
+
+    // If no real username from backend, try to restore from localStorage
+    if (!realUsername) {
+      try {
+        const saved = localStorage.getItem('atlasphere_user');
+        if (saved) {
+          const savedUser = JSON.parse(saved);
+          if (savedUser.username && savedUser.username !== 'pioneer_dao') {
+            realUsername = savedUser.username;
+          }
+        }
+      } catch {
+        // ignore
+      }
+    }
+
+    const username = realUsername || 'pioneer_dao';
+
     currentUser = {
       uid: 'pioneer_' + Math.random().toString(36).slice(2, 10),
-      username: 'pioneer_dao',
-      displayName: 'Pioneer DAO',
+      username,
+      displayName: username,
       avatar: '🧑‍💻',
       reputation: 850,
       votingPower: 42,
@@ -413,7 +442,7 @@ export async function authenticate(): Promise<PiUser> {
       piLocked: 500,
       streakDays: 14,
       kycVerified: true,
-      language: 'fr'
+      language: 'en'
     };
 
     localStorage.setItem('atlasphere_user', JSON.stringify(currentUser));

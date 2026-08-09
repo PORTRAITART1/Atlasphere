@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { createClient } from '@metagptx/web-sdk';
-import { authenticate, getCurrentUser } from '@/lib/pi-sdk';
+import { authenticate, getCurrentUser, setCurrentUser, type PiUser } from '@/lib/pi-sdk';
+import { t } from '@/lib/i18n';
 
 export default function AuthCallback() {
-  const [status, setStatus] = useState('Connexion en cours...');
+  const [status, setStatus] = useState(t('auth.connecting'));
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -20,8 +21,14 @@ export default function AuthCallback() {
         setTimeout(() => reject(new Error('Login timeout')), 3000)
       );
 
+      let atomsUser: { username?: string; name?: string; email?: string } | null = null;
       try {
         await Promise.race([loginPromise, timeoutPromise]);
+        // After successful login, get the real user profile from Atoms Cloud
+        const meResponse = await client.auth.me();
+        if (meResponse) {
+          atomsUser = meResponse as { username?: string; name?: string; email?: string };
+        }
       } catch {
         // Login timed out or failed - continue with sandbox auth
         console.log('[Atlasphere] Atoms Cloud login skipped (timeout or unavailable)');
@@ -29,15 +36,30 @@ export default function AuthCallback() {
 
       setStatus('Authentification Pi Network...');
 
-      // Authenticate with Pi SDK (instant in sandbox mode)
+      // Authenticate with Pi SDK
       await authenticate();
 
+      // If we got a real username from Atoms Cloud, override the sandbox username
       const user = getCurrentUser();
-      if (user) {
-        setStatus(`Bienvenue @${user.username} !`);
+      if (user && atomsUser) {
+        const realUsername = atomsUser.username || atomsUser.name || user.username;
+        if (realUsername && realUsername !== user.username) {
+          const updatedUser: PiUser = {
+            ...user,
+            username: realUsername,
+            displayName: realUsername,
+          };
+          setCurrentUser(updatedUser);
+          localStorage.setItem('atlasphere_user', JSON.stringify(updatedUser));
+        }
+      }
+
+      const finalUser = getCurrentUser();
+      if (finalUser) {
+        setStatus(`${t('common.success')} @${finalUser.username} !`);
         setTimeout(() => navigate('/dashboard'), 1000);
       } else {
-        setStatus('Authentification réussie');
+        setStatus(t('common.success'));
         setTimeout(() => navigate('/'), 1000);
       }
     } catch (error) {
@@ -47,7 +69,7 @@ export default function AuthCallback() {
         await authenticate();
         const user = getCurrentUser();
         if (user) {
-          setStatus(`Bienvenue @${user.username} !`);
+          setStatus(`${t('common.success')} @${user.username} !`);
           setTimeout(() => navigate('/dashboard'), 1000);
           return;
         }

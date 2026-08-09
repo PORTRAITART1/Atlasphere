@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { createClient } from '@metagptx/web-sdk';
 import { getCurrentUser } from '@/lib/pi-sdk';
+import { t } from '@/lib/i18n';
 
 let _client: ReturnType<typeof createClient> | null = null;
 function getClient() { if (!_client) _client = createClient(); return _client; }
@@ -183,12 +184,12 @@ export default function Comments({ projectId }: CommentsProps) {
       {loading ? (
         <div className="text-center py-8">
           <div className="animate-spin text-2xl mb-2">⏳</div>
-          <p className="text-gray-500 text-sm">Chargement...</p>
+          <p className="text-gray-500 text-sm">{t('common.loading')}</p>
         </div>
       ) : topLevelComments.length === 0 ? (
         <div className="text-center py-8 bg-slate-800/20 rounded-xl border border-slate-700/20">
           <div className="text-3xl mb-2">🗨️</div>
-          <p className="text-gray-400 text-sm">Aucun commentaire pour le moment. Soyez le premier !</p>
+          <p className="text-gray-400 text-sm">{t('comments.no_comments')}</p>
         </div>
       ) : (
         <div className="space-y-4">

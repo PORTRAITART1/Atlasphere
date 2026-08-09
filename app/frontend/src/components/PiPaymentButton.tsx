@@ -106,13 +106,13 @@ export default function PiPaymentButton({
   const getButtonContent = () => {
     switch (status) {
       case 'approving':
-        return '⏳ Approbation...';
+        return `⏳ ${t('common.loading')}`;
       case 'completing':
-        return '⏳ Finalisation...';
+        return `⏳ ${t('common.loading')}`;
       case 'done':
-        return '✅ Succès !';
+        return `✅ ${t('common.success')}`;
       case 'error':
-        return '❌ Erreur';
+        return `❌ ${t('common.error')}`;
       default:
         return children || `${t('fund.contribute')} ${amount} π`;
     }

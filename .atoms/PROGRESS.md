@@ -28,6 +28,14 @@ Build PiDAO - A decentralized governance platform for Pi Network Pioneers where 
 - [x] Plugin Vite piValidationKeyPlugin() ajouté dans vite.config.ts — intercepte /validation-key.txt AVANT le SPA fallback, sert en text/plain avec headers nosniff/no-cache/CORS
 - [x] Vérification curl locale : HTTP 200, Content-Type text/plain, contenu exact 128 chars hex + newline
 
+## Task Breakdown (Corrections demandées — Langue par défaut + Pseudo Pi)
+- [x] Langue par défaut changée de 'fr' à 'en' (i18n.ts: currentLocale initial + detectLocale fallback)
+- [x] Pseudo Pi : authenticate() sandbox récupère le vrai username depuis Atoms Cloud (client.auth.me())
+- [x] AuthCallback.tsx : récupère le username réel via Atoms Cloud après login et l'applique au profil
+- [x] Textes en dur corrigés : PiPaymentButton.tsx, Comments.tsx, AuthCallback.tsx → utilise t()
+- [x] Clé i18n 'comments.no_comments' ajoutée dans les 6 langues (FR/EN/ES/PT/ZH/AR)
+- [x] Build final vérifié : lint OK, build OK, validation-key.txt toujours présent dans dist/
+
 ## Task Breakdown (UI/Presentation Fix)
 - [x] Navbar: regrouper les 11 liens en menu principal + sous-menu déroulant EcoChain
 - [x] Logo: retirer rounded-lg, utiliser object-contain pour fond transparent
