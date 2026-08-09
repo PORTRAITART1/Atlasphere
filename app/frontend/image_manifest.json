@@ -353,10 +353,136 @@
       "url": "https://mgx-backend-cdn.metadl.com/generate/images/317314/2026-08-03/tyscvzyaajta/branded-banner-urgency-mainnet.png",
       "path": "https://mgx-backend-cdn.metadl.com/generate/images/317314/2026-08-03/tyscvzyaajta/branded-banner-urgency-mainnet.png",
       "absolute_path": "https://mgx-backend-cdn.metadl.com/generate/images/317314/2026-08-03/tyscvzyaajta/branded-banner-urgency-mainnet.png"
+    },
+    {
+      "status": "success",
+      "filename": "branded-banner-main-hero.png",
+      "url": "https://mgx-backend-cdn.metadl.com/generate/images/317314/2026-08-09/uexgrsyaaj5q/branded-banner-main-hero.png",
+      "path": "https://mgx-backend-cdn.metadl.com/generate/images/317314/2026-08-09/uexgrsyaaj5q/branded-banner-main-hero.png",
+      "absolute_path": "https://mgx-backend-cdn.metadl.com/generate/images/317314/2026-08-09/uexgrsyaaj5q/branded-banner-main-hero.png"
+    },
+    {
+      "status": "success",
+      "filename": "branded-banner-testimonial.png",
+      "url": "https://mgx-backend-cdn.metadl.com/generate/images/317314/2026-08-09/uexgseiaaj5a/branded-banner-testimonial.png",
+      "path": "https://mgx-backend-cdn.metadl.com/generate/images/317314/2026-08-09/uexgseiaaj5a/branded-banner-testimonial.png",
+      "absolute_path": "https://mgx-backend-cdn.metadl.com/generate/images/317314/2026-08-09/uexgseiaaj5a/branded-banner-testimonial.png"
+    },
+    {
+      "status": "success",
+      "filename": "branded-banner-urgency-mainnet.png",
+      "url": "https://mgx-backend-cdn.metadl.com/generate/images/317314/2026-08-09/uexgsvyaaj4q/branded-banner-urgency-mainnet.png",
+      "path": "https://mgx-backend-cdn.metadl.com/generate/images/317314/2026-08-09/uexgsvyaaj4q/branded-banner-urgency-mainnet.png",
+      "absolute_path": "https://mgx-backend-cdn.metadl.com/generate/images/317314/2026-08-09/uexgsvyaaj4q/branded-banner-urgency-mainnet.png"
+    },
+    {
+      "status": "success",
+      "filename": "branded-banner-feature-grid.png",
+      "url": "https://mgx-backend-cdn.metadl.com/generate/images/317314/2026-08-09/uexgtgqaaj4a/branded-banner-feature-grid.png",
+      "path": "https://mgx-backend-cdn.metadl.com/generate/images/317314/2026-08-09/uexgtgqaaj4a/branded-banner-feature-grid.png",
+      "absolute_path": "https://mgx-backend-cdn.metadl.com/generate/images/317314/2026-08-09/uexgtgqaaj4a/branded-banner-feature-grid.png"
+    },
+    {
+      "status": "success",
+      "filename": "branded-banner-community-counter.png",
+      "url": "https://mgx-backend-cdn.metadl.com/generate/images/317314/2026-08-09/uexgtxyaaj3q/branded-banner-community-counter.png",
+      "path": "https://mgx-backend-cdn.metadl.com/generate/images/317314/2026-08-09/uexgtxyaaj3q/branded-banner-community-counter.png",
+      "absolute_path": "https://mgx-backend-cdn.metadl.com/generate/images/317314/2026-08-09/uexgtxyaaj3q/branded-banner-community-counter.png"
+    },
+    {
+      "status": "success",
+      "filename": "branded-banner-ecochain.png",
+      "url": "https://mgx-backend-cdn.metadl.com/generate/images/317314/2026-08-09/uexgukqbaj6a/branded-banner-ecochain.png",
+      "path": "https://mgx-backend-cdn.metadl.com/generate/images/317314/2026-08-09/uexgukqbaj6a/branded-banner-ecochain.png",
+      "absolute_path": "https://mgx-backend-cdn.metadl.com/generate/images/317314/2026-08-09/uexgukqbaj6a/branded-banner-ecochain.png"
+    },
+    {
+      "status": "success",
+      "filename": "branded-banner-pi-payment.png",
+      "url": "https://mgx-backend-cdn.metadl.com/generate/images/317314/2026-08-09/uexgu2yaaj5q/branded-banner-pi-payment.png",
+      "path": "https://mgx-backend-cdn.metadl.com/generate/images/317314/2026-08-09/uexgu2yaaj5q/branded-banner-pi-payment.png",
+      "absolute_path": "https://mgx-backend-cdn.metadl.com/generate/images/317314/2026-08-09/uexgu2yaaj5q/branded-banner-pi-payment.png"
+    },
+    {
+      "status": "success",
+      "filename": "branded-banner-governance-flow.png",
+      "url": "https://mgx-backend-cdn.metadl.com/generate/images/317314/2026-08-09/uexgvmqaaj5a/branded-banner-governance-flow.png",
+      "path": "https://mgx-backend-cdn.metadl.com/generate/images/317314/2026-08-09/uexgvmqaaj5a/branded-banner-governance-flow.png",
+      "absolute_path": "https://mgx-backend-cdn.metadl.com/generate/images/317314/2026-08-09/uexgvmqaaj5a/branded-banner-governance-flow.png"
+    },
+    {
+      "status": "success",
+      "filename": "branded-quests-rewards.png",
+      "url": "https://mgx-backend-cdn.metadl.com/generate/images/317314/2026-08-09/uexkq2yaaj4a/branded-quests-rewards.png",
+      "path": "https://mgx-backend-cdn.metadl.com/generate/images/317314/2026-08-09/uexkq2yaaj4a/branded-quests-rewards.png",
+      "absolute_path": "https://mgx-backend-cdn.metadl.com/generate/images/317314/2026-08-09/uexkq2yaaj4a/branded-quests-rewards.png"
+    },
+    {
+      "status": "success",
+      "filename": "branded-reputation-badges.png",
+      "url": "https://mgx-backend-cdn.metadl.com/generate/images/317314/2026-08-09/uexkrkyaaj3q/branded-reputation-badges.png",
+      "path": "https://mgx-backend-cdn.metadl.com/generate/images/317314/2026-08-09/uexkrkyaaj3q/branded-reputation-badges.png",
+      "absolute_path": "https://mgx-backend-cdn.metadl.com/generate/images/317314/2026-08-09/uexkrkyaaj3q/branded-reputation-badges.png"
+    },
+    {
+      "status": "success",
+      "filename": "branded-pi-payments.png",
+      "url": "https://mgx-backend-cdn.metadl.com/generate/images/317314/2026-08-09/uexkr4qaaj6a/branded-pi-payments.png",
+      "path": "https://mgx-backend-cdn.metadl.com/generate/images/317314/2026-08-09/uexkr4qaaj6a/branded-pi-payments.png",
+      "absolute_path": "https://mgx-backend-cdn.metadl.com/generate/images/317314/2026-08-09/uexkr4qaaj6a/branded-pi-payments.png"
+    },
+    {
+      "status": "success",
+      "filename": "branded-ecochain-ai.png",
+      "url": "https://mgx-backend-cdn.metadl.com/generate/images/317314/2026-08-09/uexksoqaaj5a/branded-ecochain-ai.png",
+      "path": "https://mgx-backend-cdn.metadl.com/generate/images/317314/2026-08-09/uexksoqaaj5a/branded-ecochain-ai.png",
+      "absolute_path": "https://mgx-backend-cdn.metadl.com/generate/images/317314/2026-08-09/uexksoqaaj5a/branded-ecochain-ai.png"
+    },
+    {
+      "status": "success",
+      "filename": "branded-community-voting.png",
+      "url": "https://mgx-backend-cdn.metadl.com/generate/images/317314/2026-08-09/uexks6qaaj4q/branded-community-voting.png",
+      "path": "https://mgx-backend-cdn.metadl.com/generate/images/317314/2026-08-09/uexks6qaaj4q/branded-community-voting.png",
+      "absolute_path": "https://mgx-backend-cdn.metadl.com/generate/images/317314/2026-08-09/uexks6qaaj4q/branded-community-voting.png"
+    },
+    {
+      "status": "success",
+      "filename": "branded-hero-governance-globe.png",
+      "url": "https://mgx-backend-cdn.metadl.com/generate/images/317314/2026-08-09/uexktpiaaj4a/branded-hero-governance-globe.png",
+      "path": "https://mgx-backend-cdn.metadl.com/generate/images/317314/2026-08-09/uexktpiaaj4a/branded-hero-governance-globe.png",
+      "absolute_path": "https://mgx-backend-cdn.metadl.com/generate/images/317314/2026-08-09/uexktpiaaj4a/branded-hero-governance-globe.png"
+    },
+    {
+      "status": "success",
+      "filename": "branded-beta-launch-cta.png",
+      "url": "https://mgx-backend-cdn.metadl.com/generate/images/317314/2026-08-09/uexkuaqaaj3q/branded-beta-launch-cta.png",
+      "path": "https://mgx-backend-cdn.metadl.com/generate/images/317314/2026-08-09/uexkuaqaaj3q/branded-beta-launch-cta.png",
+      "absolute_path": "https://mgx-backend-cdn.metadl.com/generate/images/317314/2026-08-09/uexkuaqaaj3q/branded-beta-launch-cta.png"
+    },
+    {
+      "status": "success",
+      "filename": "branded-global-multilingual.png",
+      "url": "https://mgx-backend-cdn.metadl.com/generate/images/317314/2026-08-09/uexkuraaaj6a/branded-global-multilingual.png",
+      "path": "https://mgx-backend-cdn.metadl.com/generate/images/317314/2026-08-09/uexkuraaaj6a/branded-global-multilingual.png",
+      "absolute_path": "https://mgx-backend-cdn.metadl.com/generate/images/317314/2026-08-09/uexkuraaaj6a/branded-global-multilingual.png"
+    },
+    {
+      "status": "success",
+      "filename": "branded-dao-governance.png",
+      "url": "https://mgx-backend-cdn.metadl.com/generate/images/317314/2026-08-09/uexkvdqaaj5q/branded-dao-governance.png",
+      "path": "https://mgx-backend-cdn.metadl.com/generate/images/317314/2026-08-09/uexkvdqaaj5q/branded-dao-governance.png",
+      "absolute_path": "https://mgx-backend-cdn.metadl.com/generate/images/317314/2026-08-09/uexkvdqaaj5q/branded-dao-governance.png"
+    },
+    {
+      "status": "success",
+      "filename": "branded-crowdfunding-pi.png",
+      "url": "https://mgx-backend-cdn.metadl.com/generate/images/317314/2026-08-09/uexkvuqaaj5a/branded-crowdfunding-pi.png",
+      "path": "https://mgx-backend-cdn.metadl.com/generate/images/317314/2026-08-09/uexkvuqaaj5a/branded-crowdfunding-pi.png",
+      "absolute_path": "https://mgx-backend-cdn.metadl.com/generate/images/317314/2026-08-09/uexkvuqaaj5a/branded-crowdfunding-pi.png"
     }
   ],
-  "success_count": 47,
+  "success_count": 65,
   "failed_count": 0,
   "running_count": 0,
-  "message": "Generated 47/47 images total"
+  "message": "Generated 65/65 images total"
 }
