@@ -1,12 +1,12 @@
 // Atlasphere Internationalization (i18n) - 6 languages: FR, EN, ES, PT, ZH, AR
 import { useState, useEffect } from 'react';
 
-export type Locale = 'fr' | 'en' | 'es' | 'pt' | 'zh' | 'ar';
+export type Locale = 'en' | 'fr' | 'es' | 'pt' | 'zh' | 'ar';
 
-export const locales: Locale[] = ['fr', 'en', 'es', 'pt', 'zh', 'ar'];
+export const locales: Locale[] = ['en', 'fr', 'es', 'pt', 'zh', 'ar'];
 export const localeNames: Record<Locale, string> = {
-  fr: 'Français',
   en: 'English',
+  fr: 'Français',
   es: 'Español',
   pt: 'Português',
   zh: '中文',
@@ -14,8 +14,8 @@ export const localeNames: Record<Locale, string> = {
 };
 
 export const localeFlags: Record<Locale, string> = {
-  fr: '🇫🇷',
   en: '🇬🇧',
+  fr: '🇫🇷',
   es: '🇪🇸',
   pt: '🇧🇷',
   zh: '🇨🇳',
