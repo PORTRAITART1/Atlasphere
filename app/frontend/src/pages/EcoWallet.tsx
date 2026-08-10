@@ -28,7 +28,7 @@ function BalanceCard() {
             <p className="text-sm text-emerald-300/70">{t('ecowallet.wallet_name')}</p>
             <div className="flex items-center gap-2 mt-1">
               <span className="text-lg">{level.icon}</span>
-              <span className="text-sm font-medium text-emerald-300">{level.level}</span>
+              <span className="text-sm font-medium text-emerald-300">{t(level.level)}</span>
             </div>
           </div>
           <div className="flex items-center gap-1 bg-emerald-500/10 px-3 py-1 rounded-full">
@@ -78,7 +78,7 @@ function TransactionItem({ tx }: { tx: EcoTransaction }) {
       <div className="flex items-center gap-3">
         <span className="text-lg">{icon}</span>
         <div>
-          <p className="text-sm text-gray-200">{tx.description}</p>
+          <p className="text-sm text-gray-200">{t(tx.description)}</p>
           <p className="text-xs text-gray-500">{new Date(tx.timestamp).toLocaleDateString(undefined, { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}</p>
         </div>
       </div>
@@ -98,8 +98,8 @@ function RewardCard({ reward, onClaim }: { reward: EcoReward; onClaim: (id: stri
           +{reward.ecoAmount} ECO
         </span>
       </div>
-      <h4 className="text-sm font-semibold text-gray-200 mb-1">{reward.title}</h4>
-      <p className="text-xs text-gray-400 mb-3">{reward.description}</p>
+      <h4 className="text-sm font-semibold text-gray-200 mb-1">{t(reward.title)}</h4>
+      <p className="text-xs text-gray-400 mb-3">{t(reward.description)}</p>
       {reward.claimed ? (
         <span className="text-xs text-emerald-400/70">{t('ecowallet.claimed_on')} {reward.claimedAt}</span>
       ) : (

@@ -99,25 +99,25 @@ export function getEcoBalance(): { eco: number; pi: number; totalEarned: number;
 
 export function getEcoTransactions(): EcoTransaction[] {
   return [
-    { id: '1', type: 'earn', amount: 25, currency: 'ECO', description: 'Données qualité air partagées', category: 'air', timestamp: '2026-07-31T08:30:00Z', status: 'completed' },
-    { id: '2', type: 'earn', amount: 50, currency: 'ECO', description: 'Challenge transport vert complété', category: 'transport', timestamp: '2026-07-30T14:20:00Z', status: 'completed' },
-    { id: '3', type: 'spend', amount: 100, currency: 'ECO', description: 'Achat dataset biodiversité', category: 'biodiversity', timestamp: '2026-07-29T10:15:00Z', status: 'completed' },
-    { id: '4', type: 'reward', amount: 200, currency: 'ECO', description: 'Bonus streak 14 jours', category: 'energy', timestamp: '2026-07-28T09:00:00Z', status: 'completed' },
-    { id: '5', type: 'earn', amount: 15, currency: 'ECO', description: 'Mesure CO2 domicile', category: 'energy', timestamp: '2026-07-27T16:45:00Z', status: 'completed' },
-    { id: '6', type: 'transfer', amount: 5, currency: 'Pi', description: 'Abonnement Premium EcoChain', category: 'energy', timestamp: '2026-07-26T12:00:00Z', status: 'completed' },
-    { id: '7', type: 'earn', amount: 30, currency: 'ECO', description: 'Rapport consommation eau', category: 'water', timestamp: '2026-07-25T11:30:00Z', status: 'completed' },
-    { id: '8', type: 'earn', amount: 75, currency: 'ECO', description: 'Participation nettoyage quartier', category: 'waste', timestamp: '2026-07-24T15:00:00Z', status: 'completed' },
+    { id: '1', type: 'earn', amount: 25, currency: 'ECO', description: 'ecowallet.tx.air_data_shared', category: 'air', timestamp: '2026-07-31T08:30:00Z', status: 'completed' },
+    { id: '2', type: 'earn', amount: 50, currency: 'ECO', description: 'ecowallet.tx.green_transport', category: 'transport', timestamp: '2026-07-30T14:20:00Z', status: 'completed' },
+    { id: '3', type: 'spend', amount: 100, currency: 'ECO', description: 'ecowallet.tx.buy_biodiversity', category: 'biodiversity', timestamp: '2026-07-29T10:15:00Z', status: 'completed' },
+    { id: '4', type: 'reward', amount: 200, currency: 'ECO', description: 'ecowallet.tx.streak_bonus', category: 'energy', timestamp: '2026-07-28T09:00:00Z', status: 'completed' },
+    { id: '5', type: 'earn', amount: 15, currency: 'ECO', description: 'ecowallet.tx.co2_home', category: 'energy', timestamp: '2026-07-27T16:45:00Z', status: 'completed' },
+    { id: '6', type: 'transfer', amount: 5, currency: 'Pi', description: 'ecowallet.tx.premium_sub', category: 'energy', timestamp: '2026-07-26T12:00:00Z', status: 'completed' },
+    { id: '7', type: 'earn', amount: 30, currency: 'ECO', description: 'ecowallet.tx.water_report', category: 'water', timestamp: '2026-07-25T11:30:00Z', status: 'completed' },
+    { id: '8', type: 'earn', amount: 75, currency: 'ECO', description: 'ecowallet.tx.neighborhood_cleanup', category: 'waste', timestamp: '2026-07-24T15:00:00Z', status: 'completed' },
   ];
 }
 
 export function getEcoRewards(): EcoReward[] {
   return [
-    { id: '1', title: 'Sentinelle de l\'Air', description: 'Partagez 10 mesures de qualité d\'air', ecoAmount: 50, icon: '🌬️', category: 'air', claimed: true, claimedAt: '2026-07-20' },
-    { id: '2', title: 'Éco-Mobilité', description: 'Utilisez les transports verts 7 jours consécutifs', ecoAmount: 100, icon: '🚲', category: 'transport', claimed: true, claimedAt: '2026-07-18' },
-    { id: '3', title: 'Gardien de l\'Eau', description: 'Réduisez votre consommation d\'eau de 20%', ecoAmount: 75, icon: '💧', category: 'water', claimed: false },
-    { id: '4', title: 'Zéro Déchet', description: 'Recyclez 100% de vos déchets pendant 1 mois', ecoAmount: 200, icon: '♻️', category: 'waste', claimed: false },
-    { id: '5', title: 'Énergie Verte', description: 'Réduisez votre empreinte carbone de 30%', ecoAmount: 150, icon: '⚡', category: 'energy', claimed: false },
-    { id: '6', title: 'Bio-Diversité', description: 'Plantez 5 arbres ou plantes locales', ecoAmount: 120, icon: '🌳', category: 'biodiversity', claimed: false },
+    { id: '1', title: 'ecowallet.reward.air_sentinel', description: 'ecowallet.reward.air_sentinel_desc', ecoAmount: 50, icon: '🌬️', category: 'air', claimed: true, claimedAt: '2026-07-20' },
+    { id: '2', title: 'ecowallet.reward.eco_mobility', description: 'ecowallet.reward.eco_mobility_desc', ecoAmount: 100, icon: '🚲', category: 'transport', claimed: true, claimedAt: '2026-07-18' },
+    { id: '3', title: 'ecowallet.reward.water_guardian', description: 'ecowallet.reward.water_guardian_desc', ecoAmount: 75, icon: '💧', category: 'water', claimed: false },
+    { id: '4', title: 'ecowallet.reward.zero_waste', description: 'ecowallet.reward.zero_waste_desc', ecoAmount: 200, icon: '♻️', category: 'waste', claimed: false },
+    { id: '5', title: 'ecowallet.reward.green_energy', description: 'ecowallet.reward.green_energy_desc', ecoAmount: 150, icon: '⚡', category: 'energy', claimed: false },
+    { id: '6', title: 'ecowallet.reward.biodiversity', description: 'ecowallet.reward.biodiversity_desc', ecoAmount: 120, icon: '🌳', category: 'biodiversity', claimed: false },
   ];
 }
 
@@ -191,11 +191,11 @@ export function formatEco(amount: number): string {
 }
 
 export function getEcoLevel(totalEarned: number): { level: string; icon: string; nextThreshold: number } {
-  if (totalEarned >= 10000) return { level: 'Légende Verte', icon: '🌍', nextThreshold: 20000 };
-  if (totalEarned >= 5000) return { level: 'Éco-Champion', icon: '🏆', nextThreshold: 10000 };
-  if (totalEarned >= 2000) return { level: 'Gardien Nature', icon: '🌿', nextThreshold: 5000 };
-  if (totalEarned >= 500) return { level: 'Éco-Citoyen', icon: '🌱', nextThreshold: 2000 };
-  return { level: 'Débutant Vert', icon: '🌾', nextThreshold: 500 };
+  if (totalEarned >= 10000) return { level: 'ecowallet.level.green_legend', icon: '🌍', nextThreshold: 20000 };
+  if (totalEarned >= 5000) return { level: 'ecowallet.level.eco_champion', icon: '🏆', nextThreshold: 10000 };
+  if (totalEarned >= 2000) return { level: 'ecowallet.level.nature_guardian', icon: '🌿', nextThreshold: 5000 };
+  if (totalEarned >= 500) return { level: 'ecowallet.level.eco_citizen', icon: '🌱', nextThreshold: 2000 };
+  return { level: 'ecowallet.level.green_beginner', icon: '🌾', nextThreshold: 500 };
 }
 
 export function getAirQualityLabel(aqi: number): { label: string; color: string; emoji: string } {
