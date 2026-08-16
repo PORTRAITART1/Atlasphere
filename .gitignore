@@ -2,6 +2,6 @@ venv/
 *.log
 node_modules/
 build/
-__pycache__
-dist
-vite.config.ts.timestamp-*
+__pycache__/
+dist/
+.atoms/
