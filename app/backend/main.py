@@ -6,16 +6,16 @@ import traceback
 from contextlib import asynccontextmanager
 from datetime import datetime
 
-from core.config import settings
+from app.backend.core.config import settings
 from fastapi import FastAPI, HTTPException, Request, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from fastapi.routing import APIRouter
 
 # MODULE_IMPORTS_START
-from services.database import initialize_database, close_database
-from services.mock_data import initialize_mock_data
-from services.auth import initialize_admin_user
+from app.backend.services.database import initialize_database, close_database
+from app.backend.services.mock_data import initialize_mock_data
+from app.backend.services.auth import initialize_admin_user
 # MODULE_IMPORTS_END
 
 
@@ -101,7 +101,7 @@ app.add_middleware(
 
 
 # Auto-discover and include all routers from the local `routers` package
-def include_routers_from_package(app: FastAPI, package_name: str = "routers") -> None:
+def include_routers_from_package(app: FastAPI, package_name: str = "app.backend.routers") -> None:
     """Discover and include all APIRouter objects from a package.
 
     This scans the given package (and subpackages) for module-level variables that
@@ -151,7 +151,7 @@ def include_routers_from_package(app: FastAPI, package_name: str = "routers") ->
 
 # Setup logging before router discovery
 setup_logging()
-include_routers_from_package(app, "routers")
+include_routers_from_package(app, "app.backend.routers")
 
 
 # Add exception handler for all exceptions except HTTPException

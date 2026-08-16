@@ -13,7 +13,7 @@ from pathlib import Path
 from typing import AsyncGenerator, Optional
 
 import fitz
-from core.config import settings
+from app.backend.core.config import settings
 import httpx
 from openai import AsyncOpenAI
 from schemas.aihub import AnalyzePdfRequest, AnalyzePdfResponse

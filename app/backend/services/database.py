@@ -2,7 +2,7 @@ import logging
 import os
 import time
 
-from core.database import db_manager
+from app.backend.core.database import db_manager
 from sqlalchemy import text
 
 logger = logging.getLogger(__name__)

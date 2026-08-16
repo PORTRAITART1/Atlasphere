@@ -4,10 +4,10 @@ import time
 from datetime import datetime, timedelta, timezone
 from typing import Any, Dict, Optional, Tuple
 
-from core.auth import create_access_token
-from core.config import settings
-from core.database import db_manager
-from models.auth import OIDCState, User
+from app.backend.core.auth import create_access_token
+from app.backend.core.config import settings
+from app.backend.core.database import db_manager
+from app.backend.models.auth import OIDCState, User
 from sqlalchemy import delete, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -110,7 +110,7 @@ async def initialize_admin_user():
         logger.info("Ignore initialize admin")
         return
 
-    from services.database import initialize_database
+    from app.backend.services.database import initialize_database
 
     # Ensure database is initialized first
     await initialize_database()

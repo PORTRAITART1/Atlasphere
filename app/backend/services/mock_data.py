@@ -6,7 +6,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any, Iterable
 
-from core.database import db_manager
+from app.backend.core.database import db_manager
 from sqlalchemy import Date, DateTime, MetaData, Table, func, select
 from sqlalchemy.exc import NoSuchTableError, SQLAlchemyError
 

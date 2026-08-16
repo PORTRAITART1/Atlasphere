@@ -3,7 +3,7 @@ from decimal import ROUND_HALF_UP, Decimal
 from typing import Dict, Literal, Optional, Tuple
 
 import stripe
-from core.config import settings
+from app.backend.core.config import settings
 from pydantic import BaseModel, Field, field_validator, model_validator
 
 logger = logging.getLogger(__name__)

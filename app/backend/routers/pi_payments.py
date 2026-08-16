@@ -9,12 +9,12 @@ from pydantic import BaseModel
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from core.database import get_db
+from app.backend.core.database import get_db
 from dependencies.auth import get_current_user
 from schemas.auth import UserResponse
-from models.projects import Projects
-from models.contributions import Contributions
-from models.pi_profiles import Pi_profiles
+from app.backend.models.projects import Projects
+from app.backend.models.contributions import Contributions
+from app.backend.models.pi_profiles import Pi_profiles
 
 logger = logging.getLogger(__name__)
 

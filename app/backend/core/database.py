@@ -9,7 +9,7 @@ from asyncpg.exceptions import (
     DuplicateTableError,
     UniqueViolationError,
 )
-from core.config import settings
+from app.backend.core.config import settings
 from sqlalchemy import DDL, text
 from sqlalchemy.engine import make_url
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine

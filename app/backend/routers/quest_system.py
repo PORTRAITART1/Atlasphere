@@ -7,14 +7,14 @@ from pydantic import BaseModel
 from sqlalchemy import select, func
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from core.database import get_db
+from app.backend.core.database import get_db
 from dependencies.auth import get_current_user
 from schemas.auth import UserResponse
-from models.quests import Quests
-from models.quest_progress import Quest_progress
-from models.pi_profiles import Pi_profiles
-from models.votes import Votes
-from models.contributions import Contributions
+from app.backend.models.quests import Quests
+from app.backend.models.quest_progress import Quest_progress
+from app.backend.models.pi_profiles import Pi_profiles
+from app.backend.models.votes import Votes
+from app.backend.models.contributions import Contributions
 
 logger = logging.getLogger(__name__)
 

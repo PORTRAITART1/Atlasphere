@@ -3,7 +3,7 @@ import logging
 from datetime import datetime
 from typing import Optional
 
-from core.auth import AccessTokenError, decode_access_token
+from app.backend.core.auth import AccessTokenError, decode_access_token
 from fastapi import Depends, HTTPException, Request, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from schemas.auth import UserResponse

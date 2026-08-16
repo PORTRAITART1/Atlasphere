@@ -4,7 +4,7 @@ from typing import Optional
 from urllib.parse import urlencode
 
 import httpx
-from core.auth import (
+from app.backend.core.auth import (
     IDTokenValidationError,
     build_authorization_url,
     build_logout_url,
@@ -14,12 +14,12 @@ from core.auth import (
     generate_state,
     validate_id_token,
 )
-from core.config import settings
-from core.database import get_db
+from app.backend.core.config import settings
+from app.backend.core.database import get_db
 from dependencies.auth import get_current_user
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 from fastapi.responses import RedirectResponse
-from models.auth import User
+from app.backend.models.auth import User
 from schemas.auth import (
     PlatformTokenExchangeRequest,
     TokenExchangeResponse,
