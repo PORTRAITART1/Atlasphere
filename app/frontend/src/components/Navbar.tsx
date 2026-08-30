@@ -8,6 +8,7 @@ import GlobalSearch from '@/components/GlobalSearch';
 import ThemeToggle from '@/components/ThemeToggle';
 import PushNotifications from '@/components/PushNotifications';
 import { getTotalUnread } from '@/lib/messaging';
+import { isAdminUsername } from '@/lib/admin';
 
 interface NavItem {
   path: string;
@@ -122,6 +123,9 @@ export default function Navbar() {
     { path: '/delegation', label: t('nav.dao.delegation'), icon: '🤝', desc: t('nav.dao.delegation_desc') },
   ];
 
+  // Administrator-only destinations are hidden from regular Pioneers.
+  const isAdmin = isAdminUsername(user?.username);
+
   const moreLinks: NavItem[] = [
     { path: '/my-dashboard', label: t('nav.more.dashboard'), icon: '📊', desc: t('nav.more.dashboard_desc') },
     { path: '/rewards', label: t('nav.more.rewards'), icon: '🎁', desc: t('nav.more.rewards_desc') },
@@ -135,8 +139,12 @@ export default function Navbar() {
     { path: '/map', label: t('nav.more.map'), icon: '🗺️', desc: t('nav.more.map_desc') },
     { path: '/notification-settings', label: t('nav.more.notifications'), icon: '🔔', desc: t('nav.more.notifications_desc') },
     { path: '/marketing-download', label: t('nav.more.marketing'), icon: '📦', desc: t('nav.more.marketing_desc') },
-    { path: '/settings', label: t('nav.more.settings'), icon: '⚙️', desc: t('nav.more.settings_desc') },
-    { path: '/admin', label: t('nav.more.admin'), icon: '🛡️', desc: t('nav.more.admin_desc') },
+    ...(isAdmin
+      ? [
+          { path: '/settings', label: t('nav.more.settings'), icon: '⚙️', desc: t('nav.more.settings_desc') },
+          { path: '/admin', label: t('nav.more.admin'), icon: '🛡️', desc: t('nav.more.admin_desc') },
+        ]
+      : []),
   ];
 
   const filterItems = (items: NavItem[]) => {

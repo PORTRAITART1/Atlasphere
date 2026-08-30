@@ -1,8 +1,16 @@
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { t, useI18nRerender } from '@/lib/i18n';
+import { getCurrentUser, subscribe } from '@/lib/pi-sdk';
+import { isAdminUsername } from '@/lib/admin';
 
 export default function Footer() {
   useI18nRerender();
+  const [username, setUsername] = useState(getCurrentUser()?.username);
+
+  useEffect(() => subscribe(() => setUsername(getCurrentUser()?.username)), []);
+
+  const isAdmin = isAdminUsername(username);
 
   return (
     <footer className="bg-slate-900 border-t border-indigo-500/20 mt-auto">
@@ -46,7 +54,9 @@ export default function Footer() {
               <Link to="/api-docs" className="block text-gray-400 hover:text-indigo-400 text-sm transition-colors">{t('footer.api_docs')}</Link>
               <Link to="/security" className="block text-gray-400 hover:text-indigo-400 text-sm transition-colors">{t('footer.security')}</Link>
               <Link to="/reputation" className="block text-gray-400 hover:text-indigo-400 text-sm transition-colors">{t('footer.reputation')}</Link>
-              <Link to="/settings" className="block text-gray-400 hover:text-indigo-400 text-sm transition-colors">{t('footer.settings')}</Link>
+              {isAdmin && (
+                <Link to="/settings" className="block text-gray-400 hover:text-indigo-400 text-sm transition-colors">{t('footer.settings')}</Link>
+              )}
             </div>
           </div>
         </div>

@@ -30,6 +30,18 @@ const MARKETING_ASSETS: AssetItem[] = [
   { name: 'branded-banner-feature-grid.png', url: 'https://mgx-backend-cdn.metadl.com/generate/images/317314/2026-08-03/tyscuyqaajra/branded-banner-feature-grid.png', folder: 'banners' },
   { name: 'branded-banner-testimonial.png', url: 'https://mgx-backend-cdn.metadl.com/generate/images/317314/2026-08-03/tyscvjyaajqq/branded-banner-testimonial.png', folder: 'banners' },
   { name: 'branded-banner-urgency-mainnet.png', url: 'https://mgx-backend-cdn.metadl.com/generate/images/317314/2026-08-03/tyscvzyaajta/branded-banner-urgency-mainnet.png', folder: 'banners' },
+  // Visuels store : INTRO 400x400 px
+  { name: 'intro-01-governance-globe.png', url: '/marketing-pack/store-assets/intro-01-governance-globe.png', folder: 'store-intro' },
+  { name: 'intro-02-project-funding.png', url: '/marketing-pack/store-assets/intro-02-project-funding.png', folder: 'store-intro' },
+  { name: 'intro-03-ecochain-climate.png', url: '/marketing-pack/store-assets/intro-03-ecochain-climate.png', folder: 'store-intro' },
+  { name: 'intro-04-quadratic-voting.png', url: '/marketing-pack/store-assets/intro-04-quadratic-voting.png', folder: 'store-intro' },
+  { name: 'intro-05-treasury-badges.png', url: '/marketing-pack/store-assets/intro-05-treasury-badges.png', folder: 'store-intro' },
+  // Visuels store : PREVIEW 750x1500 px
+  { name: 'preview-01-governance-hero.png', url: '/marketing-pack/store-assets/preview-01-governance-hero.png', folder: 'store-preview' },
+  { name: 'preview-02-project-funding.png', url: '/marketing-pack/store-assets/preview-02-project-funding.png', folder: 'store-preview' },
+  { name: 'preview-03-ecochain-climate.png', url: '/marketing-pack/store-assets/preview-03-ecochain-climate.png', folder: 'store-preview' },
+  { name: 'preview-04-quadratic-voting.png', url: '/marketing-pack/store-assets/preview-04-quadratic-voting.png', folder: 'store-preview' },
+  { name: 'preview-05-treasury.png', url: '/marketing-pack/store-assets/preview-05-treasury.png', folder: 'store-preview' },
 ];
 
 const DOCS_ASSETS: AssetItem[] = [
@@ -59,6 +71,8 @@ export default function MarketingDownload() {
     const imgFolder = zip.folder('marketing-pack/images');
     const bannerFolder = zip.folder('marketing-pack/banners');
     const docsFolder = zip.folder('marketing-pack/docs');
+    const introFolder = zip.folder('marketing-pack/store/intro-400x400');
+    const previewFolder = zip.folder('marketing-pack/store/preview-750x1500');
 
     let completed = 0;
 
@@ -70,7 +84,9 @@ export default function MarketingDownload() {
         const blob = await response.blob();
 
         const folder = asset.folder === 'images' ? imgFolder :
-                       asset.folder === 'banners' ? bannerFolder : docsFolder;
+                       asset.folder === 'banners' ? bannerFolder :
+                       asset.folder === 'store-intro' ? introFolder :
+                       asset.folder === 'store-preview' ? previewFolder : docsFolder;
         folder?.file(asset.name, blob);
       } catch (err) {
         console.warn(`Erreur téléchargement ${asset.name}:`, err);
@@ -107,6 +123,8 @@ export default function MarketingDownload() {
 
   const images = MARKETING_ASSETS.filter(a => a.folder === 'images');
   const banners = MARKETING_ASSETS.filter(a => a.folder === 'banners');
+  const storeIntro = MARKETING_ASSETS.filter(a => a.folder === 'store-intro');
+  const storePreview = MARKETING_ASSETS.filter(a => a.folder === 'store-preview');
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-indigo-950 to-purple-950 text-white">
@@ -219,6 +237,70 @@ export default function MarketingDownload() {
                 </div>
                 <div className="p-3 flex items-center justify-between">
                   <span className="text-sm text-slate-300 truncate flex-1">{asset.name.replace('branded-banner-', '').replace('.png', '')}</span>
+                  <button
+                    onClick={() => downloadSingle(asset)}
+                    className="p-2 hover:bg-slate-700 rounded-lg transition-colors"
+                    title="Télécharger"
+                  >
+                    <Download className="w-4 h-4 text-amber-400" />
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Store INTRO Section (400x400) */}
+        <section className="mb-12">
+          <h2 className="text-2xl font-bold mb-6 flex items-center gap-2">
+            <Image className="w-6 h-6 text-indigo-400" />
+            Visuels INTRO — 400×400 px ({storeIntro.length})
+          </h2>
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
+            {storeIntro.map((asset) => (
+              <div key={asset.name} className="bg-slate-800/60 backdrop-blur-sm rounded-xl overflow-hidden border border-slate-700/50 hover:border-indigo-500/50 transition-all group">
+                <div className="aspect-square relative overflow-hidden">
+                  <img
+                    src={asset.url}
+                    alt={asset.name}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    loading="lazy"
+                  />
+                </div>
+                <div className="p-3 flex items-center justify-between gap-2">
+                  <span className="text-xs text-slate-300 truncate flex-1">{asset.name.replace('.png', '')}</span>
+                  <button
+                    onClick={() => downloadSingle(asset)}
+                    className="p-2 hover:bg-slate-700 rounded-lg transition-colors"
+                    title="Télécharger"
+                  >
+                    <Download className="w-4 h-4 text-amber-400" />
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Store PREVIEW Section (750x1500) */}
+        <section className="mb-12">
+          <h2 className="text-2xl font-bold mb-6 flex items-center gap-2">
+            <Image className="w-6 h-6 text-purple-400" />
+            Visuels PREVIEW — 750×1500 px ({storePreview.length})
+          </h2>
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
+            {storePreview.map((asset) => (
+              <div key={asset.name} className="bg-slate-800/60 backdrop-blur-sm rounded-xl overflow-hidden border border-slate-700/50 hover:border-purple-500/50 transition-all group">
+                <div className="aspect-[1/2] relative overflow-hidden">
+                  <img
+                    src={asset.url}
+                    alt={asset.name}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    loading="lazy"
+                  />
+                </div>
+                <div className="p-3 flex items-center justify-between gap-2">
+                  <span className="text-xs text-slate-300 truncate flex-1">{asset.name.replace('.png', '')}</span>
                   <button
                     onClick={() => downloadSingle(asset)}
                     className="p-2 hover:bg-slate-700 rounded-lg transition-colors"

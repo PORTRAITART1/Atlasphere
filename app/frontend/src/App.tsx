@@ -7,6 +7,7 @@ import FeedbackForm from '@/components/FeedbackForm';
 import EcoChatbot from '@/components/EcoChatbot';
 import { autoAuthenticate, isInPiBrowser } from '@/lib/pi-sdk';
 import { applyTheme } from '@/lib/theme';
+import AdminGuard from '@/components/AdminGuard';
 
 // Lazy-loaded pages for performance
 const Index = lazy(() => import('./pages/Index'));
@@ -89,14 +90,28 @@ const AppRoutes = () => (
       <Route path="/reputation" element={<Reputation />} />
       <Route path="/api-docs" element={<ApiDocs />} />
       <Route path="/security" element={<Security />} />
-      <Route path="/admin" element={<Admin />} />
+      <Route
+        path="/admin"
+        element={
+          <AdminGuard>
+            <Admin />
+          </AdminGuard>
+        }
+      />
       <Route path="/delegation" element={<Delegation />} />
       <Route path="/analytics" element={<Analytics />} />
       <Route path="/map" element={<ProjectMap />} />
       <Route path="/auth/callback" element={<AuthCallback />} />
       <Route path="/privacy" element={<Privacy />} />
       <Route path="/terms" element={<Terms />} />
-      <Route path="/settings" element={<Settings />} />
+      <Route
+        path="/settings"
+        element={
+          <AdminGuard>
+            <Settings />
+          </AdminGuard>
+        }
+      />
       <Route path="/eco-wallet" element={<EcoWallet />} />
       <Route path="/climate" element={<ClimateDashboard />} />
       <Route path="/eco-market" element={<EcoMarket />} />
