@@ -18,6 +18,7 @@ import {
   shareOnPi,
 } from '@/lib/pi-sdk';
 import { Crown, Zap, Shield, Clock, CheckCircle2, XCircle, Share2, RefreshCw } from 'lucide-react';
+import { t, useI18nRerender } from '@/lib/i18n';
 
 // Atlasphere subscription services (aligned with PiRC2 smart contract spec)
 const ATLASPHERE_SERVICES: PiRC2Service[] = [
@@ -56,30 +57,31 @@ const ATLASPHERE_SERVICES: PiRC2Service[] = [
   },
 ];
 
-const PLAN_FEATURES: Record<number, string[]> = {
+// Feature lists are stored as i18n keys so every plan is fully localized.
+const PLAN_FEATURE_KEYS: Record<number, string[]> = {
   0: [
-    'Voting standard (1x poids)',
-    'Créer jusqu\'à 3 propositions/mois',
-    'Accès aux quêtes de base',
-    'Badge Pioneer Basic',
+    'sub.f_vote1',
+    'sub.f_prop3',
+    'sub.f_quests_basic',
+    'sub.f_badge_basic',
   ],
   1: [
-    'Voting amélioré (2x poids)',
-    'Propositions illimitées',
-    'Accès à toutes les quêtes',
-    'Badge Pioneer Pro',
-    'Priorité de modération',
-    'Analytics de propositions',
+    'sub.f_vote2',
+    'sub.f_prop_unl',
+    'sub.f_quests_all',
+    'sub.f_badge_pro',
+    'sub.f_mod',
+    'sub.f_analytics',
   ],
   2: [
-    'Voting premium (5x poids)',
-    'Propositions illimitées',
-    'Quêtes exclusives + récompenses bonus',
-    'Badge Pioneer Elite',
-    'Modération prioritaire',
-    'Analytics avancés',
-    'Accès API développeur',
-    'Support prioritaire',
+    'sub.f_vote5',
+    'sub.f_prop_unl',
+    'sub.f_quests_excl',
+    'sub.f_badge_elite',
+    'sub.f_mod',
+    'sub.f_analytics_adv',
+    'sub.f_api',
+    'sub.f_support',
   ],
 };
 
@@ -88,6 +90,8 @@ const PLAN_COLORS = ['border-blue-500/30 bg-blue-950/20', 'border-purple-500/30 
 const PLAN_BADGE_COLORS = ['bg-blue-600', 'bg-purple-600', 'bg-amber-600'];
 
 export default function Subscriptions() {
+  useI18nRerender();
+
   const [user, setUser] = useState(getCurrentUser());
   const [mySubscriptions, setMySubscriptions] = useState<PiRC2Subscription[]>([]);
   const [subscribing, setSubscribing] = useState<number | null>(null);
@@ -119,7 +123,7 @@ export default function Subscriptions() {
         // Per PiRC2 spec: immediate payment for first period (no trial) or approval for auto-renew
         const success = await createPiPayment(
           hasTrial ? 0 : piAmount,
-          `Atlasphere ${service.name} - Abonnement`,
+          `Atlasphere ${service.name} - ${t('sub.subscription')}`,
           {
             type: 'subscription',
             service_id: service.service_id.toString(),
@@ -199,18 +203,17 @@ export default function Subscriptions() {
         {/* Header */}
         <div className="text-center mb-12">
           <h1 className="text-4xl font-bold text-white mb-4">
-            Abonnements Atlasphere
+            {t('sub.title')}
           </h1>
           <p className="text-lg text-slate-300 max-w-2xl mx-auto">
-            Débloquez des fonctionnalités avancées de gouvernance avec les abonnements récurrents Pi.
-            Propulsé par le smart contract PiRC2 sur Soroban.
+            {t('sub.subtitle')}
           </p>
-          <div className="mt-4 flex items-center justify-center gap-2">
+          <div className="mt-4 flex items-center justify-center gap-2 flex-wrap">
             <Badge variant="outline" className="text-xs text-slate-400 border-slate-600">
-              Contrat: {PIRC2_CONTRACT_ID.slice(0, 8)}...{PIRC2_CONTRACT_ID.slice(-4)}
+              {t('sub.contract')}: {PIRC2_CONTRACT_ID.slice(0, 8)}...{PIRC2_CONTRACT_ID.slice(-4)}
             </Badge>
             <Badge variant="outline" className="text-xs text-slate-400 border-slate-600">
-              RPC: {PI_TESTNET_RPC}
+              {t('sub.rpc')}: {PI_TESTNET_RPC}
             </Badge>
           </div>
         </div>
@@ -227,7 +230,7 @@ export default function Subscriptions() {
               <Card key={service.service_id} className={`relative overflow-hidden border ${PLAN_COLORS[idx]} backdrop-blur-sm`}>
                 {idx === 1 && (
                   <div className="absolute top-0 right-0 bg-purple-600 text-white text-xs px-3 py-1 rounded-bl-lg font-medium">
-                    Populaire
+                    {t('sub.popular')}
                   </div>
                 )}
 
@@ -239,7 +242,7 @@ export default function Subscriptions() {
                   <CardDescription className="text-slate-400">
                     {service.trial_period_secs > 0 && (
                       <span className="block text-emerald-400 text-sm mb-1">
-                        ✨ {formatPeriod(service.trial_period_secs)} d'essai gratuit
+                        ✨ {formatPeriod(service.trial_period_secs)} {t('sub.trial_free')}
                       </span>
                     )}
                   </CardDescription>
@@ -251,27 +254,27 @@ export default function Subscriptions() {
 
                 <CardContent className="pb-4">
                   <ul className="space-y-2">
-                    {PLAN_FEATURES[service.service_id]?.map((feature, i) => (
-                      <li key={i} className="flex items-start gap-2 text-sm text-slate-300">
+                    {PLAN_FEATURE_KEYS[service.service_id]?.map((featureKey) => (
+                      <li key={featureKey} className="flex items-start gap-2 text-sm text-slate-300">
                         <CheckCircle2 className="w-4 h-4 text-emerald-400 mt-0.5 shrink-0" />
-                        <span>{feature}</span>
+                        <span>{t(featureKey)}</span>
                       </li>
                     ))}
                   </ul>
 
                   {/* PiRC2 Technical Details */}
                   <div className="mt-4 pt-4 border-t border-white/10">
-                    <p className="text-xs text-slate-500 mb-1">Détails PiRC2:</p>
+                    <p className="text-xs text-slate-500 mb-1">{t('sub.details')}</p>
                     <div className="flex flex-wrap gap-1">
                       <Badge variant="outline" className="text-[10px] text-slate-500 border-slate-700">
-                        Période: {formatPeriod(service.period_secs)}
+                        {t('sub.period')}: {formatPeriod(service.period_secs)}
                       </Badge>
                       <Badge variant="outline" className="text-[10px] text-slate-500 border-slate-700">
-                        Pré-approbation: {service.approve_periods} périodes
+                        {t('sub.preapproval')}: {service.approve_periods} {t('sub.periods')}
                       </Badge>
                       <Badge variant="outline" className="text-[10px] text-slate-500 border-slate-700">
                         <Clock className="w-3 h-3 mr-1" />
-                        Auto-renouvellement
+                        {t('sub.autorenew')}
                       </Badge>
                     </div>
                   </div>
@@ -281,7 +284,7 @@ export default function Subscriptions() {
                   {isActive ? (
                     <>
                       <Badge className={`${PLAN_BADGE_COLORS[idx]} text-white w-full justify-center py-1`}>
-                        {inTrial ? '🎉 Période d\'essai' : '✅ Actif'}
+                        {inTrial ? t('sub.in_trial') : t('sub.active')}
                       </Badge>
                       <div className="flex gap-2 w-full">
                         <Button
@@ -291,7 +294,7 @@ export default function Subscriptions() {
                           onClick={() => handleToggleAutoRenew(activeSub!.sub_id)}
                         >
                           <RefreshCw className="w-3 h-3 mr-1" />
-                          {activeSub!.auto_renew ? 'Désactiver' : 'Activer'} renouvellement
+                          {activeSub!.auto_renew ? t('sub.deactivate') : t('sub.activate')} {t('sub.renewal')}
                         </Button>
                         {activeSub!.auto_renew && (
                           <Button
@@ -301,12 +304,12 @@ export default function Subscriptions() {
                             onClick={() => handleCancel(activeSub!.sub_id)}
                           >
                             <XCircle className="w-3 h-3 mr-1" />
-                            Annuler
+                            {t('sub.cancel')}
                           </Button>
                         )}
                       </div>
                       <p className="text-[10px] text-slate-500 text-center">
-                        Expire: {new Date(activeSub!.service_end_ts * 1000).toLocaleDateString()}
+                        {t('sub.expires')}: {new Date(activeSub!.service_end_ts * 1000).toLocaleDateString()}
                       </p>
                     </>
                   ) : (
@@ -317,10 +320,10 @@ export default function Subscriptions() {
                         disabled={!user || subscribing === service.service_id}
                       >
                         {subscribing === service.service_id
-                          ? 'Souscription...'
+                          ? t('sub.subscribing')
                           : service.trial_period_secs > 0
-                            ? 'Essai gratuit + Auto-renouvellement'
-                            : 'S\'abonner (Auto-renouvellement)'}
+                            ? t('sub.trial_cta')
+                            : t('sub.subscribe_cta')}
                       </Button>
                       {service.trial_period_secs > 0 && (
                         <Button
@@ -330,7 +333,7 @@ export default function Subscriptions() {
                           onClick={() => handleSubscribe(service, false)}
                           disabled={!user || subscribing === service.service_id}
                         >
-                          Essai uniquement (sans engagement)
+                          {t('sub.trial_only')}
                         </Button>
                       )}
                     </>
@@ -346,63 +349,50 @@ export default function Subscriptions() {
           <CardHeader>
             <CardTitle className="text-white flex items-center gap-2">
               <Shield className="w-5 h-5 text-indigo-400" />
-              Comment fonctionnent les abonnements PiRC2
+              {t('sub.how')}
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
               <div className="p-4 rounded-lg bg-white/5">
                 <div className="text-2xl mb-2">1️⃣</div>
-                <h4 className="text-white font-medium text-sm mb-1">Souscription</h4>
-                <p className="text-xs text-slate-400">
-                  Vous approuvez un nombre de périodes de paiement via le smart contract Soroban.
-                  Aucun paiement immédiat si période d'essai.
-                </p>
+                <h4 className="text-white font-medium text-sm mb-1">{t('sub.s1t')}</h4>
+                <p className="text-xs text-slate-400">{t('sub.s1d')}</p>
               </div>
               <div className="p-4 rounded-lg bg-white/5">
                 <div className="text-2xl mb-2">2️⃣</div>
-                <h4 className="text-white font-medium text-sm mb-1">Approbation Token</h4>
-                <p className="text-xs text-slate-400">
-                  Le contrat reçoit une allowance (approve) pour {'{approve_periods}'} périodes.
-                  Modèle non-custodial : vos Pi restent dans votre wallet.
-                </p>
+                <h4 className="text-white font-medium text-sm mb-1">{t('sub.s2t')}</h4>
+                <p className="text-xs text-slate-400">{t('sub.s2d')}</p>
               </div>
               <div className="p-4 rounded-lg bg-white/5">
                 <div className="text-2xl mb-2">3️⃣</div>
-                <h4 className="text-white font-medium text-sm mb-1">Facturation</h4>
-                <p className="text-xs text-slate-400">
-                  Le marchand appelle <code className="text-indigo-300">process()</code> pour charger les abonnés échus.
-                  Pas de dérive : next_charge_ts avance exactement de period_secs.
-                </p>
+                <h4 className="text-white font-medium text-sm mb-1">{t('sub.s3t')}</h4>
+                <p className="text-xs text-slate-400">{t('sub.s3d')}</p>
               </div>
               <div className="p-4 rounded-lg bg-white/5">
                 <div className="text-2xl mb-2">4️⃣</div>
-                <h4 className="text-white font-medium text-sm mb-1">Contrôle Total</h4>
-                <p className="text-xs text-slate-400">
-                  Annulez à tout moment avec <code className="text-indigo-300">cancel()</code>.
-                  L'accès reste actif jusqu'à service_end_ts.
-                  Étendez avec <code className="text-indigo-300">extend_subscription()</code>.
-                </p>
+                <h4 className="text-white font-medium text-sm mb-1">{t('sub.s4t')}</h4>
+                <p className="text-xs text-slate-400">{t('sub.s4d')}</p>
               </div>
             </div>
 
             <div className="mt-6 p-4 rounded-lg bg-indigo-950/30 border border-indigo-500/20">
-              <h4 className="text-indigo-300 font-medium text-sm mb-2">📋 Spécification Technique</h4>
+              <h4 className="text-indigo-300 font-medium text-sm mb-2">{t('sub.spec')}</h4>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs">
                 <div>
-                  <span className="text-slate-500">Réseau:</span>
+                  <span className="text-slate-500">{t('sub.l_network')}:</span>
                   <span className="text-white ml-1">Pi Testnet</span>
                 </div>
                 <div>
-                  <span className="text-slate-500">Standard:</span>
+                  <span className="text-slate-500">{t('sub.l_standard')}:</span>
                   <span className="text-white ml-1">PiRC2</span>
                 </div>
                 <div>
-                  <span className="text-slate-500">Runtime:</span>
+                  <span className="text-slate-500">{t('sub.l_runtime')}:</span>
                   <span className="text-white ml-1">Soroban</span>
                 </div>
                 <div>
-                  <span className="text-slate-500">Pattern:</span>
+                  <span className="text-slate-500">{t('sub.l_pattern')}:</span>
                   <span className="text-white ml-1">approve + transfer_from</span>
                 </div>
               </div>
@@ -417,11 +407,11 @@ export default function Subscriptions() {
             className="border-slate-600 text-slate-300 hover:text-white"
             onClick={() => shareOnPi(
               'Atlasphere Subscriptions',
-              '🚀 Découvrez les abonnements Atlasphere propulsés par le smart contract PiRC2 sur Soroban! Gouvernance décentralisée pour tous les Pioneers. ' + window.location.href
+              t('sub.share_text') + window.location.href
             )}
           >
             <Share2 className="w-4 h-4 mr-2" />
-            Partager sur Pi
+            {t('sub.share')}
           </Button>
         </div>
       </main>

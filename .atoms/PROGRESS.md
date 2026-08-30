@@ -9,7 +9,11 @@
 - [x] Amélioration ergonomique du menu (mega-menus + filtre rapide + sections mobiles repliables + accessibilité clavier)
 - [x] Optimisation tokens : jalons factorisés en clés réutilisables `ms.*`
 - [x] Lint + build final OK
-- [ ] Reste : textes FR en dur des pages avancées secondaires (Settings, EcoNFT, Subscriptions, etc.)
+- [x] Traduction des pages secondaires : Settings, Subscriptions, EcoNFT, Community
+- [x] Traduction des pages du menu Communauté du pied de page : ApiDocs, Security, Reputation
+- [x] Traduction des pages Badges et Notifications
+- [x] Clés `set.*`, `sub.*`, `nft.*`, `com.*`, `bdg.*`, `ntf.*`, `adoc.*`, `sec.*`, `rep.*` présentes dans les 7 langues
+- [x] Lint + build revalidés après traduction des pages secondaires
 
 ## Audit i18n (textes FR en dur détectés)
 34 pages + 8 composants contiennent encore des libellés FR en dur (~408 occurrences).

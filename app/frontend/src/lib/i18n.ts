@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import { ru } from './locales/ru';
 import { content } from './locales/content';
+import { pages } from './locales/pages';
 
 export type Locale = 'en' | 'ar' | 'zh' | 'ru' | 'fr' | 'pt' | 'es';
 
@@ -3547,6 +3548,8 @@ const messages: Record<Locale, Translations> = {
 // English acts as the fallback for any locale without a content block.
 locales.forEach((loc) => {
   Object.assign(messages[loc], content[loc] ?? content.en);
+  // Secondary/advanced pages (Settings, Subscriptions, EcoNFT, Community, ...)
+  Object.assign(messages[loc], pages[loc] ?? pages.en);
 });
 
 // State management

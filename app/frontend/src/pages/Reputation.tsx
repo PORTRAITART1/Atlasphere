@@ -2,29 +2,31 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
-import { t, subscribeI18n } from '@/lib/i18n';
+import { t, useI18nRerender } from '@/lib/i18n';
 import { getCurrentUser, subscribe, type PiUser } from '@/lib/pi-sdk';
 import { fetchMyProjects, fetchMyVotes, fetchMyContributions } from '@/lib/api';
 
 interface Badge {
   id: string;
-  name: string;
+  nameKey: string;
   icon: string;
-  description: string;
+  descKey: string;
   earned: boolean;
-  earnedAt?: string;
 }
 
 interface ReputationBreakdown {
-  category: string;
+  categoryKey: string;
   points: number;
   icon: string;
-  description: string;
+  /** Prefix rendered before the localized description (e.g. a count). */
+  prefix?: string;
+  descKey: string;
 }
 
 export default function Reputation() {
+  useI18nRerender();
+
   const [user, setUser] = useState<PiUser | null>(getCurrentUser());
-  const [, setLangTick] = useState(0);
   const [loading, setLoading] = useState(true);
   const [reputationScore, setReputationScore] = useState(0);
   const [votingWeight, setVotingWeight] = useState(1.0);
@@ -35,10 +37,6 @@ export default function Reputation() {
 
   useEffect(() => {
     return subscribe(() => setUser(getCurrentUser()));
-  }, []);
-
-  useEffect(() => {
-    return subscribeI18n(() => setLangTick((n) => n + 1));
   }, []);
 
   useEffect(() => {
@@ -78,27 +76,27 @@ export default function Reputation() {
       setVotingWeight(parseFloat(weight.toFixed(2)));
 
       setBreakdown([
-        { category: 'Proposals Created', points: proposalPoints, icon: '📝', description: `${projects.length} proposals × 50 pts` },
-        { category: 'Votes Cast', points: votePoints, icon: '🗳️', description: `${votes.length} votes × 10 pts` },
-        { category: 'Contributions', points: contributionPoints, icon: '💰', description: `${contribs.length} contributions` },
-        { category: 'Consistency', points: consistencyPoints, icon: '📅', description: 'Regular participation bonus' },
-        { category: 'Community Impact', points: communityPoints, icon: '🌟', description: 'Projects + contributions impact' },
+        { categoryKey: 'rep.b_proposals', points: proposalPoints, icon: '📝', prefix: `${projects.length} `, descKey: 'rep.d_proposals' },
+        { categoryKey: 'rep.b_votes', points: votePoints, icon: '🗳️', prefix: `${votes.length} `, descKey: 'rep.d_votes' },
+        { categoryKey: 'rep.b_contribs', points: contributionPoints, icon: '💰', prefix: `${contribs.length} `, descKey: 'rep.d_contribs' },
+        { categoryKey: 'rep.b_consistency', points: consistencyPoints, icon: '📅', descKey: 'rep.d_consistency' },
+        { categoryKey: 'rep.b_impact', points: communityPoints, icon: '🌟', descKey: 'rep.d_impact' },
       ]);
 
       // Calculate badges
       const allBadges: Badge[] = [
-        { id: 'first_vote', name: 'First Vote', icon: '🗳️', description: 'Cast your first vote', earned: votes.length >= 1, earnedAt: votes.length >= 1 ? votes[0]?.created_at || undefined : undefined },
-        { id: 'voter_10', name: 'Active Voter', icon: '⚡', description: 'Cast 10 votes', earned: votes.length >= 10 },
-        { id: 'voter_50', name: 'Democracy Champion', icon: '🏆', description: 'Cast 50 votes', earned: votes.length >= 50 },
-        { id: 'first_proposal', name: 'Innovator', icon: '💡', description: 'Submit your first proposal', earned: projects.length >= 1, earnedAt: projects.length >= 1 ? projects[0]?.created_at || undefined : undefined },
-        { id: 'proposal_5', name: 'Visionary', icon: '🔮', description: 'Submit 5 proposals', earned: projects.length >= 5 },
-        { id: 'first_contribution', name: 'Supporter', icon: '🤝', description: 'Make your first contribution', earned: contribs.length >= 1, earnedAt: contribs.length >= 1 ? contribs[0]?.created_at || undefined : undefined },
-        { id: 'contributor_10', name: 'Patron', icon: '👑', description: 'Make 10 contributions', earned: contribs.length >= 10 },
-        { id: 'big_spender', name: 'Whale', icon: '🐋', description: 'Contribute 100+ π total', earned: contribs.reduce((s, c) => s + c.amount, 0) >= 100 },
-        { id: 'level_5', name: 'Rising Star', icon: '⭐', description: 'Reach level 5', earned: calcLevel >= 5 },
-        { id: 'level_10', name: 'Community Leader', icon: '🌟', description: 'Reach level 10', earned: calcLevel >= 10 },
-        { id: 'early_adopter', name: 'Early Adopter', icon: '🚀', description: 'Join in the first month', earned: true, earnedAt: '2026-05-24T00:00:00Z' },
-        { id: 'multi_talent', name: 'Multi-Talent', icon: '🎭', description: 'Vote, propose, and contribute', earned: votes.length > 0 && projects.length > 0 && contribs.length > 0 },
+        { id: 'first_vote', nameKey: 'rep.n1', icon: '🗳️', descKey: 'rep.dd1', earned: votes.length >= 1 },
+        { id: 'voter_10', nameKey: 'rep.n2', icon: '⚡', descKey: 'rep.dd2', earned: votes.length >= 10 },
+        { id: 'voter_50', nameKey: 'rep.n3', icon: '🏆', descKey: 'rep.dd3', earned: votes.length >= 50 },
+        { id: 'first_proposal', nameKey: 'rep.n4', icon: '💡', descKey: 'rep.dd4', earned: projects.length >= 1 },
+        { id: 'proposal_5', nameKey: 'rep.n5', icon: '🔮', descKey: 'rep.dd5', earned: projects.length >= 5 },
+        { id: 'first_contribution', nameKey: 'rep.n6', icon: '🤝', descKey: 'rep.dd6', earned: contribs.length >= 1 },
+        { id: 'contributor_10', nameKey: 'rep.n7', icon: '👑', descKey: 'rep.dd7', earned: contribs.length >= 10 },
+        { id: 'big_spender', nameKey: 'rep.n8', icon: '🐋', descKey: 'rep.dd8', earned: contribs.reduce((s, c) => s + c.amount, 0) >= 100 },
+        { id: 'level_5', nameKey: 'rep.n9', icon: '⭐', descKey: 'rep.dd9', earned: calcLevel >= 5 },
+        { id: 'level_10', nameKey: 'rep.n10', icon: '🌟', descKey: 'rep.dd10', earned: calcLevel >= 10 },
+        { id: 'early_adopter', nameKey: 'rep.n11', icon: '🚀', descKey: 'rep.dd11', earned: true },
+        { id: 'multi_talent', nameKey: 'rep.n12', icon: '🎭', descKey: 'rep.dd12', earned: votes.length > 0 && projects.length > 0 && contribs.length > 0 },
       ];
       setBadges(allBadges);
     } catch (err) {
@@ -110,6 +108,15 @@ export default function Reputation() {
 
   const earnedBadges = badges.filter((b) => b.earned);
   const lockedBadges = badges.filter((b) => !b.earned);
+
+  const earnActions = [
+    { key: 'rep.e1', points: '+50', icon: '📝' },
+    { key: 'rep.e2', points: '+10', icon: '🗳️' },
+    { key: 'rep.e3', points: '+5 / π', icon: '💰' },
+    { key: 'rep.e4', points: '+25-100', icon: '🎯' },
+    { key: 'rep.e5', points: '+100', icon: '✅' },
+    { key: 'rep.e6', points: `+2 ${t('rep.per_day')}`, icon: '📅' },
+  ];
 
   if (loading) {
     return (
@@ -132,11 +139,9 @@ export default function Reputation() {
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-white mb-2">
-            ⭐ {t('reputation.title') || 'Reputation System'}
+            ⭐ {t('rep.title')}
           </h1>
-          <p className="text-gray-400">
-            {t('reputation.subtitle') || 'Your reputation determines your voting weight and community standing'}
-          </p>
+          <p className="text-gray-400">{t('rep.subtitle')}</p>
         </div>
 
         {/* Main Score Card */}
@@ -163,7 +168,7 @@ export default function Reputation() {
               </svg>
               <div className="absolute inset-0 flex flex-col items-center justify-center">
                 <span className="text-3xl font-bold text-white">{reputationScore}</span>
-                <span className="text-xs text-gray-400">points</span>
+                <span className="text-xs text-gray-400">{t('rep.points')}</span>
               </div>
             </div>
 
@@ -172,19 +177,21 @@ export default function Reputation() {
               <div className="flex items-center gap-3 justify-center md:justify-start mb-3">
                 <span className="text-4xl">🏅</span>
                 <div>
-                  <p className="text-sm text-gray-400">Level</p>
+                  <p className="text-sm text-gray-400">{t('rep.level')}</p>
                   <p className="text-3xl font-bold text-white">{level}</p>
                 </div>
               </div>
               <div className="bg-slate-800/60 rounded-xl p-4 inline-block">
-                <p className="text-sm text-gray-400 mb-1">{t('reputation.voting_weight') || 'Voting Weight'}</p>
+                <p className="text-sm text-gray-400 mb-1">{t('rep.voting_weight')}</p>
                 <p className="text-2xl font-bold text-amber-400">{votingWeight}x</p>
-                <p className="text-xs text-gray-500">Your votes count {votingWeight}x more</p>
+                <p className="text-xs text-gray-500">
+                  {t('rep.weight_a')} {votingWeight}x {t('rep.weight_b')}
+                </p>
               </div>
               <div className="mt-4">
                 <div className="flex items-center justify-between text-xs text-gray-400 mb-1">
-                  <span>Level {level}</span>
-                  <span>Level {level + 1}</span>
+                  <span>{t('rep.level')} {level}</span>
+                  <span>{t('rep.level')} {level + 1}</span>
                 </div>
                 <div className="w-full bg-slate-700 rounded-full h-3">
                   <div
@@ -193,7 +200,7 @@ export default function Reputation() {
                   />
                 </div>
                 <p className="text-xs text-gray-500 mt-1">
-                  {Math.floor(200 - (reputationScore % 200))} points to next level
+                  {Math.floor(200 - (reputationScore % 200))} {t('rep.to_next')}
                 </p>
               </div>
             </div>
@@ -203,14 +210,14 @@ export default function Reputation() {
         {/* Score Breakdown */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
           <div className="bg-slate-800/40 border border-slate-700/50 rounded-xl p-6">
-            <h2 className="text-lg font-semibold text-white mb-4">📊 {t('reputation.breakdown') || 'Score Breakdown'}</h2>
+            <h2 className="text-lg font-semibold text-white mb-4">📊 {t('rep.breakdown')}</h2>
             <div className="space-y-4">
               {breakdown.map((item) => (
-                <div key={item.category} className="flex items-center gap-3">
+                <div key={item.categoryKey} className="flex items-center gap-3">
                   <span className="text-2xl w-8">{item.icon}</span>
                   <div className="flex-1">
                     <div className="flex items-center justify-between mb-1">
-                      <span className="text-sm text-white">{item.category}</span>
+                      <span className="text-sm text-white">{t(item.categoryKey)}</span>
                       <span className="text-sm font-medium text-indigo-400">+{item.points}</span>
                     </div>
                     <div className="w-full bg-slate-700 rounded-full h-1.5">
@@ -219,7 +226,9 @@ export default function Reputation() {
                         style={{ width: `${Math.min((item.points / Math.max(reputationScore, 1)) * 100, 100)}%` }}
                       />
                     </div>
-                    <p className="text-xs text-gray-500 mt-0.5">{item.description}</p>
+                    <p className="text-xs text-gray-500 mt-0.5">
+                      {item.prefix || ''}{t(item.descKey)}
+                    </p>
                   </div>
                 </div>
               ))}
@@ -228,22 +237,15 @@ export default function Reputation() {
 
           {/* How to Earn */}
           <div className="bg-slate-800/40 border border-slate-700/50 rounded-xl p-6">
-            <h2 className="text-lg font-semibold text-white mb-4">🚀 {t('reputation.how_to_earn') || 'How to Earn'}</h2>
+            <h2 className="text-lg font-semibold text-white mb-4">🚀 {t('rep.how_to_earn')}</h2>
             <div className="space-y-3">
-              {[
-                { action: 'Submit a proposal', points: '+50', icon: '📝' },
-                { action: 'Cast a vote', points: '+10', icon: '🗳️' },
-                { action: 'Contribute to a project', points: '+5 per π', icon: '💰' },
-                { action: 'Complete a quest', points: '+25-100', icon: '🎯' },
-                { action: 'Proposal gets approved', points: '+100', icon: '✅' },
-                { action: 'Consistent daily activity', points: '+2/day', icon: '📅' },
-              ].map((item) => (
-                <div key={item.action} className="flex items-center justify-between p-3 bg-slate-700/30 rounded-lg">
+              {earnActions.map((item) => (
+                <div key={item.key} className="flex items-center justify-between gap-3 p-3 bg-slate-700/30 rounded-lg">
                   <div className="flex items-center gap-2">
                     <span>{item.icon}</span>
-                    <span className="text-sm text-gray-300">{item.action}</span>
+                    <span className="text-sm text-gray-300">{t(item.key)}</span>
                   </div>
-                  <span className="text-sm font-medium text-emerald-400">{item.points}</span>
+                  <span className="text-sm font-medium text-emerald-400 whitespace-nowrap">{item.points}</span>
                 </div>
               ))}
             </div>
@@ -252,12 +254,14 @@ export default function Reputation() {
 
         {/* Badges */}
         <div className="bg-slate-800/40 border border-slate-700/50 rounded-xl p-6 mb-8">
-          <h2 className="text-lg font-semibold text-white mb-4">🏆 {t('reputation.badges') || 'Badges'} ({earnedBadges.length}/{badges.length})</h2>
+          <h2 className="text-lg font-semibold text-white mb-4">
+            🏆 {t('rep.badges')} ({earnedBadges.length}/{badges.length})
+          </h2>
 
           {/* Earned Badges */}
           {earnedBadges.length > 0 && (
             <div className="mb-6">
-              <p className="text-sm text-emerald-400 font-medium mb-3">✅ Earned</p>
+              <p className="text-sm text-emerald-400 font-medium mb-3">✅ {t('rep.earned')}</p>
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
                 {earnedBadges.map((badge) => (
                   <div
@@ -265,8 +269,8 @@ export default function Reputation() {
                     className="bg-emerald-500/10 border border-emerald-500/20 rounded-xl p-4 text-center hover:scale-105 transition-transform"
                   >
                     <span className="text-3xl block mb-2">{badge.icon}</span>
-                    <p className="text-sm font-medium text-white">{badge.name}</p>
-                    <p className="text-xs text-gray-400 mt-1">{badge.description}</p>
+                    <p className="text-sm font-medium text-white">{t(badge.nameKey)}</p>
+                    <p className="text-xs text-gray-400 mt-1">{t(badge.descKey)}</p>
                   </div>
                 ))}
               </div>
@@ -276,7 +280,7 @@ export default function Reputation() {
           {/* Locked Badges */}
           {lockedBadges.length > 0 && (
             <div>
-              <p className="text-sm text-gray-500 font-medium mb-3">🔒 Locked</p>
+              <p className="text-sm text-gray-500 font-medium mb-3">🔒 {t('rep.locked')}</p>
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
                 {lockedBadges.map((badge) => (
                   <div
@@ -284,8 +288,8 @@ export default function Reputation() {
                     className="bg-slate-800/60 border border-slate-700/30 rounded-xl p-4 text-center opacity-50"
                   >
                     <span className="text-3xl block mb-2 grayscale">{badge.icon}</span>
-                    <p className="text-sm font-medium text-gray-400">{badge.name}</p>
-                    <p className="text-xs text-gray-500 mt-1">{badge.description}</p>
+                    <p className="text-sm font-medium text-gray-400">{t(badge.nameKey)}</p>
+                    <p className="text-xs text-gray-500 mt-1">{t(badge.descKey)}</p>
                   </div>
                 ))}
               </div>
@@ -296,21 +300,21 @@ export default function Reputation() {
         {/* CTA */}
         {!user && (
           <div className="bg-indigo-600/10 border border-indigo-500/20 rounded-xl p-6 text-center">
-            <p className="text-white font-medium mb-2">Connect with Pi Network to track your reputation</p>
-            <p className="text-sm text-gray-400">Your votes, proposals, and contributions all build your reputation score.</p>
+            <p className="text-white font-medium mb-2">{t('rep.cta_title')}</p>
+            <p className="text-sm text-gray-400">{t('rep.cta_desc')}</p>
           </div>
         )}
 
         {user && (
           <div className="flex flex-wrap gap-3 justify-center">
             <Link to="/proposals" className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-sm rounded-lg transition-colors">
-              🗳️ Vote on Proposals
+              🗳️ {t('rep.a_vote')}
             </Link>
             <Link to="/create" className="px-4 py-2 bg-purple-600 hover:bg-purple-500 text-white text-sm rounded-lg transition-colors">
-              📝 Create a Proposal
+              📝 {t('rep.a_create')}
             </Link>
             <Link to="/funding" className="px-4 py-2 bg-amber-600 hover:bg-amber-500 text-white text-sm rounded-lg transition-colors">
-              💰 Fund a Project
+              💰 {t('rep.a_fund')}
             </Link>
           </div>
         )}
