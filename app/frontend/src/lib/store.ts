@@ -1,4 +1,6 @@
-// Atlasphere Data Store
+// Atlasphere Data Store — all user-facing text is stored as i18n keys and
+// resolved through t() at read time, so every locale renders natively.
+import { t } from './i18n';
 
 export type ProposalStatus = 'voting' | 'approved' | 'funding' | 'funded' | 'completed' | 'rejected';
 export type Category = 'education' | 'commerce' | 'technology' | 'social' | 'environment';
@@ -58,12 +60,17 @@ export interface UserContribution {
   date: string;
 }
 
+/** Build a milestone from a reusable i18n slug (ms.<slug>.t / ms.<slug>.d). */
+function ms(slug: string, completed: boolean): Milestone {
+  return { title: `ms.${slug}.t`, description: `ms.${slug}.d`, completed };
+}
+
 const proposals: Proposal[] = [
   {
     id: '1',
-    title: 'Pi Academy - Éducation Blockchain Gratuite',
-    description: 'Plateforme éducative gratuite pour enseigner la blockchain et la crypto aux Pionniers débutants dans 10 langues.',
-    fullDescription: 'Pi Academy est un projet éducatif ambitieux visant à créer une plateforme d\'apprentissage complète et gratuite pour tous les Pionniers. Le programme couvre les fondamentaux de la blockchain, la sécurité crypto, le développement dApps, et l\'économie décentralisée. Disponible en 10 langues avec des certifications on-chain.',
+    title: 'p1.t',
+    description: 'p1.d',
+    fullDescription: 'p1.f',
     category: 'education',
     status: 'voting',
     author: 'EduPioneer',
@@ -77,15 +84,10 @@ const proposals: Proposal[] = [
     fundingRaised: 0,
     contributors: 0,
     comments: [
-      { id: 'c1', author: 'CryptoLearner', avatar: '📚', text: 'Excellent projet ! L\'éducation est la clé de l\'adoption.', date: '2026-05-12', likes: 45 },
-      { id: 'c2', author: 'DevPioneer', avatar: '💻', text: 'Je propose d\'ajouter un module sur le développement Pi Apps.', date: '2026-05-14', likes: 32 },
+      { id: 'c1', author: 'CryptoLearner', avatar: '📚', text: 'Education is the key to real adoption. Great initiative!', date: '2026-05-12', likes: 45 },
+      { id: 'c2', author: 'DevPioneer', avatar: '💻', text: 'Please add a dedicated module on building Pi Apps.', date: '2026-05-14', likes: 32 },
     ],
-    milestones: [
-      { title: 'Curriculum Design', description: 'Conception du programme éducatif complet', completed: true },
-      { title: 'Platform Development', description: 'Développement de la plateforme web', completed: false },
-      { title: 'Content Creation', description: 'Création du contenu en 10 langues', completed: false },
-      { title: 'Beta Launch', description: 'Lancement beta avec 1000 étudiants', completed: false },
-    ],
+    milestones: [ms('research', true), ms('build', false), ms('content', false), ms('launch', false)],
     team: [
       { name: 'Dr. Sarah Chen', role: 'Lead Educator', avatar: '👩‍🔬' },
       { name: 'Marco Silva', role: 'Platform Dev', avatar: '👨‍💻' },
@@ -94,9 +96,9 @@ const proposals: Proposal[] = [
   },
   {
     id: '2',
-    title: 'PiHealth - Télémédecine Communautaire',
-    description: 'Application de télémédecine payable en Pi pour les communautés rurales sans accès aux soins.',
-    fullDescription: 'PiHealth connecte les patients des zones rurales avec des médecins qualifiés via des consultations vidéo payées en Pi. Le projet inclut un système de dossiers médicaux décentralisé, des prescriptions numériques, et un programme de prévention santé communautaire.',
+    title: 'p2.t',
+    description: 'p2.d',
+    fullDescription: 'p2.f',
     category: 'social',
     status: 'funding',
     author: 'HealthDAO',
@@ -110,15 +112,10 @@ const proposals: Proposal[] = [
     fundingRaised: 52340,
     contributors: 847,
     comments: [
-      { id: 'c3', author: 'DrMedic', avatar: '👨‍⚕️', text: 'En tant que médecin, je suis prêt à contribuer bénévolement.', date: '2026-04-22', likes: 89 },
-      { id: 'c4', author: 'RuralPioneer', avatar: '🌾', text: 'Ma communauté a désespérément besoin de cela !', date: '2026-04-25', likes: 67 },
+      { id: 'c3', author: 'DrMedic', avatar: '👨‍⚕️', text: 'As a physician I am ready to volunteer consultation hours.', date: '2026-04-22', likes: 89 },
+      { id: 'c4', author: 'RuralPioneer', avatar: '🌾', text: 'My community desperately needs this service.', date: '2026-04-25', likes: 67 },
     ],
-    milestones: [
-      { title: 'Medical Network', description: 'Recrutement de 50 médecins', completed: true },
-      { title: 'App Development', description: 'Développement de l\'application mobile', completed: true },
-      { title: 'Pilot Program', description: 'Programme pilote dans 5 villages', completed: false },
-      { title: 'Full Launch', description: 'Lancement dans 20 pays', completed: false },
-    ],
+    milestones: [ms('partners', true), ms('build', true), ms('pilot', false), ms('scale', false)],
     team: [
       { name: 'Dr. James Okafor', role: 'Medical Director', avatar: '👨‍⚕️' },
       { name: 'Lin Wei', role: 'Tech Lead', avatar: '🧑‍💻' },
@@ -127,9 +124,9 @@ const proposals: Proposal[] = [
   },
   {
     id: '3',
-    title: 'GreenPi - Reforestation Tokenisée',
-    description: 'Chaque Pi investi plante un arbre réel. Suivi par satellite et certificats NFT de propriété d\'arbres.',
-    fullDescription: 'GreenPi combine la puissance de Pi Network avec la reforestation mondiale. Chaque contribution en Pi finance la plantation d\'arbres réels, suivis par satellite. Les contributeurs reçoivent des NFTs représentant leurs arbres avec des mises à jour de croissance en temps réel. Objectif : 1 million d\'arbres en 2 ans.',
+    title: 'p3.t',
+    description: 'p3.d',
+    fullDescription: 'p3.f',
     category: 'environment',
     status: 'approved',
     author: 'EcoChain',
@@ -143,14 +140,9 @@ const proposals: Proposal[] = [
     fundingRaised: 0,
     contributors: 0,
     comments: [
-      { id: 'c5', author: 'GreenWarrior', avatar: '🌿', text: 'Brillant ! Combiner crypto et écologie, c\'est l\'avenir.', date: '2026-05-03', likes: 124 },
+      { id: 'c5', author: 'GreenWarrior', avatar: '🌿', text: 'Combining crypto with real ecology is the way forward.', date: '2026-05-03', likes: 124 },
     ],
-    milestones: [
-      { title: 'Partnership', description: 'Partenariats avec ONG de reforestation', completed: true },
-      { title: 'Satellite Integration', description: 'Intégration du suivi satellite', completed: true },
-      { title: 'NFT System', description: 'Système de certificats NFT', completed: false },
-      { title: 'First Planting', description: 'Première campagne de plantation', completed: false },
-    ],
+    milestones: [ms('partners', true), ms('integration', true), ms('build', false), ms('launch', false)],
     team: [
       { name: 'Maria Santos', role: 'Project Lead', avatar: '🌍' },
       { name: 'Raj Patel', role: 'Satellite Tech', avatar: '🛰️' },
@@ -159,9 +151,9 @@ const proposals: Proposal[] = [
   },
   {
     id: '4',
-    title: 'PiCommerce SDK - Outils pour Marchands',
-    description: 'Kit de développement pour intégrer les paiements Pi dans n\'importe quelle boutique en ligne en 5 minutes.',
-    fullDescription: 'PiCommerce SDK est un ensemble d\'outils plug-and-play permettant à tout commerçant d\'accepter Pi en moins de 5 minutes. Inclut des plugins pour Shopify, WooCommerce, et une API REST universelle. Le SDK gère automatiquement la conversion, les remboursements, et la comptabilité.',
+    title: 'p4.t',
+    description: 'p4.d',
+    fullDescription: 'p4.f',
     category: 'commerce',
     status: 'funded',
     author: 'CommerceDAO',
@@ -175,14 +167,9 @@ const proposals: Proposal[] = [
     fundingRaised: 60000,
     contributors: 1234,
     comments: [
-      { id: 'c6', author: 'ShopOwner', avatar: '🏪', text: 'Exactement ce dont mon e-commerce a besoin !', date: '2026-03-18', likes: 78 },
+      { id: 'c6', author: 'ShopOwner', avatar: '🏪', text: 'Exactly what my online store needs to accept Pi.', date: '2026-03-18', likes: 78 },
     ],
-    milestones: [
-      { title: 'API Design', description: 'Conception de l\'API REST', completed: true },
-      { title: 'Core SDK', description: 'Développement du SDK principal', completed: true },
-      { title: 'Plugins', description: 'Plugins Shopify et WooCommerce', completed: true },
-      { title: 'Documentation', description: 'Documentation et tutoriels', completed: false },
-    ],
+    milestones: [ms('research', true), ms('build', true), ms('integration', true), ms('docs', false)],
     team: [
       { name: 'Alex Turner', role: 'Lead Developer', avatar: '⚡' },
       { name: 'Yuki Tanaka', role: 'API Architect', avatar: '🏗️' },
@@ -190,9 +177,9 @@ const proposals: Proposal[] = [
   },
   {
     id: '5',
-    title: 'PiMesh - Internet Décentralisé',
-    description: 'Réseau mesh communautaire offrant internet gratuit dans les zones non-connectées, alimenté par Pi.',
-    fullDescription: 'PiMesh crée un réseau internet décentralisé utilisant des nœuds mesh communautaires. Les Pionniers qui partagent leur bande passante sont récompensés en Pi. Les utilisateurs dans les zones sans internet peuvent se connecter gratuitement via le réseau mesh local.',
+    title: 'p5.t',
+    description: 'p5.d',
+    fullDescription: 'p5.f',
     category: 'technology',
     status: 'voting',
     author: 'MeshNet',
@@ -206,15 +193,10 @@ const proposals: Proposal[] = [
     fundingRaised: 0,
     contributors: 0,
     comments: [
-      { id: 'c7', author: 'TechVision', avatar: '🔮', text: 'Ambitieux mais nécessaire. Le vrai web3 !', date: '2026-05-19', likes: 56 },
-      { id: 'c8', author: 'Skeptic42', avatar: '🤔', text: 'Comment garantir la qualité du réseau ?', date: '2026-05-20', likes: 34 },
+      { id: 'c7', author: 'TechVision', avatar: '🔮', text: 'Ambitious but necessary. This is real web3 infrastructure.', date: '2026-05-19', likes: 56 },
+      { id: 'c8', author: 'Skeptic42', avatar: '🤔', text: 'How do you guarantee network quality at scale?', date: '2026-05-20', likes: 34 },
     ],
-    milestones: [
-      { title: 'Hardware Design', description: 'Conception des nœuds mesh', completed: false },
-      { title: 'Protocol', description: 'Protocole de communication P2P', completed: false },
-      { title: 'Pilot City', description: 'Déploiement dans une ville pilote', completed: false },
-      { title: 'Scale Up', description: 'Extension à 10 villes', completed: false },
-    ],
+    milestones: [ms('research', false), ms('build', false), ms('pilot', false), ms('scale', false)],
     team: [
       { name: 'Ivan Petrov', role: 'Network Engineer', avatar: '🔧' },
       { name: 'Amara Diop', role: 'Hardware Lead', avatar: '🔌' },
@@ -223,9 +205,9 @@ const proposals: Proposal[] = [
   },
   {
     id: '6',
-    title: 'PiKids - Éducation Financière pour Enfants',
-    description: 'Jeu éducatif gamifié enseignant la gestion financière et la crypto aux enfants de 8-14 ans.',
-    fullDescription: 'PiKids est un jeu éducatif qui enseigne les concepts financiers de base et la cryptomonnaie aux enfants à travers des aventures interactives. Les enfants gèrent une ville virtuelle, prennent des décisions économiques, et apprennent la valeur de l\'épargne et de l\'investissement.',
+    title: 'p6.t',
+    description: 'p6.d',
+    fullDescription: 'p6.f',
     category: 'education',
     status: 'completed',
     author: 'KidsFinance',
@@ -239,17 +221,124 @@ const proposals: Proposal[] = [
     fundingRaised: 35000,
     contributors: 2156,
     comments: [
-      { id: 'c9', author: 'ParentPioneer', avatar: '👨‍👧', text: 'Mes enfants adorent ! Ils comprennent enfin la crypto.', date: '2026-04-15', likes: 234 },
+      { id: 'c9', author: 'ParentPioneer', avatar: '👨‍👧', text: 'My kids love it and finally understand crypto basics.', date: '2026-04-15', likes: 234 },
     ],
-    milestones: [
-      { title: 'Game Design', description: 'Conception du jeu et des niveaux', completed: true },
-      { title: 'Development', description: 'Développement complet du jeu', completed: true },
-      { title: 'Testing', description: 'Tests avec 500 enfants', completed: true },
-      { title: 'Launch', description: 'Lancement mondial', completed: true },
-    ],
+    milestones: [ms('research', true), ms('build', true), ms('testing', true), ms('launch', true)],
     team: [
       { name: 'Sophie Martin', role: 'Game Designer', avatar: '🎨' },
       { name: 'David Kim', role: 'Developer', avatar: '👨‍💻' },
+    ],
+  },
+  {
+    id: '7',
+    title: 'p7.t',
+    description: 'p7.d',
+    fullDescription: 'p7.f',
+    category: 'commerce',
+    status: 'voting',
+    author: 'RemitDAO',
+    authorAvatar: '💸',
+    createdAt: '2026-08-04',
+    deadline: '2026-09-04',
+    votesFor: 7248,
+    votesAgainst: 412,
+    totalVoters: 7660,
+    fundingGoal: 180000,
+    fundingRaised: 0,
+    contributors: 0,
+    comments: [
+      { id: 'c10', author: 'DiasporaPi', avatar: '🌍', text: 'I pay 8% in fees every month. A 1% Pi corridor changes everything.', date: '2026-08-06', likes: 312 },
+      { id: 'c11', author: 'AgentLagos', avatar: '🏦', text: 'Ready to become a cash-out agent and stake Pi as guarantee.', date: '2026-08-09', likes: 187 },
+    ],
+    milestones: [ms('compliance', true), ms('build', false), ms('audit', false), ms('pilot', false), ms('scale', false)],
+    team: [
+      { name: 'Nadia Haddad', role: 'Payments Lead', avatar: '💱' },
+      { name: 'Emeka Obi', role: 'Agent Network', avatar: '🤝' },
+      { name: 'Sofia Rossi', role: 'Compliance Officer', avatar: '⚖️' },
+    ],
+  },
+  {
+    id: '8',
+    title: 'p8.t',
+    description: 'p8.d',
+    fullDescription: 'p8.f',
+    category: 'commerce',
+    status: 'voting',
+    author: 'CreditGuild',
+    authorAvatar: '📊',
+    createdAt: '2026-08-11',
+    deadline: '2026-09-11',
+    votesFor: 5906,
+    votesAgainst: 1180,
+    totalVoters: 7086,
+    fundingGoal: 150000,
+    fundingRaised: 0,
+    contributors: 0,
+    comments: [
+      { id: 'c12', author: 'MarketSeller', avatar: '🧺', text: 'No bank will lend me 200 Pi of stock. My reputation should count.', date: '2026-08-13', likes: 264 },
+      { id: 'c13', author: 'RiskAnalyst', avatar: '📉', text: 'Please publish the default model before the funding round opens.', date: '2026-08-15', likes: 141 },
+    ],
+    milestones: [ms('research', true), ms('build', false), ms('audit', false), ms('pilot', false), ms('scale', false)],
+    team: [
+      { name: 'Priya Nair', role: 'Credit Scoring', avatar: '🧮' },
+      { name: 'Tomás Herrera', role: 'Smart Contracts', avatar: '⛓️' },
+      { name: 'Grace Mwangi', role: 'Merchant Success', avatar: '🛒' },
+    ],
+  },
+  {
+    id: '9',
+    title: 'p9.t',
+    description: 'p9.d',
+    fullDescription: 'p9.f',
+    category: 'technology',
+    status: 'funding',
+    author: 'VaultDAO',
+    authorAvatar: '🏛️',
+    createdAt: '2026-07-02',
+    deadline: '2026-09-30',
+    votesFor: 8134,
+    votesAgainst: 526,
+    totalVoters: 8660,
+    fundingGoal: 250000,
+    fundingRaised: 118750,
+    contributors: 2043,
+    comments: [
+      { id: 'c14', author: 'SolarInvestor', avatar: '☀️', text: 'Fractional solar revenue paid in Pi is a genuine yield source.', date: '2026-07-05', likes: 298 },
+      { id: 'c15', author: 'AuditFirst', avatar: '🔍', text: 'Third-party asset audits must be public for every vault.', date: '2026-07-11', likes: 176 },
+    ],
+    milestones: [ms('compliance', true), ms('partners', true), ms('build', false), ms('audit', false), ms('launch', false)],
+    team: [
+      { name: 'Hassan Karim', role: 'Asset Manager', avatar: '🏗️' },
+      { name: 'Elena Novak', role: 'Tokenization Lead', avatar: '🪙' },
+      { name: 'Daniel Owusu', role: 'IoT Monitoring', avatar: '📡' },
+    ],
+  },
+  {
+    id: '10',
+    title: 'p10.t',
+    description: 'p10.d',
+    fullDescription: 'p10.f',
+    category: 'environment',
+    status: 'approved',
+    author: 'GridPioneers',
+    authorAvatar: '⚡',
+    createdAt: '2026-06-18',
+    deadline: '2026-08-18',
+    votesFor: 9412,
+    votesAgainst: 388,
+    totalVoters: 9800,
+    fundingGoal: 200000,
+    fundingRaised: 0,
+    contributors: 0,
+    comments: [
+      { id: 'c16', author: 'RooftopSolar', avatar: '🔆', text: 'I export power for almost nothing. Selling to neighbours in Pi is fairer.', date: '2026-06-21', likes: 341 },
+      { id: 'c17', author: 'CarbonAudit', avatar: '🌱', text: 'Linking each trade to the EcoChain carbon registry is the smart part.', date: '2026-06-27', likes: 205 },
+    ],
+    milestones: [ms('research', true), ms('integration', true), ms('build', false), ms('pilot', false), ms('scale', false)],
+    team: [
+      { name: 'Lucas Meyer', role: 'Energy Systems', avatar: '🔋' },
+      { name: 'Ayaka Mori', role: 'Smart Metering', avatar: '📈' },
+      { name: 'Zanele Dube', role: 'Community Grids', avatar: '🏘️' },
     ],
   },
 ];
@@ -259,28 +348,47 @@ const userVotes: UserVote[] = [
   { proposalId: '2', vote: 'for', date: '2026-04-21' },
   { proposalId: '3', vote: 'for', date: '2026-05-02' },
   { proposalId: '5', vote: 'against', date: '2026-05-19' },
+  { proposalId: '7', vote: 'for', date: '2026-08-06' },
+  { proposalId: '10', vote: 'for', date: '2026-06-20' },
 ];
 
 const userContributions: UserContribution[] = [
   { proposalId: '2', amount: 150, date: '2026-04-25' },
   { proposalId: '4', amount: 75, date: '2026-03-20' },
   { proposalId: '6', amount: 50, date: '2026-02-15' },
+  { proposalId: '9', amount: 120, date: '2026-07-08' },
 ];
 
+/** Resolve every i18n key of a proposal into the active locale. */
+function localize(p: Proposal): Proposal {
+  return {
+    ...p,
+    title: t(p.title),
+    description: t(p.description),
+    fullDescription: t(p.fullDescription),
+    milestones: p.milestones.map((m) => ({
+      ...m,
+      title: t(m.title),
+      description: t(m.description),
+    })),
+  };
+}
+
 export function getProposals(): Proposal[] {
-  return proposals;
+  return proposals.map(localize);
 }
 
 export function getProposalById(id: string): Proposal | undefined {
-  return proposals.find((p) => p.id === id);
+  const found = proposals.find((p) => p.id === id);
+  return found ? localize(found) : undefined;
 }
 
 export function getProposalsByStatus(status: ProposalStatus): Proposal[] {
-  return proposals.filter((p) => p.status === status);
+  return proposals.filter((p) => p.status === status).map(localize);
 }
 
 export function getProposalsByCategory(category: Category): Proposal[] {
-  return proposals.filter((p) => p.category === category);
+  return proposals.filter((p) => p.category === category).map(localize);
 }
 
 export function getUserVotes(): UserVote[] {
@@ -292,26 +400,26 @@ export function getUserContributions(): UserContribution[] {
 }
 
 export function getCategoryLabel(cat: Category): string {
-  const labels: Record<Category, string> = {
-    education: '📚 Éducation',
-    commerce: '🛍️ Commerce',
-    technology: '💻 Technologie',
-    social: '🤝 Social',
-    environment: '🌍 Environnement',
+  const keys: Record<Category, string> = {
+    education: 'proposals.cat.education',
+    commerce: 'proposals.cat.commerce',
+    technology: 'proposals.cat.technology',
+    social: 'proposals.cat.social',
+    environment: 'proposals.cat.environment',
   };
-  return labels[cat];
+  return t(keys[cat]);
 }
 
 export function getStatusLabel(status: ProposalStatus): string {
-  const labels: Record<ProposalStatus, string> = {
-    voting: '🗳️ En Vote',
-    approved: '✅ Approuvé',
-    funding: '💰 En Financement',
-    funded: '🎉 Financé',
-    completed: '🏆 Terminé',
-    rejected: '❌ Rejeté',
+  const keys: Record<ProposalStatus, string> = {
+    voting: 'proposals.filter.voting',
+    approved: 'proposals.filter.approved',
+    funding: 'proposals.filter.funding',
+    funded: 'proposals.filter.funded',
+    completed: 'proposals.filter.completed',
+    rejected: 'status.rejected',
   };
-  return labels[status];
+  return t(keys[status]);
 }
 
 export function getStatusColor(status: ProposalStatus): string {

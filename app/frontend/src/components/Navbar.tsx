@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { getCurrentUser, authenticate, logout, subscribe, type PiUser } from '@/lib/pi-sdk';
 import { t, subscribeI18n } from '@/lib/i18n';
@@ -9,23 +9,27 @@ import ThemeToggle from '@/components/ThemeToggle';
 import PushNotifications from '@/components/PushNotifications';
 import { getTotalUnread } from '@/lib/messaging';
 
+interface NavItem {
+  path: string;
+  label: string;
+  icon: string;
+  desc?: string;
+}
+
 export default function Navbar() {
   const [user, setUser] = useState<PiUser | null>(getCurrentUser());
   const [loading, setLoading] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
+  const [menuFilter, setMenuFilter] = useState('');
+  const [openSection, setOpenSection] = useState<string | null>('main');
   const [, setLangTick] = useState(0);
   const location = useLocation();
   const navRef = useRef<HTMLDivElement>(null);
   const dropdownTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  useEffect(() => {
-    return subscribe(() => setUser(getCurrentUser()));
-  }, []);
-
-  useEffect(() => {
-    return subscribeI18n(() => setLangTick((n) => n + 1));
-  }, []);
+  useEffect(() => subscribe(() => setUser(getCurrentUser())), []);
+  useEffect(() => subscribeI18n(() => setLangTick((n) => n + 1)), []);
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -33,14 +37,29 @@ export default function Navbar() {
         setActiveDropdown(null);
       }
     };
+    const handleKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setActiveDropdown(null);
+        setMobileOpen(false);
+      }
+    };
     document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    document.addEventListener('keydown', handleKey);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('keydown', handleKey);
+    };
   }, []);
 
   useEffect(() => {
     setMobileOpen(false);
     setActiveDropdown(null);
+    setMenuFilter('');
   }, [location.pathname]);
+
+  useEffect(() => {
+    setMenuFilter('');
+  }, [activeDropdown]);
 
   const handleAuth = async () => {
     setLoading(true);
@@ -62,14 +81,16 @@ export default function Navbar() {
   };
 
   const handleDropdownLeave = () => {
-    dropdownTimeoutRef.current = setTimeout(() => {
-      setActiveDropdown(null);
-    }, 150);
+    dropdownTimeoutRef.current = setTimeout(() => setActiveDropdown(null), 200);
+  };
+
+  const toggleDropdown = (name: string) => {
+    setActiveDropdown((cur) => (cur === name ? null : name));
   };
 
   const unreadMessages = getTotalUnread();
 
-  const mainLinks = [
+  const mainLinks: NavItem[] = [
     { path: '/', label: t('nav.home'), icon: '🏠' },
     { path: '/proposals', label: t('nav.proposals'), icon: '📋' },
     { path: '/funding', label: t('nav.funding'), icon: '💎' },
@@ -77,7 +98,7 @@ export default function Navbar() {
     { path: '/quests', label: t('nav.quests'), icon: '🎯' },
   ];
 
-  const ecoLinks = [
+  const ecoLinks: NavItem[] = [
     { path: '/eco-wallet', label: t('nav.eco.wallet'), icon: '🌿', desc: t('nav.eco.wallet_desc') },
     { path: '/climate', label: t('nav.eco.climate'), icon: '🌍', desc: t('nav.eco.climate_desc') },
     { path: '/eco-market', label: t('nav.eco.market'), icon: '🛒', desc: t('nav.eco.market_desc') },
@@ -92,7 +113,7 @@ export default function Navbar() {
     { path: '/carbon-credits', label: t('nav.eco.carbon'), icon: '🌱', desc: t('nav.eco.carbon_desc') },
   ];
 
-  const daoLinks = [
+  const daoLinks: NavItem[] = [
     { path: '/quadratic-voting', label: t('nav.dao.quadratic'), icon: '📐', desc: t('nav.dao.quadratic_desc') },
     { path: '/committees', label: t('nav.dao.committees'), icon: '🏛️', desc: t('nav.dao.committees_desc') },
     { path: '/treasury', label: t('nav.dao.treasury'), icon: '💰', desc: t('nav.dao.treasury_desc') },
@@ -101,7 +122,7 @@ export default function Navbar() {
     { path: '/delegation', label: t('nav.dao.delegation'), icon: '🤝', desc: t('nav.dao.delegation_desc') },
   ];
 
-  const moreLinks = [
+  const moreLinks: NavItem[] = [
     { path: '/my-dashboard', label: t('nav.more.dashboard'), icon: '📊', desc: t('nav.more.dashboard_desc') },
     { path: '/rewards', label: t('nav.more.rewards'), icon: '🎁', desc: t('nav.more.rewards_desc') },
     { path: '/badges', label: t('nav.more.badges'), icon: '🏅', desc: t('nav.more.badges_desc') },
@@ -118,13 +139,49 @@ export default function Navbar() {
     { path: '/admin', label: t('nav.more.admin'), icon: '🛡️', desc: t('nav.more.admin_desc') },
   ];
 
+  const filterItems = (items: NavItem[]) => {
+    const q = menuFilter.trim().toLowerCase();
+    if (!q) return items;
+    return items.filter(
+      (i) => i.label.toLowerCase().includes(q) || (i.desc ?? '').toLowerCase().includes(q)
+    );
+  };
+
+  const filteredEco = useMemo(() => filterItems(ecoLinks), [menuFilter, ecoLinks]);
+  const filteredMore = useMemo(() => filterItems(moreLinks), [menuFilter, moreLinks]);
+
   const isEcoActive = ecoLinks.some((l) => location.pathname === l.path);
   const isDaoActive = daoLinks.some((l) => location.pathname === l.path);
   const isMoreActive = moreLinks.some((l) => location.pathname === l.path);
 
+  const sectionToggle = (id: string) => setOpenSection((cur) => (cur === id ? null : id));
+
+  const chevron = (open: boolean) => (
+    <svg
+      className={`w-3 h-3 transition-transform duration-200 ${open ? 'rotate-180' : ''}`}
+      fill="none"
+      stroke="currentColor"
+      viewBox="0 0 24 24"
+    >
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+    </svg>
+  );
+
+  const quickFilter = (accent: string) => (
+    <div className="px-3 pb-2">
+      <input
+        type="text"
+        value={menuFilter}
+        onChange={(e) => setMenuFilter(e.target.value)}
+        placeholder={t('common.search')}
+        aria-label={t('common.search')}
+        className={`w-full px-3 py-1.5 rounded-lg bg-slate-900/70 border border-white/10 text-sm text-white placeholder:text-gray-500 outline-none focus:border-${accent}-400/60 transition-colors`}
+      />
+    </div>
+  );
+
   return (
     <nav className="sticky top-0 z-50 bg-slate-900/80 backdrop-blur-xl border-b border-white/[0.06]" ref={navRef}>
-      {/* Top accent line */}
       <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-indigo-500 via-purple-500 to-amber-400" />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -151,29 +208,29 @@ export default function Navbar() {
               <Link
                 key={link.path}
                 to={link.path}
+                aria-current={location.pathname === link.path ? 'page' : undefined}
                 className={`relative px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
-                  location.pathname === link.path
-                    ? 'text-white'
-                    : 'text-gray-400 hover:text-white'
+                  location.pathname === link.path ? 'text-white' : 'text-gray-400 hover:text-white'
                 }`}
               >
                 <span className="relative z-10">{link.label}</span>
                 {location.pathname === link.path && (
-                  <span className="absolute inset-0 rounded-lg bg-white/[0.08] border border-white/[0.08]" />
+                  <>
+                    <span className="absolute inset-0 rounded-lg bg-white/[0.08] border border-white/[0.08]" />
+                    <span className="absolute -bottom-[9px] left-1/2 -translate-x-1/2 h-[2px] w-6 rounded-full bg-gradient-to-r from-indigo-400 to-purple-400" />
+                  </>
                 )}
               </Link>
             ))}
 
-            {/* Separator */}
             <div className="w-px h-5 bg-white/10 mx-1" />
 
             {/* EcoChain Mega Menu */}
-            <div
-              className="relative"
-              onMouseEnter={() => handleDropdownEnter('eco')}
-              onMouseLeave={handleDropdownLeave}
-            >
+            <div className="relative" onMouseEnter={() => handleDropdownEnter('eco')} onMouseLeave={handleDropdownLeave}>
               <button
+                onClick={() => toggleDropdown('eco')}
+                aria-haspopup="true"
+                aria-expanded={activeDropdown === 'eco'}
                 className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
                   isEcoActive || activeDropdown === 'eco'
                     ? 'text-emerald-300 bg-emerald-500/10'
@@ -182,32 +239,26 @@ export default function Navbar() {
               >
                 <span className="text-xs">🌱</span>
                 <span>EcoChain</span>
-                <svg
-                  className={`w-3 h-3 transition-transform duration-200 ${activeDropdown === 'eco' ? 'rotate-180' : ''}`}
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                </svg>
+                {chevron(activeDropdown === 'eco')}
               </button>
 
               {activeDropdown === 'eco' && (
-                <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-[420px] bg-slate-800/95 backdrop-blur-xl border border-white/[0.08] rounded-2xl shadow-2xl shadow-black/40 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200 z-50">
+                <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-[440px] bg-slate-800/95 backdrop-blur-xl border border-white/[0.08] rounded-2xl shadow-2xl shadow-black/40 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200 z-50">
                   <div className="p-2">
-                    <div className="px-3 py-2 mb-1">
+                    <div className="px-3 py-2">
                       <p className="text-xs font-semibold text-emerald-400 uppercase tracking-wider">{t('nav.ecochain')} AI</p>
                       <p className="text-[11px] text-gray-500 mt-0.5">{t('nav.ecochain_desc')}</p>
                     </div>
-                    <div className="grid grid-cols-2 gap-0.5">
-                      {ecoLinks.map((link) => (
+                    {quickFilter('emerald')}
+                    <div className="grid grid-cols-2 gap-0.5 max-h-[52vh] overflow-y-auto">
+                      {filteredEco.map((link) => (
                         <Link
                           key={link.path}
                           to={link.path}
                           className={`flex items-start gap-2.5 px-3 py-2.5 rounded-xl transition-all duration-150 ${
                             location.pathname === link.path
                               ? 'bg-emerald-500/15 text-emerald-200'
-                              : 'text-gray-300 hover:bg-white/[0.04] hover:text-white'
+                              : 'text-gray-300 hover:bg-white/[0.06] hover:text-white'
                           }`}
                         >
                           <span className="text-base mt-0.5 shrink-0">{link.icon}</span>
@@ -218,18 +269,20 @@ export default function Navbar() {
                         </Link>
                       ))}
                     </div>
+                    {filteredEco.length === 0 && (
+                      <p className="px-3 py-4 text-center text-xs text-gray-500">{t('proposals.no_results')}</p>
+                    )}
                   </div>
                 </div>
               )}
             </div>
 
             {/* DAO Mega Menu */}
-            <div
-              className="relative"
-              onMouseEnter={() => handleDropdownEnter('dao')}
-              onMouseLeave={handleDropdownLeave}
-            >
+            <div className="relative" onMouseEnter={() => handleDropdownEnter('dao')} onMouseLeave={handleDropdownLeave}>
               <button
+                onClick={() => toggleDropdown('dao')}
+                aria-haspopup="true"
+                aria-expanded={activeDropdown === 'dao'}
                 className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
                   isDaoActive || activeDropdown === 'dao'
                     ? 'text-purple-300 bg-purple-500/10'
@@ -238,18 +291,11 @@ export default function Navbar() {
               >
                 <span className="text-xs">🏛️</span>
                 <span>DAO</span>
-                <svg
-                  className={`w-3 h-3 transition-transform duration-200 ${activeDropdown === 'dao' ? 'rotate-180' : ''}`}
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                </svg>
+                {chevron(activeDropdown === 'dao')}
               </button>
 
               {activeDropdown === 'dao' && (
-                <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-[280px] bg-slate-800/95 backdrop-blur-xl border border-white/[0.08] rounded-2xl shadow-2xl shadow-black/40 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200 z-50">
+                <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-[290px] bg-slate-800/95 backdrop-blur-xl border border-white/[0.08] rounded-2xl shadow-2xl shadow-black/40 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200 z-50">
                   <div className="p-2">
                     <div className="px-3 py-2 mb-1">
                       <p className="text-xs font-semibold text-purple-400 uppercase tracking-wider">{t('nav.dao_desc')}</p>
@@ -263,7 +309,7 @@ export default function Navbar() {
                           className={`flex items-center gap-2.5 px-3 py-2.5 rounded-xl transition-all duration-150 ${
                             location.pathname === link.path
                               ? 'bg-purple-500/15 text-purple-200'
-                              : 'text-gray-300 hover:bg-white/[0.04] hover:text-white'
+                              : 'text-gray-300 hover:bg-white/[0.06] hover:text-white'
                           }`}
                         >
                           <span className="text-base shrink-0">{link.icon}</span>
@@ -280,12 +326,11 @@ export default function Navbar() {
             </div>
 
             {/* More Mega Menu */}
-            <div
-              className="relative"
-              onMouseEnter={() => handleDropdownEnter('more')}
-              onMouseLeave={handleDropdownLeave}
-            >
+            <div className="relative" onMouseEnter={() => handleDropdownEnter('more')} onMouseLeave={handleDropdownLeave}>
               <button
+                onClick={() => toggleDropdown('more')}
+                aria-haspopup="true"
+                aria-expanded={activeDropdown === 'more'}
                 className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
                   isMoreActive || activeDropdown === 'more'
                     ? 'text-amber-300 bg-amber-500/10'
@@ -293,32 +338,26 @@ export default function Navbar() {
                 }`}
               >
                 <span>{t('nav.more')}</span>
-                <svg
-                  className={`w-3 h-3 transition-transform duration-200 ${activeDropdown === 'more' ? 'rotate-180' : ''}`}
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                </svg>
+                {chevron(activeDropdown === 'more')}
               </button>
 
               {activeDropdown === 'more' && (
-                <div className="absolute top-full right-0 mt-2 w-[480px] bg-slate-800/95 backdrop-blur-xl border border-white/[0.08] rounded-2xl shadow-2xl shadow-black/40 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200 z-50">
+                <div className="absolute top-full right-0 mt-2 w-[490px] bg-slate-800/95 backdrop-blur-xl border border-white/[0.08] rounded-2xl shadow-2xl shadow-black/40 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200 z-50">
                   <div className="p-2">
-                    <div className="px-3 py-2 mb-1">
+                    <div className="px-3 py-2">
                       <p className="text-xs font-semibold text-amber-400 uppercase tracking-wider">{t('nav.explore')}</p>
                       <p className="text-[11px] text-gray-500 mt-0.5">{t('nav.explore_desc')}</p>
                     </div>
-                    <div className="grid grid-cols-2 gap-0.5">
-                      {moreLinks.map((link) => (
+                    {quickFilter('amber')}
+                    <div className="grid grid-cols-2 gap-0.5 max-h-[52vh] overflow-y-auto">
+                      {filteredMore.map((link) => (
                         <Link
                           key={link.path}
                           to={link.path}
                           className={`flex items-center gap-2.5 px-3 py-2.5 rounded-xl transition-all duration-150 ${
                             location.pathname === link.path
                               ? 'bg-amber-500/15 text-amber-200'
-                              : 'text-gray-300 hover:bg-white/[0.04] hover:text-white'
+                              : 'text-gray-300 hover:bg-white/[0.06] hover:text-white'
                           }`}
                         >
                           <span className="text-base shrink-0">{link.icon}</span>
@@ -329,6 +368,9 @@ export default function Navbar() {
                         </Link>
                       ))}
                     </div>
+                    {filteredMore.length === 0 && (
+                      <p className="px-3 py-4 text-center text-xs text-gray-500">{t('proposals.no_results')}</p>
+                    )}
                   </div>
                 </div>
               )}
@@ -345,6 +387,7 @@ export default function Navbar() {
               to="/messages"
               className="relative p-1.5 sm:p-2 rounded-lg text-gray-400 hover:text-white hover:bg-white/[0.06] transition-all duration-200"
               title={t('nav.messages')}
+              aria-label={t('nav.messages')}
             >
               <svg className="w-4 h-4 sm:w-[18px] sm:h-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
@@ -385,6 +428,7 @@ export default function Navbar() {
                   onClick={logout}
                   className="hidden sm:block p-1.5 rounded-lg text-gray-500 hover:text-red-400 hover:bg-red-500/10 transition-all duration-200"
                   title={t('nav.disconnect')}
+                  aria-label={t('nav.disconnect')}
                 >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
@@ -417,6 +461,7 @@ export default function Navbar() {
               onClick={() => setMobileOpen(!mobileOpen)}
               className="lg:hidden text-gray-400 hover:text-white p-2 rounded-lg hover:bg-white/[0.06] transition-all duration-200 ml-1"
               aria-label={t('nav.menu')}
+              aria-expanded={mobileOpen}
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 {mobileOpen ? (
@@ -429,32 +474,48 @@ export default function Navbar() {
           </div>
         </div>
 
-        {/* Mobile Navigation */}
+        {/* Mobile Navigation — collapsible sections */}
         {mobileOpen && (
-          <div className="lg:hidden pb-4 border-t border-white/[0.06] mt-2 pt-4 max-h-[80vh] overflow-y-auto">
-            {/* Main links */}
-            <div className="space-y-0.5 mb-4">
-              <p className="px-3 py-1.5 text-[10px] font-bold text-gray-500 uppercase tracking-widest">{t('nav.navigation')}</p>
-              {mainLinks.map((link) => (
-                <Link
-                  key={link.path}
-                  to={link.path}
-                  className={`flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${
-                    location.pathname === link.path
-                      ? 'bg-white/[0.08] text-white'
-                      : 'text-gray-400 hover:text-white hover:bg-white/[0.04]'
-                  }`}
-                >
-                  <span>{link.icon}</span>
-                  <span>{link.label}</span>
-                </Link>
-              ))}
-            </div>
+          <div className="lg:hidden pb-4 border-t border-white/[0.06] mt-2 pt-3 max-h-[80vh] overflow-y-auto">
+            {/* Navigation */}
+            <button
+              onClick={() => sectionToggle('main')}
+              aria-expanded={openSection === 'main'}
+              className="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-[11px] font-bold text-gray-400 uppercase tracking-widest hover:bg-white/[0.04] transition-colors"
+            >
+              <span>{t('nav.navigation')}</span>
+              {chevron(openSection === 'main')}
+            </button>
+            {openSection === 'main' && (
+              <div className="space-y-0.5 mb-2">
+                {mainLinks.map((link) => (
+                  <Link
+                    key={link.path}
+                    to={link.path}
+                    className={`flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${
+                      location.pathname === link.path
+                        ? 'bg-white/[0.08] text-white'
+                        : 'text-gray-400 hover:text-white hover:bg-white/[0.04]'
+                    }`}
+                  >
+                    <span>{link.icon}</span>
+                    <span>{link.label}</span>
+                  </Link>
+                ))}
+              </div>
+            )}
 
-            {/* EcoChain section */}
-            <div className="space-y-0.5 mb-4">
-              <p className="px-3 py-1.5 text-[10px] font-bold text-emerald-500 uppercase tracking-widest">🌱 {t('nav.ecochain')} AI</p>
-              <div className="grid grid-cols-2 gap-0.5">
+            {/* EcoChain */}
+            <button
+              onClick={() => sectionToggle('eco')}
+              aria-expanded={openSection === 'eco'}
+              className="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-[11px] font-bold text-emerald-400 uppercase tracking-widest hover:bg-white/[0.04] transition-colors"
+            >
+              <span>🌱 {t('nav.ecochain')} AI</span>
+              {chevron(openSection === 'eco')}
+            </button>
+            {openSection === 'eco' && (
+              <div className="grid grid-cols-2 gap-0.5 mb-2">
                 {ecoLinks.map((link) => (
                   <Link
                     key={link.path}
@@ -470,48 +531,73 @@ export default function Navbar() {
                   </Link>
                 ))}
               </div>
-            </div>
+            )}
 
-            {/* DAO section */}
-            <div className="space-y-0.5 mb-4">
-              <p className="px-3 py-1.5 text-[10px] font-bold text-purple-400 uppercase tracking-widest">🏛️ {t('nav.dao_desc')}</p>
-              {daoLinks.map((link) => (
-                <Link
-                  key={link.path}
-                  to={link.path}
-                  className={`flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${
-                    location.pathname === link.path
-                      ? 'bg-purple-500/15 text-purple-300'
-                      : 'text-gray-400 hover:text-white hover:bg-white/[0.04]'
-                  }`}
-                >
-                  <span>{link.icon}</span>
-                  <span>{link.label}</span>
+            {/* DAO */}
+            <button
+              onClick={() => sectionToggle('dao')}
+              aria-expanded={openSection === 'dao'}
+              className="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-[11px] font-bold text-purple-400 uppercase tracking-widest hover:bg-white/[0.04] transition-colors"
+            >
+              <span>🏛️ {t('nav.dao_desc')}</span>
+              {chevron(openSection === 'dao')}
+            </button>
+            {openSection === 'dao' && (
+              <div className="space-y-0.5 mb-2">
+                {daoLinks.map((link) => (
+                  <Link
+                    key={link.path}
+                    to={link.path}
+                    className={`flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${
+                      location.pathname === link.path
+                        ? 'bg-purple-500/15 text-purple-300'
+                        : 'text-gray-400 hover:text-white hover:bg-white/[0.04]'
+                    }`}
+                  >
+                    <span>{link.icon}</span>
+                    <span>{link.label}</span>
+                  </Link>
+                ))}
+              </div>
+            )}
+
+            {/* Social */}
+            <button
+              onClick={() => sectionToggle('social')}
+              aria-expanded={openSection === 'social'}
+              className="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-[11px] font-bold text-blue-400 uppercase tracking-widest hover:bg-white/[0.04] transition-colors"
+            >
+              <span>💬 {t('nav.social')}</span>
+              {chevron(openSection === 'social')}
+            </button>
+            {openSection === 'social' && (
+              <div className="space-y-0.5 mb-2">
+                <Link to="/messages" className={`flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${location.pathname === '/messages' ? 'bg-white/[0.08] text-white' : 'text-gray-400 hover:text-white hover:bg-white/[0.04]'}`}>
+                  <span>💌</span>
+                  <span>{t('nav.messages')}</span>
+                  {unreadMessages > 0 && <span className="ml-auto bg-red-500 text-white text-[10px] px-1.5 py-0.5 rounded-full font-bold">{unreadMessages}</span>}
                 </Link>
-              ))}
-            </div>
+                <Link to="/badges" className={`flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${location.pathname === '/badges' ? 'bg-white/[0.08] text-white' : 'text-gray-400 hover:text-white hover:bg-white/[0.04]'}`}>
+                  <span>🏅</span>
+                  <span>{t('nav.badges')}</span>
+                </Link>
+                <Link to="/project-tracking" className={`flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${location.pathname === '/project-tracking' ? 'bg-white/[0.08] text-white' : 'text-gray-400 hover:text-white hover:bg-white/[0.04]'}`}>
+                  <span>📋</span>
+                  <span>{t('nav.project_tracking')}</span>
+                </Link>
+              </div>
+            )}
 
-            {/* Social section */}
-            <div className="space-y-0.5 mb-4">
-              <p className="px-3 py-1.5 text-[10px] font-bold text-blue-400 uppercase tracking-widest">💬 {t('nav.social')}</p>
-              <Link to="/messages" className={`flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${location.pathname === '/messages' ? 'bg-white/[0.08] text-white' : 'text-gray-400 hover:text-white hover:bg-white/[0.04]'}`}>
-                <span>💌</span>
-                <span>{t('nav.messages')}</span>
-                {unreadMessages > 0 && <span className="ml-auto bg-red-500 text-white text-[10px] px-1.5 py-0.5 rounded-full font-bold">{unreadMessages}</span>}
-              </Link>
-              <Link to="/badges" className={`flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${location.pathname === '/badges' ? 'bg-white/[0.08] text-white' : 'text-gray-400 hover:text-white hover:bg-white/[0.04]'}`}>
-                <span>🏅</span>
-                <span>{t('nav.badges')}</span>
-              </Link>
-              <Link to="/project-tracking" className={`flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${location.pathname === '/project-tracking' ? 'bg-white/[0.08] text-white' : 'text-gray-400 hover:text-white hover:bg-white/[0.04]'}`}>
-                <span>📋</span>
-                <span>{t('nav.project_tracking')}</span>
-              </Link>
-            </div>
-
-            {/* More section */}
-            <div className="space-y-0.5 pt-3 border-t border-white/[0.06]">
-              <p className="px-3 py-1.5 text-[10px] font-bold text-amber-400 uppercase tracking-widest">⚡ {t('nav.more')}</p>
+            {/* More */}
+            <button
+              onClick={() => sectionToggle('more')}
+              aria-expanded={openSection === 'more'}
+              className="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-[11px] font-bold text-amber-400 uppercase tracking-widest hover:bg-white/[0.04] transition-colors"
+            >
+              <span>⚡ {t('nav.more')}</span>
+              {chevron(openSection === 'more')}
+            </button>
+            {openSection === 'more' && (
               <div className="grid grid-cols-2 gap-0.5">
                 {moreLinks.map((link) => (
                   <Link
@@ -528,7 +614,7 @@ export default function Navbar() {
                   </Link>
                 ))}
               </div>
-            </div>
+            )}
           </div>
         )}
       </div>

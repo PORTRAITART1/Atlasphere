@@ -1,5 +1,6 @@
 // Atlasphere API Service - Connects frontend to real backend
 import { createClient } from '@metagptx/web-sdk';
+import { t } from './i18n';
 
 // Lazy-initialize client to avoid blocking on module load
 let _client: ReturnType<typeof createClient> | null = null;
@@ -99,6 +100,42 @@ export interface NotificationListResponse {
 
 // ============ PROJECTS API ============
 
+// Seeded projects store their text as i18n keys (e.g. "p1.t", "p1.m1.t") so the
+// same record can be rendered in the 7 supported languages. User-submitted
+// projects keep their raw text and are returned untouched.
+const I18N_KEY_RE = /^(p\d+|ms)\.[a-z0-9_.]+$/;
+
+function tr(value: string | null | undefined): string {
+  if (!value) return '';
+  return I18N_KEY_RE.test(value) ? t(value) : value;
+}
+
+function localizeMilestones(raw: string): string {
+  try {
+    const list = JSON.parse(raw) as { title?: string; description?: string }[];
+    if (!Array.isArray(list)) return raw;
+    return JSON.stringify(
+      list.map((m) => ({ ...m, title: tr(m.title), description: tr(m.description) }))
+    );
+  } catch {
+    return raw;
+  }
+}
+
+export function localizeProject(p: Project): Project {
+  return {
+    ...p,
+    title: tr(p.title),
+    description: tr(p.description),
+    milestones: p.milestones ? localizeMilestones(p.milestones) : p.milestones,
+  };
+}
+
+function localizeList(data: ProjectListResponse): ProjectListResponse {
+  if (!data?.items) return data;
+  return { ...data, items: data.items.map(localizeProject) };
+}
+
 export async function fetchAllProjects(params?: {
   query?: Record<string, unknown>;
   sort?: string;
@@ -113,7 +150,7 @@ export async function fetchAllProjects(params?: {
 
   const url = `/api/v1/entities/projects/all${searchParams.toString() ? '?' + searchParams.toString() : ''}`;
   const response = await getClient().apiCall.invoke({ url, method: 'GET' });
-  return response?.data as ProjectListResponse;
+  return localizeList(response?.data as ProjectListResponse);
 }
 
 export async function fetchMyProjects(params?: {
@@ -130,7 +167,7 @@ export async function fetchMyProjects(params?: {
 
   const url = `/api/v1/entities/projects${searchParams.toString() ? '?' + searchParams.toString() : ''}`;
   const response = await getClient().apiCall.invoke({ url, method: 'GET' });
-  return response?.data as ProjectListResponse;
+  return localizeList(response?.data as ProjectListResponse);
 }
 
 export async function fetchProjectById(id: number): Promise<Project | null> {
@@ -140,7 +177,8 @@ export async function fetchProjectById(id: number): Promise<Project | null> {
       method: 'GET',
     });
     const data = response?.data as ProjectListResponse;
-    return data?.items?.[0] || null;
+    const found = data?.items?.[0];
+    return found ? localizeProject(found) : null;
   } catch {
     return null;
   }
@@ -323,14 +361,15 @@ export async function markAllNotificationsRead(ids: number[]): Promise<void> {
 
 export function getStatusLabel(status: string | null): string {
   const map: Record<string, string> = {
-    voting: '🗳️ En Vote',
-    approved: '✅ Approuvé',
-    funding: '💰 En Financement',
-    funded: '🎉 Financé',
-    completed: '🏆 Terminé',
-    rejected: '❌ Rejeté',
+    voting: 'proposals.filter.voting',
+    approved: 'proposals.filter.approved',
+    funding: 'proposals.filter.funding',
+    funded: 'proposals.filter.funded',
+    completed: 'proposals.filter.completed',
+    rejected: 'status.rejected',
   };
-  return map[status || ''] || status || 'Inconnu';
+  const key = map[status || ''];
+  return key ? t(key) : status || '—';
 }
 
 export function getStatusColor(status: string | null): string {
@@ -347,13 +386,14 @@ export function getStatusColor(status: string | null): string {
 
 export function getCategoryLabel(category: string): string {
   const map: Record<string, string> = {
-    education: '📚 Éducation',
-    commerce: '🛍️ Commerce',
-    technology: '💻 Technologie',
-    social: '🤝 Social',
-    environment: '🌍 Environnement',
+    education: 'proposals.cat.education',
+    commerce: 'proposals.cat.commerce',
+    technology: 'proposals.cat.technology',
+    social: 'proposals.cat.social',
+    environment: 'proposals.cat.environment',
   };
-  return map[category] || category;
+  const key = map[category];
+  return key ? t(key) : category;
 }
 
 export function parseMilestones(milestones: string | null): { title: string; description: string; completed: boolean }[] {

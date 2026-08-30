@@ -1,31 +1,37 @@
 // Atlasphere Internationalization (i18n) - 6 languages: FR, EN, ES, PT, ZH, AR
 import { useState, useEffect } from 'react';
+import { ru } from './locales/ru';
+import { content } from './locales/content';
 
-export type Locale = 'en' | 'es' | 'ar' | 'zh' | 'pt' | 'fr';
+export type Locale = 'en' | 'ar' | 'zh' | 'ru' | 'fr' | 'pt' | 'es';
 
-export const locales: Locale[] = ['en', 'es', 'ar', 'zh', 'pt', 'fr'];
+// Display order: English, Arabic, Chinese, Russian, French, Portuguese, Spanish
+export const locales: Locale[] = ['en', 'ar', 'zh', 'ru', 'fr', 'pt', 'es'];
 export const localeNames: Record<Locale, string> = {
   en: 'English',
-  fr: 'Français',
-  es: 'Español',
-  pt: 'Português',
+  ar: 'العربية',
   zh: '中文',
-  ar: 'العربية'
+  ru: 'Русский',
+  fr: 'Français',
+  pt: 'Português',
+  es: 'Español'
 };
 
 export const localeFlags: Record<Locale, string> = {
   en: '🇬🇧',
-  fr: '🇫🇷',
-  es: '🇪🇸',
-  pt: '🇧🇷',
+  ar: '🇸🇦',
   zh: '🇨🇳',
-  ar: '🇸🇦'
+  ru: '🇷🇺',
+  fr: '🇫🇷',
+  pt: '🇧🇷',
+  es: '🇪🇸'
 };
 
 type TranslationKey = string;
 type Translations = Record<TranslationKey, string>;
 
 const messages: Record<Locale, Translations> = {
+  ru,
   fr: {
     // Navigation
     'nav.home': 'Accueil',
@@ -3536,6 +3542,12 @@ const messages: Record<Locale, Translations> = {
     'terms.s12.text': 'لأي أسئلة حول هذه الشروط، تواصل معنا عبر منصة Pi Network أو من خلال نظام الدعم المجتمعي.',
   }
 };
+
+// Merge multilingual project & milestone content into every dictionary.
+// English acts as the fallback for any locale without a content block.
+locales.forEach((loc) => {
+  Object.assign(messages[loc], content[loc] ?? content.en);
+});
 
 // State management
 let currentLocale: Locale = 'en';
