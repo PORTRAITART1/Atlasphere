@@ -233,7 +233,7 @@ async function onIncompletePaymentFound(payment: APIPayment) {
     if (!payment.status.developer_approved) {
       console.log('[Atlasphere] Approving incomplete payment:', payment.identifier);
       await getClient().apiCall.invoke({
-        url: '/api/v1/pi-payments/approve',
+        url: '/api/v1/pi-pay/approve',
         method: 'POST',
         data: { payment_id: payment.identifier },
       });
@@ -243,7 +243,7 @@ async function onIncompletePaymentFound(payment: APIPayment) {
     if (payment.status.developer_approved && payment.transaction?.verified && !payment.status.developer_completed) {
       console.log('[Atlasphere] Completing incomplete payment:', payment.identifier);
       await getClient().apiCall.invoke({
-        url: '/api/v1/pi-payments/complete',
+        url: '/api/v1/pi-pay/complete',
         method: 'POST',
         data: {
           payment_id: payment.identifier,
@@ -459,17 +459,37 @@ export async function createPiPayment(
   onApprove?: (paymentId: string) => Promise<void>,
   onComplete?: (paymentId: string, txid: string) => Promise<void>
 ): Promise<boolean> {
+  // Business purposes accepted by the Atlasphere server whitelist.
+  const purposeMap: Record<string, string> = {
+    contribution: 'project_funding',
+    funding: 'project_funding',
+    fund: 'project_funding',
+    project_funding: 'project_funding',
+    donation: 'donation',
+    subscription: 'subscription',
+    premium: 'premium',
+    payment_test: 'payment_test',
+  };
+  const rawPurpose = String(metadata.purpose || metadata.type || 'project_funding').toLowerCase();
+  const payload: Record<string, string> = {
+    ...metadata,
+    purpose: purposeMap[rawPurpose] || 'project_funding',
+  };
+  if (!payload.project_id && metadata.projectId) {
+    payload.project_id = String(metadata.projectId);
+  }
+
   if (isInPiBrowser() && window.Pi) {
     // Real Pi payment with backend approval/completion
     try {
       await window.Pi.createPayment(
-        { amount, memo, metadata },
+        { amount, memo, metadata: payload },
         {
           onReadyForServerApproval: async (paymentId: string) => {
             // Call backend to approve the payment
             try {
               await getClient().apiCall.invoke({
-                url: '/api/v1/pi-payments/approve',
+                url: '/api/v1/pi-pay/approve',
                 method: 'POST',
                 data: { payment_id: paymentId },
               });
@@ -483,15 +503,9 @@ export async function createPiPayment(
             // Call backend to complete the payment and record contribution
             try {
               await getClient().apiCall.invoke({
-                url: '/api/v1/pi-payments/complete',
+                url: '/api/v1/pi-pay/complete',
                 method: 'POST',
-                data: {
-                  payment_id: paymentId,
-                  txid,
-                  project_id: parseInt(metadata.project_id || '0'),
-                  amount,
-                  pi_uid: currentUser?.uid || '',
-                },
+                data: { payment_id: paymentId, txid },
               });
               console.log('[Atlasphere] Payment completed:', paymentId, txid);
 
@@ -516,77 +530,11 @@ export async function createPiPayment(
       return false;
     }
   } else {
-    // Sandbox simulation with backend recording
-    await new Promise((r) => setTimeout(r, 800));
-    const fakePaymentId = 'pay_' + Math.random().toString(36).slice(2, 12);
-    const fakeTxid = 'tx_' + Math.random().toString(36).slice(2, 16);
-
-    // Simulate server approval
-    try {
-      await getClient().apiCall.invoke({
-        url: '/api/v1/pi-payments/approve',
-        method: 'POST',
-        data: { payment_id: fakePaymentId },
-      });
-    } catch {
-      // In sandbox, approval might fail due to missing PI_API_KEY - that's OK
-      console.log('[Atlasphere] Sandbox: skipping server approval');
-    }
-
-    if (onApprove) await onApprove(fakePaymentId);
-    await new Promise((r) => setTimeout(r, 500));
-
-    // Complete payment and record contribution via backend
-    try {
-      await getClient().apiCall.invoke({
-        url: '/api/v1/pi-payments/complete',
-        method: 'POST',
-        data: {
-          payment_id: fakePaymentId,
-          txid: fakeTxid,
-          project_id: parseInt(metadata.project_id || '0'),
-          amount,
-          pi_uid: currentUser?.uid || '',
-        },
-      });
-    } catch {
-      // Fallback: record contribution directly
-      console.log('[Atlasphere] Sandbox: recording contribution directly');
-      try {
-        await getClient().apiCall.invoke({
-          url: '/api/v1/entities/contributions',
-          method: 'POST',
-          data: {
-            project_id: parseInt(metadata.project_id || '0'),
-            amount,
-            transaction_id: fakeTxid,
-            payment_id: fakePaymentId,
-            status: 'completed',
-            pi_uid: currentUser?.uid || '',
-          },
-        });
-      } catch (e) {
-        console.error('[Atlasphere] Failed to record contribution:', e);
-      }
-    }
-
-    if (onComplete) await onComplete(fakePaymentId, fakeTxid);
-
-    // Update local user state
-    if (currentUser && currentUser.piBalance >= amount) {
-      currentUser = {
-        ...currentUser,
-        piBalance: currentUser.piBalance - amount,
-        contributions: currentUser.contributions + 1
-      };
-      localStorage.setItem('atlasphere_user', JSON.stringify(currentUser));
-      notifyListeners();
-    }
-
-    // Check quest progress
-    await checkQuestProgress('fund');
-
-    return true;
+    // No simulated payment: a fake transaction would never be accepted by the
+    // Pi Developer review, and the server refuses any payment it cannot re-read
+    // from the Pi Platform API. Real payments must happen inside Pi Browser.
+    console.warn('[Atlasphere] Real Pi payments require Pi Browser.');
+    return false;
   }
 }
 

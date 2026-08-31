@@ -1,24 +1,30 @@
 import { useState } from 'react';
-import { createClient } from '@metagptx/web-sdk';
-import { createPiPayment, getCurrentUser } from '@/lib/pi-sdk';
+import { createPiPayment, getCurrentUser, isInPiBrowser } from '@/lib/pi-sdk';
 import { t } from '@/lib/i18n';
-
-let _client: ReturnType<typeof createClient> | null = null;
-function getClient() { if (!_client) _client = createClient(); return _client; }
 
 interface PiPaymentButtonProps {
   amount: number;
-  projectId: number;
+  projectId?: number;
+  /** Server-side whitelisted purpose. */
+  purpose?: 'project_funding' | 'payment_test' | 'donation' | 'subscription' | 'premium';
   memo?: string;
-  onSuccess?: () => void;
+  onSuccess?: (paymentId: string, txid: string) => void;
   onError?: (error: string) => void;
   className?: string;
   children?: React.ReactNode;
 }
 
+/**
+ * Triggers a real Pi Network U2A payment.
+ *
+ * The component never records anything itself: approval, completion and the
+ * business effect are handled exclusively by the Atlasphere server, which
+ * re-reads the payment from the Pi Platform API before trusting it.
+ */
 export default function PiPaymentButton({
   amount,
   projectId,
+  purpose = 'project_funding',
   memo = 'Atlasphere contribution',
   onSuccess,
   onError,
@@ -31,7 +37,11 @@ export default function PiPaymentButton({
   const handlePayment = async () => {
     const user = getCurrentUser();
     if (!user) {
-      onError?.('Please connect with Pi Network first');
+      onError?.(t('pay.err_login'));
+      return;
+    }
+    if (!isInPiBrowser()) {
+      onError?.(t('pay.err_browser'));
       return;
     }
 
@@ -39,74 +49,38 @@ export default function PiPaymentButton({
     setStatus('approving');
 
     try {
+      const metadata: Record<string, string> = { purpose };
+      if (projectId) metadata.project_id = String(projectId);
+
       const success = await createPiPayment(
         amount,
         memo,
-        { projectId: String(projectId), type: 'contribution' },
-        // onReadyForServerApproval
-        async (paymentId: string) => {
-          setStatus('approving');
-          try {
-            await getClient().apiCall.invoke({
-              url: '/api/v1/pi-payments/approve',
-              method: 'POST',
-              data: { payment_id: paymentId },
-            });
-          } catch (err) {
-            console.error('Server approval failed:', err);
-          }
-        },
-        // onReadyForServerCompletion
-        async (paymentId: string, txid: string) => {
+        metadata,
+        async () => {
           setStatus('completing');
-          try {
-            await getClient().apiCall.invoke({
-              url: '/api/v1/pi-payments/complete',
-              method: 'POST',
-              data: {
-                payment_id: paymentId,
-                txid,
-                project_id: projectId,
-                amount,
-                pi_uid: user.uid,
-              },
-            });
-
-            // Check quest progress after funding
-            await getClient().apiCall.invoke({
-              url: '/api/v1/quests/check-progress',
-              method: 'POST',
-              data: { pi_uid: user.uid, action_type: 'fund' },
-            });
-
-            setStatus('done');
-            onSuccess?.();
-          } catch (err) {
-            console.error('Server completion failed:', err);
-            setStatus('error');
-            onError?.('Payment completion failed');
-          }
+        },
+        async (paymentId: string, txid: string) => {
+          setStatus('done');
+          onSuccess?.(paymentId, txid);
         }
       );
 
       if (!success) {
         setStatus('error');
-        onError?.('Payment was cancelled or failed');
+        onError?.(t('pay.err_failed'));
       }
-    } catch (error) {
+    } catch {
       setStatus('error');
-      onError?.('Payment failed');
+      onError?.(t('pay.err_failed'));
     } finally {
       setIsProcessing(false);
-      // Reset status after delay
-      setTimeout(() => setStatus('idle'), 3000);
+      setTimeout(() => setStatus('idle'), 4000);
     }
   };
 
   const getButtonContent = () => {
     switch (status) {
       case 'approving':
-        return `⏳ ${t('common.loading')}`;
       case 'completing':
         return `⏳ ${t('common.loading')}`;
       case 'done':

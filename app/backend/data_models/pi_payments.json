@@ -1,0 +1,76 @@
+{
+    "title": "pi_payments",
+    "type": "object",
+    "description": "Server-authoritative ledger of Pi Network U2A payments. payment_id is the idempotency key. Rows belong to the authenticated Atlasphere account that signed the payment.",
+    "properties": {
+        "id": {
+            "type": "integer",
+            "description": "Autoincrement primary key"
+        },
+        "user_id": {
+            "type": "string",
+            "description": "Authenticated Atlasphere account that signed the payment request"
+        },
+        "payment_id": {
+            "type": "string",
+            "description": "Pi Network payment identifier, unique idempotency key"
+        },
+        "txid": {
+            "type": "string",
+            "description": "Pi blockchain transaction id"
+        },
+        "pi_uid": {
+            "type": "string",
+            "description": "Pi Network user uid returned by the Pi Platform API"
+        },
+        "pi_username": {
+            "type": "string",
+            "description": "Pi username resolved server-side"
+        },
+        "amount": {
+            "type": "number",
+            "description": "Amount in Pi, read from the Pi Platform API"
+        },
+        "memo": {
+            "type": "string",
+            "description": "Payment memo"
+        },
+        "purpose": {
+            "type": "string",
+            "description": "Whitelisted business purpose"
+        },
+        "project_id": {
+            "type": "integer",
+            "description": "Funded project id when applicable"
+        },
+        "status": {
+            "type": "string",
+            "description": "pending, approved, completed, cancelled or error"
+        },
+        "network": {
+            "type": "string",
+            "description": "Pi Mainnet or Pi Testnet"
+        },
+        "approved_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Server approval timestamp"
+        },
+        "completed_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Server completion timestamp"
+        },
+        "error_message": {
+            "type": "string",
+            "description": "Last error recorded for this payment"
+        }
+    },
+    "required": [
+        "id",
+        "payment_id",
+        "amount",
+        "status",
+        "user_id"
+    ]
+}

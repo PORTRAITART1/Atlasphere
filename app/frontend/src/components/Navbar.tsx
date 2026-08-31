@@ -139,6 +139,7 @@ export default function Navbar() {
     { path: '/map', label: t('nav.more.map'), icon: '🗺️', desc: t('nav.more.map_desc') },
     { path: '/notification-settings', label: t('nav.more.notifications'), icon: '🔔', desc: t('nav.more.notifications_desc') },
     { path: '/marketing-download', label: t('nav.more.marketing'), icon: '📦', desc: t('nav.more.marketing_desc') },
+    { path: '/payment-test', label: t('nav.more.payment_test'), icon: '💎', desc: t('nav.more.payment_test_desc') },
     ...(isAdmin
       ? [
           { path: '/settings', label: t('nav.more.settings'), icon: '⚙️', desc: t('nav.more.settings_desc') },
