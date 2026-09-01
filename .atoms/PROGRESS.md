@@ -31,6 +31,12 @@
 - [x] `python -m py_compile` backend OK, `pnpm run lint` OK, `pnpm run build` OK
 - [ ] Tests réels par 5 Pioneers distincts dans Pi Browser (action côté propriétaire de l'app)
 
+## Accès administrateur
+- [x] `VITE_ADMIN_USERNAMES=portraitart` configuré dans `app/frontend/.env`
+- [x] Routes `/settings` et `/admin` réservées à ce compte Pi
+- [x] Lint + build revalidés après configuration admin
+- Note : hors Pi Browser, le nom d'utilisateur provient du compte Atoms Cloud, donc l'accès admin doit être testé connecté avec Pi.
+
 ## Audit i18n (textes FR en dur détectés)
 34 pages + 8 composants contiennent encore des libellés FR en dur (~408 occurrences).
 Priorité haute (pages liées au menu principal) : Settings, Subscriptions, ProjectTracking,
