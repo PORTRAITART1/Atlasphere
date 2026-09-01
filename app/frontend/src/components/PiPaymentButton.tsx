@@ -52,6 +52,8 @@ export default function PiPaymentButton({
       const metadata: Record<string, string> = { purpose };
       if (projectId) metadata.project_id = String(projectId);
 
+      let failure = '';
+
       const success = await createPiPayment(
         amount,
         memo,
@@ -62,10 +64,15 @@ export default function PiPaymentButton({
         async (paymentId: string, txid: string) => {
           setStatus('done');
           onSuccess?.(paymentId, txid);
+        },
+        (message: string) => {
+          failure = message;
+          setStatus('error');
+          onError?.(message || t('pay.err_failed'));
         }
       );
 
-      if (!success) {
+      if (!success && !failure) {
         setStatus('error');
         onError?.(t('pay.err_failed'));
       }

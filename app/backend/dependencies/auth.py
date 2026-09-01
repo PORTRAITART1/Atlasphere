@@ -56,6 +56,38 @@ async def get_current_user(token: str = Depends(get_bearer_token)) -> UserRespon
     )
 
 
+async def get_optional_user(
+    credentials: Optional[HTTPAuthorizationCredentials] = Depends(bearer_scheme),
+) -> Optional[UserResponse]:
+    """Same as :func:`get_current_user` but returns ``None`` instead of raising.
+
+    Used by the Pi payment endpoints: a Pioneer paying inside Pi Browser proves
+    their identity with a Pi access token, so a missing platform session must
+    not block a real Pi Network payment (the Pi wallet only waits a few seconds
+    for the server approval).
+    """
+    if not credentials or credentials.scheme.lower() != "bearer":
+        return None
+
+    try:
+        payload = decode_access_token(credentials.credentials)
+    except AccessTokenError as exc:
+        logger.debug("Optional token validation failed: %s", type(exc).__name__)
+        return None
+
+    user_id = payload.get("sub")
+    if not user_id:
+        return None
+
+    return UserResponse(
+        id=user_id,
+        email=payload.get("email", ""),
+        name=payload.get("name"),
+        role=payload.get("role", "user"),
+        last_login=None,
+    )
+
+
 async def get_admin_user(current_user: UserResponse = Depends(get_current_user)) -> UserResponse:
     """Dependency to ensure current user has admin role."""
     if current_user.role != "admin":

@@ -183,14 +183,17 @@ export async function initPiSdk(): Promise<void> {
 
   if (window.Pi) {
     if (!_piInitPromise) {
-      const isProduction = window.location.hostname.includes('.pi') ||
-                           window.location.hostname.includes('mainnet');
+      // Inside Pi Browser the SDK MUST run with sandbox: false, otherwise the
+      // wallet opens a sandbox session that never matches the real payment and
+      // the approval window expires. sandbox: true is only for the Pi Sandbox
+      // web environment (testing outside Pi Browser).
+      const sandbox = !isInPiBrowser();
       _piInitPromise = window.Pi.init({
         version: '2.0',
-        sandbox: !isProduction
+        sandbox,
       }).then(() => {
         piSdkInitialized = true;
-        console.log('[Atlasphere] Pi SDK initialized', { sandbox: !isProduction });
+        console.log('[Atlasphere] Pi SDK initialized', { sandbox });
       });
     }
     await _piInitPromise;
@@ -217,6 +220,30 @@ export function setCurrentUser(user: PiUser | null): void {
   notifyListeners();
 }
 
+/** Pi access token stored at authentication time (proves the payer identity). */
+export function getPiAccessToken(): string {
+  try {
+    return localStorage.getItem('atlasphere_pi_token') || '';
+  } catch {
+    return '';
+  }
+}
+
+/** Extract a readable message from a failed backend call. */
+function extractApiError(error: unknown, fallback: string): string {
+  const err = error as {
+    response?: { data?: { detail?: string }; status?: number };
+    data?: { detail?: string };
+    message?: string;
+  };
+  return (
+    err?.response?.data?.detail ||
+    err?.data?.detail ||
+    err?.message ||
+    fallback
+  );
+}
+
 // Handle incomplete payments found during authentication
 // Per Pi SDK spec, this is called when an unfinished payment is detected
 async function onIncompletePaymentFound(payment: APIPayment) {
@@ -235,7 +262,7 @@ async function onIncompletePaymentFound(payment: APIPayment) {
       await getClient().apiCall.invoke({
         url: '/api/v1/pi-pay/approve',
         method: 'POST',
-        data: { payment_id: payment.identifier },
+        data: { payment_id: payment.identifier, pi_access_token: getPiAccessToken() },
       });
     }
 
@@ -248,6 +275,7 @@ async function onIncompletePaymentFound(payment: APIPayment) {
         data: {
           payment_id: payment.identifier,
           txid: payment.transaction.txid,
+          pi_access_token: getPiAccessToken(),
         },
       });
       console.log('[Atlasphere] Incomplete payment completed successfully:', payment.identifier);
@@ -457,7 +485,8 @@ export async function createPiPayment(
   memo: string,
   metadata: Record<string, string>,
   onApprove?: (paymentId: string) => Promise<void>,
-  onComplete?: (paymentId: string, txid: string) => Promise<void>
+  onComplete?: (paymentId: string, txid: string) => Promise<void>,
+  onFailure?: (message: string) => void
 ): Promise<boolean> {
   // Business purposes accepted by the Atlasphere server whitelist.
   const purposeMap: Record<string, string> = {
@@ -480,22 +509,41 @@ export async function createPiPayment(
   }
 
   if (isInPiBrowser() && window.Pi) {
+    // A Pi access token MUST exist before the wallet opens: the server uses it
+    // to authenticate the payer, and the wallet only waits a few seconds for
+    // the approval, so there is no time to authenticate afterwards.
+    if (!getPiAccessToken()) {
+      try {
+        await authenticate();
+      } catch (err) {
+        console.error('[Atlasphere] Pi authentication before payment failed:', err);
+      }
+    }
+    if (!getPiAccessToken()) {
+      onFailure?.('Pi Network authentication is required before paying. Please reconnect.');
+      return false;
+    }
+
     // Real Pi payment with backend approval/completion
     try {
       await window.Pi.createPayment(
         { amount, memo, metadata: payload },
         {
           onReadyForServerApproval: async (paymentId: string) => {
-            // Call backend to approve the payment
+            // This call MUST succeed inside the wallet approval window,
+            // otherwise Pi shows "Payment expired / the developer did not
+            // approve this payment".
             try {
               await getClient().apiCall.invoke({
                 url: '/api/v1/pi-pay/approve',
                 method: 'POST',
-                data: { payment_id: paymentId },
+                data: { payment_id: paymentId, pi_access_token: getPiAccessToken() },
               });
               console.log('[Atlasphere] Payment approved by server:', paymentId);
             } catch (err) {
-              console.error('[Atlasphere] Server approval failed:', err);
+              const message = extractApiError(err, 'Server approval failed.');
+              console.error('[Atlasphere] Server approval failed:', message, err);
+              onFailure?.(message);
             }
             if (onApprove) await onApprove(paymentId);
           },
@@ -505,28 +553,42 @@ export async function createPiPayment(
               await getClient().apiCall.invoke({
                 url: '/api/v1/pi-pay/complete',
                 method: 'POST',
-                data: { payment_id: paymentId, txid },
+                data: { payment_id: paymentId, txid, pi_access_token: getPiAccessToken() },
               });
               console.log('[Atlasphere] Payment completed:', paymentId, txid);
 
               // Check quest progress after funding
               await checkQuestProgress('fund');
             } catch (err) {
-              console.error('[Atlasphere] Server completion failed:', err);
+              const message = extractApiError(err, 'Server completion failed.');
+              console.error('[Atlasphere] Server completion failed:', message, err);
+              onFailure?.(message);
+              return;
             }
             if (onComplete) await onComplete(paymentId, txid);
           },
           onCancel: (paymentId: string) => {
             console.log('[Atlasphere] Payment cancelled:', paymentId);
+            onFailure?.('Payment cancelled in the Pi Wallet.');
+            void getClient()
+              .apiCall.invoke({
+                url: '/api/v1/pi-pay/cancel',
+                method: 'POST',
+                data: { payment_id: paymentId, reason: 'Cancelled in the Pi Wallet' },
+              })
+              .catch(() => {});
           },
           onError: (error: Error) => {
             console.error('[Atlasphere] Payment error:', error);
+            onFailure?.(error?.message || 'Pi payment error.');
           }
         }
       );
       return true;
     } catch (error) {
-      console.error('[Atlasphere] Payment creation failed:', error);
+      const message = extractApiError(error, 'Payment creation failed.');
+      console.error('[Atlasphere] Payment creation failed:', message, error);
+      onFailure?.(message);
       return false;
     }
   } else {
