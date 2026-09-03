@@ -164,14 +164,53 @@ let currentUser: PiUser | null = null;
 const listeners: Set<() => void> = new Set();
 let piSdkInitialized = false;
 
-// Check if running inside Pi Browser (not just if SDK script is loaded)
+/**
+ * Runtime detection of Pi Browser.
+ *
+ * The user-agent alone is NOT reliable: Pi Browser does not always expose a
+ * recognisable marker, and a false negative used to disable real payments.
+ * The authoritative probe is `Pi.nativeFeaturesList()`, which only resolves
+ * inside Pi Browser. It runs once at startup and caches its result.
+ */
+let _piBrowserProbe: boolean | null = null;
+
+function hasPiBrowserUserAgent(): boolean {
+  const ua = (typeof navigator !== 'undefined' && navigator.userAgent) || '';
+  return /PiBrowser|Pi\s?Browser|Pi\s?Network/i.test(ua);
+}
+
 export function isInPiBrowser(): boolean {
   if (typeof window === 'undefined') return false;
-  // The Pi SDK script loads window.Pi even outside Pi Browser,
-  // but Pi Browser sets specific user-agent markers
-  const ua = navigator.userAgent || '';
-  const isPiBrowser = ua.includes('PiBrowser') || ua.includes('Pi Network');
-  return isPiBrowser && !!window.Pi;
+  // Without the SDK object there is no Pi runtime at all.
+  if (!window.Pi) return false;
+  // A successful native-feature probe is authoritative.
+  if (_piBrowserProbe === true) return true;
+  return hasPiBrowserUserAgent();
+}
+
+/** Probe the Pi native bridge once; only Pi Browser answers it. */
+export async function detectPiBrowser(): Promise<boolean> {
+  if (typeof window === 'undefined' || !window.Pi) return false;
+  if (_piBrowserProbe !== null) return _piBrowserProbe;
+
+  if (typeof window.Pi.nativeFeaturesList !== 'function') {
+    _piBrowserProbe = hasPiBrowserUserAgent();
+    return _piBrowserProbe;
+  }
+
+  try {
+    const features = await withTimeout(
+      window.Pi.nativeFeaturesList(),
+      4000,
+      'nativeFeaturesList timeout'
+    );
+    _piBrowserProbe = Array.isArray(features);
+  } catch {
+    _piBrowserProbe = hasPiBrowserUserAgent();
+  }
+
+  if (_piBrowserProbe) notifyListeners();
+  return _piBrowserProbe;
 }
 
 // Initialize Pi SDK — Pi.init() returns a Promise per official docs.
@@ -183,17 +222,18 @@ export async function initPiSdk(): Promise<void> {
 
   if (window.Pi) {
     if (!_piInitPromise) {
-      // Inside Pi Browser the SDK MUST run with sandbox: false, otherwise the
-      // wallet opens a sandbox session that never matches the real payment and
-      // the approval window expires. sandbox: true is only for the Pi Sandbox
-      // web environment (testing outside Pi Browser).
-      const sandbox = !isInPiBrowser();
+      // Pi SDK v2.0 requires an explicit, deterministic sandbox flag.
+      // Real payments in Pi Browser MUST use sandbox: false; guessing it from
+      // the hostname or the user-agent caused the wallet to open a sandbox
+      // session and the approval window to expire. Set VITE_PI_SANDBOX=true
+      // only to test in the Pi Sandbox web environment.
+      const sandbox = String(import.meta.env.VITE_PI_SANDBOX || '').toLowerCase() === 'true';
       _piInitPromise = window.Pi.init({
         version: '2.0',
         sandbox,
       }).then(() => {
         piSdkInitialized = true;
-        console.log('[Atlasphere] Pi SDK initialized', { sandbox });
+        console.log('[Atlasphere] Pi SDK v2.0 initialized', { sandbox });
       });
     }
     await _piInitPromise;
@@ -882,9 +922,12 @@ export function isSubscriptionActive(subscription: PiRC2Subscription): boolean {
 if (typeof window !== 'undefined') {
   restoreSession();
   // Try to init Pi SDK after DOM is ready (fire-and-forget, authenticate() will await it)
+  const bootstrap = () => {
+    void initPiSdk().then(() => detectPiBrowser());
+  };
   if (document.readyState === 'complete') {
-    void initPiSdk();
+    bootstrap();
   } else {
-    window.addEventListener('load', () => void initPiSdk());
+    window.addEventListener('load', bootstrap);
   }
 }

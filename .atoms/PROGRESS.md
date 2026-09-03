@@ -42,6 +42,18 @@ Cause racine (3 défauts cumulés dans la fenêtre d'approbation de ~10 s du wal
 - [x] `python -m py_compile` OK, `pnpm run lint` OK, `pnpm run build` OK
 - [ ] Nouveau test réel dans Pi Browser à refaire par le testeur
 
+## Conformité Pi SDK v2.0 (vérifiée 2026-09-03)
+- [x] Script officiel chargé : `https://sdk.minepi.com/pi-sdk.js` dans `index.html`
+- [x] `Pi.init({ version: '2.0', sandbox })` appelé une seule fois, Promise attendue avant tout autre appel
+- [x] Mode réseau désormais **explicite et déterministe** via `VITE_PI_SANDBOX` (défaut `false` = paiements réels) ; suppression de la déduction par nom de domaine/user-agent qui provoquait un démarrage sandbox involontaire
+- [x] `Pi.authenticate(scopes, onIncompletePaymentFound)` avec scopes `payments`, `username`, `wallet_address`
+- [x] `onIncompletePaymentFound` implémenté : reprise d'un paiement annulé / à approuver / à compléter
+- [x] `Pi.createPayment` avec les 4 callbacks obligatoires : `onReadyForServerApproval`, `onReadyForServerCompletion`, `onCancel`, `onError`
+- [x] Vérification du token via `GET /v2/me`, paiements via `GET/POST /v2/payments/{id}[/approve|/complete]`
+- [x] Détection Pi Browser fiabilisée : sonde `Pi.nativeFeaturesList()` (autoritaire) avec repli user-agent, au lieu du user-agent seul
+- [x] Utilitaires natifs déclarés : `openShareDialog`, `openConversation`, `nativeFeaturesList`, `requestPermission`, `copyText`, `openUrlInSystemBrowser`, `Ads`
+- [x] `pnpm run lint` OK, `pnpm run build` OK
+
 ## Accès administrateur
 - [x] `VITE_ADMIN_USERNAMES=portraitart` configuré dans `app/frontend/.env`
 - [x] Routes `/settings` et `/admin` réservées à ce compte Pi
