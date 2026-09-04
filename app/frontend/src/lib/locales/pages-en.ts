@@ -4,6 +4,37 @@
 export type PageDict = Record<string, string>;
 
 export const pagesEn: PageDict = {
+  // ---------- Pioneer feedback ----------
+  'fb.title': '⭐ Pioneer Feedback',
+  'fb.subtitle': 'Share your experience after testing Atlasphere on Pi Network',
+  'fb.form_title': 'Leave your feedback',
+  'fb.rating_label': 'Your rating',
+  'fb.comment_label': 'Your comment (optional)',
+  'fb.comment_placeholder': 'Tell other Pioneers what worked well for you...',
+  'fb.submit': 'Publish my feedback',
+  'fb.update': 'Update my feedback',
+  'fb.sending': 'Sending...',
+  'fb.login_required': 'Sign in with Pi Network to leave your feedback.',
+  'fb.browser_warn': 'Open Atlasphere in Pi Browser to have your feedback verified as a real Pioneer.',
+  'fb.thanks': '✅ Thank you! Your feedback is published on the wall.',
+  'fb.updated': '✅ Your feedback has been updated.',
+  'fb.rating_required': 'Please select a rating from 1 to 5 stars.',
+  'fb.already_title': 'Your published feedback',
+  'fb.wall_title': '💬 What Pioneers say',
+  'fb.no_feedback': 'No feedback yet. Be the first Pioneer to share your experience!',
+  'fb.verified_badge': '✅ Verified payment',
+  'fb.verified_only': 'Verified Pioneers only',
+  'fb.avg_rating': 'Average rating',
+  'fb.positive_rate': 'Positive feedback',
+  'fb.total_reviews': 'Total reviews',
+  'fb.verified_count': 'Verified testers',
+  'fb.stars': 'stars',
+  'fb.load_more': 'Show more',
+  'fb.error': 'Your feedback could not be sent. Please try again.',
+  'fb.cta': 'Leave your feedback',
+  'nav.more.feedback': 'Feedback',
+  'nav.more.feedback_desc': 'Pioneer testimonials',
+
   // ---------- Real Pi payments (U2A) ----------
   'pay.title': '💎 Pi Payment Test',
   'pay.subtitle': 'Run a real Pi Network payment, verified by the Atlasphere server',

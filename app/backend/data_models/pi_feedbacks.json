@@ -1,0 +1,44 @@
+{
+    "title": "pi_feedbacks",
+    "type": "object",
+    "properties": {
+        "id": {
+            "type": "integer"
+        },
+        "pi_uid": {
+            "type": "string"
+        },
+        "pi_username": {
+            "type": "string"
+        },
+        "rating": {
+            "type": "integer"
+        },
+        "comment": {
+            "type": "string"
+        },
+        "language": {
+            "type": "string"
+        },
+        "network": {
+            "type": "string"
+        },
+        "payment_id": {
+            "type": "string"
+        },
+        "verified_payment": {
+            "type": "boolean"
+        },
+        "is_published": {
+            "type": "boolean"
+        },
+        "device_info": {
+            "type": "string"
+        }
+    },
+    "required": [
+        "id",
+        "pi_uid",
+        "rating"
+    ]
+}

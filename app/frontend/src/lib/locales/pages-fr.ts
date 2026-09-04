@@ -2,6 +2,37 @@
 import type { PageDict } from './pages-en';
 
 export const pagesFr: PageDict = {
+  // ---------- Avis des Pionniers ----------
+  'fb.title': '⭐ Avis des Pionniers',
+  'fb.subtitle': 'Partagez votre expérience après avoir testé Atlasphere sur Pi Network',
+  'fb.form_title': 'Laissez votre avis',
+  'fb.rating_label': 'Votre note',
+  'fb.comment_label': 'Votre commentaire (facultatif)',
+  'fb.comment_placeholder': 'Dites aux autres Pionniers ce qui a bien fonctionné pour vous...',
+  'fb.submit': 'Publier mon avis',
+  'fb.update': 'Mettre à jour mon avis',
+  'fb.sending': 'Envoi en cours...',
+  'fb.login_required': 'Connectez-vous avec Pi Network pour laisser votre avis.',
+  'fb.browser_warn': 'Ouvrez Atlasphere dans Pi Browser pour que votre avis soit vérifié comme celui d\'un vrai Pionnier.',
+  'fb.thanks': '✅ Merci ! Votre avis est publié sur le mur.',
+  'fb.updated': '✅ Votre avis a été mis à jour.',
+  'fb.rating_required': 'Veuillez choisir une note de 1 à 5 étoiles.',
+  'fb.already_title': 'Votre avis publié',
+  'fb.wall_title': '💬 Ce que disent les Pionniers',
+  'fb.no_feedback': 'Aucun avis pour le moment. Soyez le premier Pionnier à partager votre expérience !',
+  'fb.verified_badge': '✅ Paiement vérifié',
+  'fb.verified_only': 'Pionniers vérifiés uniquement',
+  'fb.avg_rating': 'Note moyenne',
+  'fb.positive_rate': 'Avis positifs',
+  'fb.total_reviews': 'Avis au total',
+  'fb.verified_count': 'Testeurs vérifiés',
+  'fb.stars': 'étoiles',
+  'fb.load_more': 'Voir plus',
+  'fb.error': 'Votre avis n\'a pas pu être envoyé. Veuillez réessayer.',
+  'fb.cta': 'Laissez votre avis',
+  'nav.more.feedback': 'Avis',
+  'nav.more.feedback_desc': 'Témoignages des Pionniers',
+
   // ---------- Paiements Pi réels (U2A) ----------
   'pay.title': '💎 Test de paiement Pi',
   'pay.subtitle': 'Effectuez un paiement Pi Network réel, vérifié par le serveur Atlasphere',
