@@ -1,41 +1,72 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Terms of Service - Atlasphere</title>
-  <style>
-    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; max-width: 800px; margin: 40px auto; padding: 20px; line-height: 1.6; color: #333; }
-    h1 { color: #6b46c1; } h2 { color: #553c9a; margin-top: 30px; }
-    .updated { color: #666; font-style: italic; } a { color: #6b46c1; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Terms of Service - Atlasphere</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #0f172a; color: #f8fafc; line-height: 1.7; min-height: 100vh; padding: 20px; }
+        .container { max-width: 800px; margin: 0 auto; background: #1e293b; border-radius: 16px; padding: 40px; box-shadow: 0 10px 40px rgba(0,0,0,0.3); }
+        .header { display: flex; align-items: center; gap: 16px; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 1px solid #334155; }
+        .header img { width: 48px; height: 48px; }
+        .header h1 { color: #c4b5fd; font-size: 28px; }
+        .updated { color: #94a3b8; font-style: italic; margin-bottom: 30px; }
+        h2 { color: #c4b5fd; font-size: 20px; margin-top: 30px; margin-bottom: 12px; }
+        p { color: #e2e8f0; margin-bottom: 12px; }
+        ul { padding-left: 24px; margin-bottom: 12px; }
+        li { color: #e2e8f0; margin-bottom: 6px; }
+        .back-button { display: inline-block; margin-top: 40px; padding: 12px 24px; background: #c4b5fd; color: #0f172a; text-decoration: none; border-radius: 8px; font-weight: 600; transition: opacity 0.2s; }
+        .back-button:hover { opacity: 0.85; }
+    </style>
 </head>
 <body>
-  <h1>Terms of Service</h1>
-  <p class="updated">Last updated: June 20, 2026</p>
-  <h2>1. Acceptance of Terms</h2>
-  <p>By using Atlasphere, you agree to these Terms of Service. If you do not agree, do not use the platform.</p>
-  <h2>2. Service Description</h2>
-  <p>Atlasphere is a Pi Network governance platform for community proposals, voting, project funding, quests, and reputation.</p>
-  <h2>3. Eligibility</h2>
-  <p>You must have a verified Pi Network account and be legally able to enter binding agreements in your jurisdiction.</p>
-  <h2>4. User Account</h2>
-  <p>Your account is linked to your Pi Network identity. You are responsible for activity performed through your account.</p>
-  <h2>5. Code of Conduct</h2>
-  <p>Do not submit illegal or misleading content, manipulate votes, divert funds through false proposals, harass users, or use unauthorized automation.</p>
-  <h2>6. Pi Transactions</h2>
-  <p>Pi contributions are voluntary and processed through the official Pi Network SDK. Confirmed blockchain transactions may be irreversible.</p>
-  <h2>7. Intellectual Property</h2>
-  <p>Authors retain rights to submitted proposals while granting the community the license needed to evaluate and implement approved projects.</p>
-  <h2>8. Limitation of Liability</h2>
-  <p>Atlasphere is provided as is. We do not guarantee project outcomes, investment returns, or protection from Pi value fluctuations.</p>
-  <h2>9. Governance</h2>
-  <p>Voting results follow the platform’s published reputation and governance rules. Closed governance decisions are final unless the platform provides an appeal process.</p>
-  <h2>10. Suspension and Termination</h2>
-  <p>Access may be suspended for fraud, abuse, violations of these terms, or activity harmful to the community.</p>
-  <h2>11. Modifications</h2>
-  <p>We may update these terms and will publish changes through the platform. Continued use after publication constitutes acceptance.</p>
-  <h2>12. Contact</h2>
-  <p>Contact Atlasphere through the Pi Network platform or the community support channel for questions.</p>
+    <div class="container">
+        <div class="header">
+            <img src="/favicon.svg" alt="Atlasphere">
+            <h1>Terms of Service</h1>
+        </div>
+        <p class="updated">Last updated: June 20, 2026</p>
+        <h2>1. Acceptance of Terms</h2>
+        <p>By accessing and using Atlasphere, you agree to be bound by these terms of service. If you do not accept these terms, please do not use the platform.</p>
+        <h2>2. Service Description</h2>
+        <p>Atlasphere is a decentralized governance platform on Pi Network allowing Pioneers to:</p>
+        <ul>
+            <li>Submit community project proposals</li>
+            <li>Vote on proposals with a weighted reputation system</li>
+            <li>Fund approved projects in Pi</li>
+            <li>Participate in quests to earn rewards</li>
+            <li>Build reputation within the community</li>
+        </ul>
+        <h2>3. Eligibility</h2>
+        <p>You must have a verified Pi Network account to use Atlasphere. You must be of legal age in your jurisdiction to enter into binding agreements.</p>
+        <h2>4. User Account</h2>
+        <p>Your account is linked to your Pi Network identity. You are responsible for maintaining the security of your Pi account. Any activity performed through your account is your responsibility.</p>
+        <h2>5. Code of Conduct</h2>
+        <p>By using Atlasphere, you agree to:</p>
+        <ul>
+            <li>Not submit illegal, offensive, or misleading content</li>
+            <li>Not manipulate votes or the reputation system</li>
+            <li>Not create false proposals to divert funds</li>
+            <li>Respect other community members</li>
+            <li>Not use unauthorized bots or automation</li>
+        </ul>
+        <h2>6. Pi Transactions</h2>
+        <p>Pi contributions are voluntary and made via the official Pi Network SDK. Confirmed transactions are irreversible. Atlasphere is not responsible for Pi value fluctuations.</p>
+        <h2>7. Intellectual Property</h2>
+        <p>Submitted proposals remain the intellectual property of their authors. By submitting a proposal, you grant the community a license to use it for project implementation if approved.</p>
+        <h2>8. Limitation of Liability</h2>
+        <p>Atlasphere is provided "as is". We do not guarantee the success of funded projects or return on investment. The platform is not responsible for losses related to Pi transactions or community projects.</p>
+        <h2>9. Governance</h2>
+        <p>Voting results follow the platform's published reputation and governance rules. Closed governance decisions are final unless the platform provides an appeal process.</p>
+        <h2>10. Suspension and Termination</h2>
+        <p>Access may be suspended for fraud, abuse, violations of these terms, or activity harmful to the community.</p>
+        <h2>11. Modifications</h2>
+        <p>We may update these terms and will publish changes through the platform. Continued use after publication constitutes acceptance.</p>
+        <h2>12. Contact</h2>
+        <p>Contact Atlasphere through the Pi Network platform or the community support channel for questions.</p>
+        <a href="/" class="back-button">← Back to Atlasphere</a>
+    </div>
 </body>
 </html>
