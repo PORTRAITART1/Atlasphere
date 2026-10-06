@@ -1,72 +1,53 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Terms of Service - Atlasphere</title>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #0f172a; color: #f8fafc; line-height: 1.7; min-height: 100vh; padding: 20px; }
-        .container { max-width: 800px; margin: 0 auto; background: #1e293b; border-radius: 16px; padding: 40px; box-shadow: 0 10px 40px rgba(0,0,0,0.3); }
-        .header { display: flex; align-items: center; gap: 16px; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 1px solid #334155; }
-        .header img { width: 48px; height: 48px; }
-        .header h1 { color: #c4b5fd; font-size: 28px; }
-        .updated { color: #94a3b8; font-style: italic; margin-bottom: 30px; }
-        h2 { color: #c4b5fd; font-size: 20px; margin-top: 30px; margin-bottom: 12px; }
-        p { color: #e2e8f0; margin-bottom: 12px; }
-        ul { padding-left: 24px; margin-bottom: 12px; }
-        li { color: #e2e8f0; margin-bottom: 6px; }
-        .back-button { display: inline-block; margin-top: 40px; padding: 12px 24px; background: #c4b5fd; color: #0f172a; text-decoration: none; border-radius: 8px; font-weight: 600; transition: opacity 0.2s; }
-        .back-button:hover { opacity: 0.85; }
+        html, body { min-height: 100%; }
+        body { font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #05060f; background-image: radial-gradient(ellipse at top, rgba(123,63,228,.15), transparent 60%); color: #f8fafc; line-height: 1.7; min-height: 100vh; -webkit-font-smoothing: antialiased; }
+        .navbar { position: sticky; top: 0; z-index: 100; background: rgba(5,6,15,.85); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(123,63,228,.2); padding: 16px 24px; }
+        .navbar-content { max-width: 1000px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 20px; }
+        .logo { display: flex; align-items: center; gap: 12px; color: #fff; font-size: 18px; font-weight: 700; text-decoration: none; }
+        .logo img { width: 32px; height: 32px; }
+        .logo-text, h1 { background: linear-gradient(90deg, #fff, #c4b5fd 60%, #f5c000); background-clip: text; -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .back-link { display: inline-flex; padding: 10px 18px; border-radius: 10px; background: #7b3fe4; color: #fff; font-size: 14px; font-weight: 600; text-decoration: none; box-shadow: 0 0 20px rgba(123,63,228,.4); transition: .2s ease; }
+        .back-link:hover { background: #8b4ff4; transform: translateY(-1px); }
+        .container { max-width: 820px; margin: 0 auto; padding: 60px 24px 80px; }
+        h1 { font-size: 44px; font-weight: 800; letter-spacing: -.02em; margin-bottom: 12px; }
+        .updated { color: #94a3b8; font-size: 14px; font-style: italic; margin-bottom: 48px; padding-bottom: 24px; border-bottom: 1px solid rgba(148,163,184,.15); }
+        h2 { color: #c4b5fd; font-size: 22px; font-weight: 700; margin: 48px 0 16px; }
+        h2:first-of-type { margin-top: 0; }
+        p, li { color: #cbd5e1; font-size: 16px; }
+        p { margin-bottom: 16px; }
+        ul { padding-left: 24px; margin-bottom: 20px; }
+        li { margin-bottom: 10px; }
+        @media (max-width: 640px) { h1 { font-size: 32px; } h2 { font-size: 19px; } .container { padding: 40px 20px 60px; } }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <img src="/favicon.svg" alt="Atlasphere">
-            <h1>Terms of Service</h1>
-        </div>
+    <nav class="navbar"><div class="navbar-content"><a href="/" class="logo"><img src="/favicon.svg" alt="Atlasphere"><span class="logo-text">Atlasphere</span></a><a href="/" class="back-link">← Back to Home</a></div></nav>
+    <main class="container">
+        <h1>Terms of Service</h1>
         <p class="updated">Last updated: June 20, 2026</p>
-        <h2>1. Acceptance of Terms</h2>
-        <p>By accessing and using Atlasphere, you agree to be bound by these terms of service. If you do not accept these terms, please do not use the platform.</p>
-        <h2>2. Service Description</h2>
-        <p>Atlasphere is a decentralized governance platform on Pi Network allowing Pioneers to:</p>
-        <ul>
-            <li>Submit community project proposals</li>
-            <li>Vote on proposals with a weighted reputation system</li>
-            <li>Fund approved projects in Pi</li>
-            <li>Participate in quests to earn rewards</li>
-            <li>Build reputation within the community</li>
-        </ul>
-        <h2>3. Eligibility</h2>
-        <p>You must have a verified Pi Network account to use Atlasphere. You must be of legal age in your jurisdiction to enter into binding agreements.</p>
-        <h2>4. User Account</h2>
-        <p>Your account is linked to your Pi Network identity. You are responsible for maintaining the security of your Pi account. Any activity performed through your account is your responsibility.</p>
-        <h2>5. Code of Conduct</h2>
-        <p>By using Atlasphere, you agree to:</p>
-        <ul>
-            <li>Not submit illegal, offensive, or misleading content</li>
-            <li>Not manipulate votes or the reputation system</li>
-            <li>Not create false proposals to divert funds</li>
-            <li>Respect other community members</li>
-            <li>Not use unauthorized bots or automation</li>
-        </ul>
-        <h2>6. Pi Transactions</h2>
-        <p>Pi contributions are voluntary and made via the official Pi Network SDK. Confirmed transactions are irreversible. Atlasphere is not responsible for Pi value fluctuations.</p>
-        <h2>7. Intellectual Property</h2>
-        <p>Submitted proposals remain the intellectual property of their authors. By submitting a proposal, you grant the community a license to use it for project implementation if approved.</p>
-        <h2>8. Limitation of Liability</h2>
-        <p>Atlasphere is provided "as is". We do not guarantee the success of funded projects or return on investment. The platform is not responsible for losses related to Pi transactions or community projects.</p>
-        <h2>9. Governance</h2>
-        <p>Voting results follow the platform's published reputation and governance rules. Closed governance decisions are final unless the platform provides an appeal process.</p>
-        <h2>10. Suspension and Termination</h2>
-        <p>Access may be suspended for fraud, abuse, violations of these terms, or activity harmful to the community.</p>
-        <h2>11. Modifications</h2>
-        <p>We may update these terms and will publish changes through the platform. Continued use after publication constitutes acceptance.</p>
-        <h2>12. Contact</h2>
-        <p>Contact Atlasphere through the Pi Network platform or the community support channel for questions.</p>
-        <a href="/" class="back-button">← Back to Atlasphere</a>
-    </div>
+        <h2>Acceptance of Terms</h2><p>By accessing and using Atlasphere, you agree to be bound by these terms of service. If you do not accept these terms, please do not use the platform.</p>
+        <h2>Service Description</h2><p>Atlasphere is a decentralized governance platform on Pi Network allowing Pioneers to:</p><ul><li>Submit community project proposals</li><li>Vote on proposals with a weighted reputation system</li><li>Fund approved projects in Pi</li><li>Participate in quests to earn rewards</li><li>Build reputation within the community</li></ul>
+        <h2>Eligibility</h2><p>You must have a verified Pi Network account to use Atlasphere. You must be of legal age in your jurisdiction to enter into binding agreements.</p>
+        <h2>User Account</h2><p>Your account is linked to your Pi Network identity. You are responsible for maintaining the security of your Pi account. Any activity performed through your account is your responsibility.</p>
+        <h2>Code of Conduct</h2><p>By using Atlasphere, you agree to:</p><ul><li>Not submit illegal, offensive, or misleading content</li><li>Not manipulate votes or the reputation system</li><li>Not create false proposals to divert funds</li><li>Respect other community members</li><li>Not use unauthorized bots or automation</li></ul>
+        <h2>Pi Transactions</h2><p>Pi contributions are voluntary and made via the official Pi Network SDK. Confirmed transactions are irreversible. Atlasphere is not responsible for Pi value fluctuations.</p>
+        <h2>Intellectual Property</h2><p>Submitted proposals remain the intellectual property of their authors. By submitting a proposal, you grant the community a license to use it for project implementation if approved.</p>
+        <h2>Limitation of Liability</h2><p>Atlasphere is provided "as is". We do not guarantee the success of funded projects or return on investment. The platform is not responsible for losses related to Pi transactions or community projects.</p>
+        <h2>Governance</h2><p>Voting results follow the platform's published reputation and governance rules. Closed governance decisions are final unless the platform provides an appeal process.</p>
+        <h2>Suspension and Termination</h2><p>Access may be suspended for fraud, abuse, violations of these terms, or activity harmful to the community.</p>
+        <h2>Modifications</h2><p>We may update these terms and will publish changes through the platform. Continued use after publication constitutes acceptance.</p>
+        <h2>Contact</h2><p>Contact Atlasphere through the Pi Network platform or the community support channel for questions.</p>
+    </main>
 </body>
 </html>
