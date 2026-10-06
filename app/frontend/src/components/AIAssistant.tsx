@@ -56,12 +56,12 @@ Contexte du projet:
 
     switch (mode) {
       case 'improve-title':
-        return `Tu es un expert en rédaction de propositions pour une plateforme de gouvernance décentralisée (AtlaspherePi) sur Pi Network. 
+        return `Tu es un expert en rédaction de propositions pour une plateforme de gouvernance décentralisée (Atlasphere) sur Pi Network. 
 ${context}
 Propose 3 titres alternatifs plus percutants et professionnels pour ce projet. Pour chaque titre, explique brièvement pourquoi il est efficace. Réponds en français.`;
 
       case 'enrich-description':
-        return `Tu es un expert en rédaction de propositions pour une plateforme de gouvernance décentralisée (AtlaspherePi) sur Pi Network.
+        return `Tu es un expert en rédaction de propositions pour une plateforme de gouvernance décentralisée (Atlasphere) sur Pi Network.
 ${context}
 Réécris et enrichis la description complète du projet pour la rendre plus convaincante, structurée et professionnelle. Inclus:
 - Un paragraphe d'introduction captivant
@@ -71,7 +71,7 @@ Réécris et enrichis la description complète du projet pour la rendre plus con
 Réponds en français.`;
 
       case 'suggest-milestones':
-        return `Tu es un expert en gestion de projets pour une plateforme de gouvernance décentralisée (AtlaspherePi) sur Pi Network.
+        return `Tu es un expert en gestion de projets pour une plateforme de gouvernance décentralisée (Atlasphere) sur Pi Network.
 ${context}
 Propose 4-5 jalons réalistes et mesurables pour ce projet. Pour chaque jalon, indique:
 - Le titre du jalon
@@ -81,7 +81,7 @@ Propose 4-5 jalons réalistes et mesurables pour ce projet. Pour chaque jalon, i
 Réponds en français.`;
 
       case 'estimate-budget':
-        return `Tu es un expert en estimation budgétaire pour une plateforme de gouvernance décentralisée (AtlaspherePi) sur Pi Network.
+        return `Tu es un expert en estimation budgétaire pour une plateforme de gouvernance décentralisée (Atlasphere) sur Pi Network.
 ${context}
 Basé sur des projets similaires dans la catégorie "${categoryLabels[category] || category}", propose:
 - Un budget total recommandé en Pi (avec justification)
@@ -105,7 +105,7 @@ Réponds en français.`;
         messages: [
           {
             role: 'system',
-            content: 'Tu es un assistant IA spécialisé dans l\'aide à la rédaction de propositions pour AtlaspherePi, une plateforme de gouvernance décentralisée sur Pi Network. Tu fournis des conseils pratiques, concis et actionnables en français.',
+            content: 'Tu es un assistant IA spécialisé dans l\'aide à la rédaction de propositions pour Atlasphere, une plateforme de gouvernance décentralisée sur Pi Network. Tu fournis des conseils pratiques, concis et actionnables en français.',
           },
           { role: 'user', content: prompt },
         ],
@@ -185,7 +185,7 @@ Réponds en français.`;
               🤖
             </div>
             <div>
-              <h3 className="text-white font-semibold text-sm">Assistant AtlaspherePi</h3>
+              <h3 className="text-white font-semibold text-sm">Assistant Atlasphere</h3>
               <p className="text-gray-400 text-xs">Propulsé par IA - Aide à la rédaction de propositions</p>
             </div>
           </div>

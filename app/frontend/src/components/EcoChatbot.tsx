@@ -20,7 +20,7 @@ const AI_RESPONSES: Record<string, string> = {
   'score': '📊 Votre score écologique actuel est de **742/1000** (rang : Éco-Champion, top 12%).\n\nDétail par catégorie :\n- Transport : 85/100 ✅\n- Déchets : 90/100 ✅\n- Eau : 78/100 🔄\n- Énergie : 72/100 🔄\n- Alimentation : 68/100 ⚠️\n\nConseil : Améliorez votre score alimentation en achetant local et de saison !',
   'crédit': '💚 Les **crédits carbone** permettent de compenser vos émissions résiduelles :\n\n1. Chaque crédit = 1 tonne de CO2 évitée ou absorbée\n2. Vérifiés par des organismes certifiés (Gold Standard, VCS Verra)\n3. Tokenisés sur la blockchain pour traçabilité\n4. Achetables en Pi sur notre marketplace\n\nVous avez déjà compensé 12.5 tonnes ! Continuez sur /carbon-credits.',
   'eau': '💧 Conseils pour économiser l\'eau :\n\n1. **Douche** : Limitez à 5 min (-60L/douche)\n2. **Vaisselle** : Remplissez le lave-vaisselle avant de lancer\n3. **Jardin** : Arrosez le soir (moins d\'évaporation)\n4. **Fuites** : Vérifiez le compteur la nuit (une fuite = 100L/jour !)\n5. **Récupération** : Installez un récupérateur d\'eau de pluie\n\nVotre capteur eau a détecté une consommation de 145L/jour. L\'objectif est 120L !',
-  'default': '🌿 Je suis l\'EcoAssistant d\'AtlaspherePi ! Je peux vous aider avec :\n\n- Conseils pour réduire votre empreinte\n- Explication de votre score écologique\n- Informations sur les crédits carbone\n- Recommandations personnalisées\n- Questions sur les capteurs IoT\n\nQue souhaitez-vous savoir ?',
+  'default': '🌿 Je suis l\'EcoAssistant d\'Atlasphere ! Je peux vous aider avec :\n\n- Conseils pour réduire votre empreinte\n- Explication de votre score écologique\n- Informations sur les crédits carbone\n- Recommandations personnalisées\n- Questions sur les capteurs IoT\n\nQue souhaitez-vous savoir ?',
 };
 
 function getAIResponse(message: string): string {
@@ -81,7 +81,7 @@ export default function EcoChatbot() {
               <Bot className="w-5 h-5 text-white" />
               <div>
                 <h3 className="text-sm font-bold text-white">EcoAssistant IA</h3>
-                <p className="text-xs text-white/70">Powered by AtlaspherePi AI</p>
+                <p className="text-xs text-white/70">Powered by Atlasphere AI</p>
               </div>
             </div>
             <button onClick={() => setOpen(false)} className="text-white/70 hover:text-white transition-colors">

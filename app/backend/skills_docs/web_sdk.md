@@ -6,7 +6,7 @@ Frontend authorization and data model access via metagptx/web-sdk. Covers Auth f
 ## Guide
 
 ## Critical Rules
-- In AtlaspherePi frontend code, use the configured API client by default instead of direct HTTP calls.
+- In Atlasphere frontend code, use the configured API client by default instead of direct HTTP calls.
 - Use this mapping:
   - Auth: `client.auth.*`
   - Entities / CRUD: `client.entities.*`

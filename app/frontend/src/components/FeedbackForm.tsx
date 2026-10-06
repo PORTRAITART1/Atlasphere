@@ -70,7 +70,7 @@ export default function FeedbackForm() {
                 <div className="text-center py-8">
                   <div className="text-5xl mb-4">🎉</div>
                   <h3 className="text-xl font-bold text-white mb-2">Merci pour votre feedback !</h3>
-                  <p className="text-gray-400 text-sm">Votre retour nous aide à améliorer AtlaspherePi.</p>
+                  <p className="text-gray-400 text-sm">Votre retour nous aide à améliorer Atlasphere.</p>
                 </div>
               ) : (
                 <>

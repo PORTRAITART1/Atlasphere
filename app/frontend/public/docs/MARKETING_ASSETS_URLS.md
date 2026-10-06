@@ -1,4 +1,4 @@
-# 📁 Assets Marketing — URLs des Images avec Logo AtlaspherePi
+# 📁 Assets Marketing — URLs des Images avec Logo Atlasphere
 
 ## 🖼️ 10 Images Marketing Professionnelles avec Logo (EN)
 
@@ -76,4 +76,4 @@ tar -xzf marketing-pack-atlaspherepi.tar.gz
 
 ---
 
-*Généré le 2026-08-03 — Toutes les images incluent le logo AtlaspherePi*
+*Généré le 2026-08-03 — Toutes les images incluent le logo Atlasphere*

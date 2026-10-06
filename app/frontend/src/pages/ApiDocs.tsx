@@ -118,7 +118,7 @@ export default function ApiDocs() {
             📖 {t('api.title') || 'API Documentation'}
           </h1>
           <p className="text-gray-400">
-            {t('api.subtitle') || 'Complete reference for the AtlaspherePi REST API'}
+            {t('api.subtitle') || 'Complete reference for the Atlasphere REST API'}
           </p>
           <div className="flex items-center gap-4 mt-4">
             <span className="text-xs px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">

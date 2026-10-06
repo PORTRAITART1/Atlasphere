@@ -49,7 +49,7 @@ export default function Navbar() {
     try {
       await authenticate();
     } catch (err) {
-      console.error('[AtlaspherePi] Authentication failed:', err);
+      console.error('[Atlasphere] Authentication failed:', err);
     } finally {
       setLoading(false);
     }
@@ -136,14 +136,14 @@ export default function Navbar() {
             <div className="relative">
               <img
                 src="/icons/icon-192.png"
-                alt="AtlaspherePi"
+                alt="Atlasphere"
                 className="w-9 h-9 object-contain transition-transform duration-300 group-hover:scale-110"
                 style={{ filter: 'brightness(0) saturate(100%) invert(72%) sepia(58%) saturate(600%) hue-rotate(2deg) brightness(103%) contrast(104%)' }}
               />
               <div className="absolute inset-0 rounded-full bg-amber-400/20 blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
             </div>
             <span className="text-lg font-bold bg-gradient-to-r from-amber-300 via-yellow-400 to-amber-500 bg-clip-text text-transparent tracking-tight">
-              AtlaspherePi
+              Atlasphere
             </span>
           </Link>
 

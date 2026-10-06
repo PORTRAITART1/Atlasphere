@@ -1,4 +1,4 @@
-# 📦 Pack Marketing Complet — AtlaspherePi
+# 📦 Pack Marketing Complet — Atlasphere
 ## Feuille de Route vers le Mainnet Pi Network
 
 ---
@@ -6,7 +6,7 @@
 # 🎯 POSITIONNEMENT + BRAND KIT
 
 ## Positionnement
-**AtlaspherePi** est la première plateforme de gouvernance décentralisée et de financement participatif construite par et pour les Pionniers Pi Network. Elle combine DAO, EcoChain AI, gamification et paiements Pi natifs.
+**Atlasphere** est la première plateforme de gouvernance décentralisée et de financement participatif construite par et pour les Pionniers Pi Network. Elle combine DAO, EcoChain AI, gamification et paiements Pi natifs.
 
 ## Slogan Principal (EN)
 > **"Govern. Fund. Build. — The Pioneer Way."**
@@ -18,7 +18,7 @@
 
 ## 6 CTA (EN)
 1. "Join the Pioneer Beta"
-2. "Try AtlaspherePi Now"
+2. "Try Atlasphere Now"
 3. "Vote with Your Pi"
 4. "Fund What Matters"
 5. "Become an Early Adopter"
@@ -68,13 +68,13 @@
 # 🗣️ MESSAGE FIRESIDE (FR)
 
 ```
-🌍 AtlaspherePi — La gouvernance Pi, par les Pionniers.
+🌍 Atlasphere — La gouvernance Pi, par les Pionniers.
 
 Chers Pionniers,
 
 Imaginez une plateforme où VOTRE voix compte vraiment. Où vous votez sur les projets communautaires, financez les initiatives locales avec vos Pi, et gagnez en réputation à chaque action.
 
-C'est AtlaspherePi. 🚀
+C'est Atlasphere. 🚀
 
 ✅ Votez sur des propositions (gouvernance quadratique)
 ✅ Financez des projets avec Pi (escrow sécurisé)
@@ -97,9 +97,9 @@ Ensemble, construisons l'écosystème Pi. 💜
 # 🏢 MESSAGE CORPTIME / CORPFM (FR)
 
 ```
-📢 [ANNONCE] AtlaspherePi recrute ses testeurs Pionniers !
+📢 [ANNONCE] Atlasphere recrute ses testeurs Pionniers !
 
-🔹 Qu'est-ce qu'AtlaspherePi ?
+🔹 Qu'est-ce qu'Atlasphere ?
 La 1ère plateforme DAO + Crowdfunding + EcoChain AI sur Pi Network.
 Gouvernance décentralisée. Paiements Pi natifs. Impact climatique.
 
@@ -127,7 +127,7 @@ Gouvernance décentralisée. Paiements Pi natifs. Impact climatique.
 ```
 🚀 Hey les Pionniers ! 
 
-AtlaspherePi est en phase beta et on a besoin de testeurs 🧪
+Atlasphere est en phase beta et on a besoin de testeurs 🧪
 
 C'est quoi ? → Une app DAO + Crowdfunding Pi + EcoChain AI
 → Tu votes, tu finances, tu gagnes des récompenses 🏆
@@ -155,7 +155,7 @@ Qui teste avec moi ? 👇
 
 Pionniers du monde entier,
 
-AtlaspherePi entre en phase de test massif. Notre objectif : prouver à Pi Network que notre communauté est prête pour le Mainnet.
+Atlasphere entre en phase de test massif. Notre objectif : prouver à Pi Network que notre communauté est prête pour le Mainnet.
 
 🎯 MISSION : Tester l'application et donner votre feedback
 
@@ -186,7 +186,7 @@ Plus nous avons de testeurs actifs, plus nos chances sont élevées.
 Partagez ce message avec 3 Pionniers ! 🔄
 
 ═══════════════════════════════════════
-AtlaspherePi — Govern. Fund. Build. The Pioneer Way.
+Atlasphere — Govern. Fund. Build. The Pioneer Way.
 ═══════════════════════════════════════
 ```
 
@@ -273,7 +273,7 @@ AtlaspherePi — Govern. Fund. Build. The Pioneer Way.
 - **Layout** : Countdown visuel, texte urgent, CTA proéminent
 - **Titre** : "Mainnet Submission in 30 Days"
 - **Sous-titre** : "Help us reach 1000 testers"
-- **CTA** : "Test AtlaspherePi Now"
+- **CTA** : "Test Atlasphere Now"
 - **Éléments** : Timer, barre de progression, fond indigo avec accent or
 - **Taille** : 468x60
 
@@ -283,7 +283,7 @@ AtlaspherePi — Govern. Fund. Build. The Pioneer Way.
 
 ## Phase M1 : Préparation (Semaine 1-2)
 - [ ] Finaliser le pack marketing (images, bannières, textes) ✅
-- [ ] Créer les comptes sociaux AtlaspherePi (Twitter/X, Telegram, Discord)
+- [ ] Créer les comptes sociaux Atlasphere (Twitter/X, Telegram, Discord)
 - [ ] Configurer le formulaire de feedback in-app (déjà fait ✅)
 - [ ] Préparer le tracking analytics (nombre de testeurs, actions, feedback)
 - [ ] Vérifier que l'app fonctionne parfaitement en sandbox Pi Browser
@@ -373,4 +373,4 @@ AtlaspherePi — Govern. Fund. Build. The Pioneer Way.
 
 ---
 
-*Document généré le 2026-08-03 — AtlaspherePi Marketing Pack v1.0*
+*Document généré le 2026-08-03 — Atlasphere Marketing Pack v1.0*

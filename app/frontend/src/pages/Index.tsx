@@ -68,7 +68,7 @@ export default function Index() {
           <div className="absolute inset-0">
             <img
               src="/marketing-pack/images/branded-hero-governance-globe.png"
-              alt="AtlaspherePi Governance"
+              alt="Atlasphere Governance"
               className="w-full h-full object-cover opacity-30"
             />
             <div className="absolute inset-0 bg-gradient-to-b from-slate-950/60 via-slate-950/80 to-slate-950" />
@@ -77,7 +77,7 @@ export default function Index() {
           <div className="absolute top-8 left-1/2 -translate-x-1/2 z-10">
             <img
               src="/icons/icon-192.png"
-              alt="AtlaspherePi"
+              alt="Atlasphere"
               className="w-16 h-16 md:w-20 md:h-20 object-contain drop-shadow-2xl"
             />
           </div>

@@ -119,7 +119,7 @@ export default function Settings() {
             transition={{ duration: 0.4 }}
           >
             <h1 className="text-3xl font-bold text-white mb-2">{t('settings.title', '⚙️ Configuration Réseau')}</h1>
-            <p className="text-gray-400 mb-8">{t('settings.description', 'Gérez la configuration Mainnet de AtlaspherePi')}</p>
+            <p className="text-gray-400 mb-8">{t('settings.description', 'Gérez la configuration Mainnet de Atlasphere')}</p>
           </motion.div>
 
           {/* Network Toggle */}

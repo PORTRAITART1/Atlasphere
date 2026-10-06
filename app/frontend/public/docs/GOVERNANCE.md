@@ -1,4 +1,4 @@
-# 📜 Règles de Gouvernance AtlaspherePi
+# 📜 Règles de Gouvernance Atlasphere
 
 ## Principes Fondamentaux
 

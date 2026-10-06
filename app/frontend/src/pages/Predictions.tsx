@@ -93,7 +93,7 @@ export default function Predictions() {
         messages: [
           {
             role: 'system',
-            content: `Tu es un expert en climatologie et environnement pour l'application AtlaspherePi EcoChain AI. Tu analyses les risques climatiques et donnes des recommandations personnalisées. Réponds en français, de manière concise et actionnable. Utilise des emojis pour rendre la réponse plus lisible.`,
+            content: `Tu es un expert en climatologie et environnement pour l'application Atlasphere EcoChain AI. Tu analyses les risques climatiques et donnes des recommandations personnalisées. Réponds en français, de manière concise et actionnable. Utilise des emojis pour rendre la réponse plus lisible.`,
           },
           { role: 'user', content: aiQuery },
         ],
@@ -179,7 +179,7 @@ export default function Predictions() {
         <div className="mt-8 bg-slate-800/30 border border-slate-700/50 rounded-xl p-5">
           <h3 className="text-sm font-semibold text-gray-300 mb-2">ℹ️ Comment fonctionnent les prédictions ?</h3>
           <p className="text-xs text-gray-400 leading-relaxed">
-            Notre moteur d'IA analyse en continu les données environnementales collectées par la communauté AtlaspherePi,
+            Notre moteur d'IA analyse en continu les données environnementales collectées par la communauté Atlasphere,
             combinées aux données satellites et stations météo. Les modèles de machine learning identifient les patterns
             et génèrent des alertes préventives avec un taux de précision de 85%+. Plus vous partagez de données via
             votre EcoWallet, plus les prédictions sont précises pour votre zone géographique.

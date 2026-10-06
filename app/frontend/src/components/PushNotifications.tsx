@@ -25,7 +25,7 @@ export default function PushNotifications() {
         const registration = await navigator.serviceWorker?.ready;
         if (registration) {
           // In production, you'd subscribe to a push service here
-          new Notification('AtlaspherePi', {
+          new Notification('Atlasphere', {
             body: 'Notifications activées ! Vous recevrez les alertes de votes, financements et messages.',
             icon: '/icons/icon-192.png',
           });

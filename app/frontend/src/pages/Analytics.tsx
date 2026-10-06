@@ -132,7 +132,7 @@ export default function Analytics() {
           <h1 className="text-3xl font-bold text-white mb-2">
             📊 {t('analytics.title') || 'Analytics & Statistiques'}
           </h1>
-          <p className="text-gray-400">{t('analytics.subtitle') || 'Vue d\'ensemble de l\'activité de la plateforme AtlaspherePi'}</p>
+          <p className="text-gray-400">{t('analytics.subtitle') || 'Vue d\'ensemble de l\'activité de la plateforme Atlasphere'}</p>
         </div>
 
         {loading ? (

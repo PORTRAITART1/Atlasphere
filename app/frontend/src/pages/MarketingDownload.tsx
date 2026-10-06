@@ -116,11 +116,11 @@ export default function MarketingDownload() {
           <div className="inline-flex items-center gap-3 mb-4">
             <Package className="w-10 h-10 text-amber-400" />
             <h1 className="text-4xl font-bold bg-gradient-to-r from-amber-400 to-purple-400 bg-clip-text text-transparent">
-              Pack Marketing AtlaspherePi
+              Pack Marketing Atlasphere
             </h1>
           </div>
           <p className="text-slate-300 text-lg max-w-2xl mx-auto">
-            Téléchargez tous les visuels marketing avec le logo AtlaspherePi intégré.
+            Téléchargez tous les visuels marketing avec le logo Atlasphere intégré.
             10 images + 8 bannières + documents marketing.
           </p>
         </div>

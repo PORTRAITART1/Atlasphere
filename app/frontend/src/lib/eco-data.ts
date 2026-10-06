@@ -1,4 +1,4 @@
-// EcoChain AI - Data layer for environmental features in AtlaspherePi
+// EcoChain AI - Data layer for environmental features in Atlasphere
 // Manages ECO tokens, climate data, marketplace, and rewards
 
 import { getCurrentUser } from '@/lib/pi-sdk';

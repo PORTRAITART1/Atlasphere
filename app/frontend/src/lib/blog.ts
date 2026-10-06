@@ -191,11 +191,11 @@ function getSiteDomainUrl() {
 }
 
 function getSiteName() {
-  return import.meta.env.VITE_APP_TITLE?.trim() || 'AtlaspherePi';
+  return import.meta.env.VITE_APP_TITLE?.trim() || 'Atlasphere';
 }
 
 function getTwitterSiteHandle() {
-  return import.meta.env.VITE_TWITTER_SITE?.trim() || '@AtlaspherePi';
+  return import.meta.env.VITE_TWITTER_SITE?.trim() || '@Atlasphere';
 }
 
 function getTwitterCreatorHandle() {

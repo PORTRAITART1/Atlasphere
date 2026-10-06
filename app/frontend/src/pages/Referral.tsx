@@ -18,7 +18,7 @@ export default function Referral() {
   const handleShare = () => {
     if (navigator.share) {
       navigator.share({
-        title: 'Rejoins AtlaspherePi !',
+        title: 'Rejoins Atlasphere !',
         text: `Utilise mon code ${stats.code} pour gagner des ECO tokens en rejoignant la communauté écologique !`,
         url: `https://atlaspherepi.com/join?ref=${stats.code}`,
       });

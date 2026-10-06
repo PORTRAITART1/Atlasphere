@@ -27,7 +27,7 @@ const forumPosts: ForumPost[] = [
   {
     id: 'fp-1',
     title: 'Comment maximiser votre score de réputation ?',
-    content: 'Bonjour à tous ! Je partage mes astuces pour augmenter rapidement votre score de réputation sur AtlaspherePi. Voici les actions les plus efficaces :\n\n1. Votez régulièrement sur les propositions\n2. Commentez de manière constructive\n3. Complétez les quêtes quotidiennes\n4. Participez au financement des projets\n5. Déléguez vos votes quand vous ne pouvez pas participer',
+    content: 'Bonjour à tous ! Je partage mes astuces pour augmenter rapidement votre score de réputation sur Atlasphere. Voici les actions les plus efficaces :\n\n1. Votez régulièrement sur les propositions\n2. Commentez de manière constructive\n3. Complétez les quêtes quotidiennes\n4. Participez au financement des projets\n5. Déléguez vos votes quand vous ne pouvez pas participer',
     author: 'ReputationGuru',
     authorAvatar: '🏆',
     category: 'general',
@@ -60,7 +60,7 @@ const forumPosts: ForumPost[] = [
   {
     id: 'fp-3',
     title: '🌍 Retour d\'expérience : Mon premier projet EcoChain financé',
-    content: 'Je voulais partager mon expérience avec le financement de mon projet de reforestation locale via AtlaspherePi. En 2 semaines, on a atteint 80% de l\'objectif grâce à la communauté. Les étapes clés :\n\n1. Bien rédiger la proposition avec des objectifs clairs\n2. Partager sur les réseaux sociaux\n3. Répondre à TOUS les commentaires\n4. Publier des mises à jour régulières\n5. Remercier chaque contributeur personnellement',
+    content: 'Je voulais partager mon expérience avec le financement de mon projet de reforestation locale via Atlasphere. En 2 semaines, on a atteint 80% de l\'objectif grâce à la communauté. Les étapes clés :\n\n1. Bien rédiger la proposition avec des objectifs clairs\n2. Partager sur les réseaux sociaux\n3. Répondre à TOUS les commentaires\n4. Publier des mises à jour régulières\n5. Remercier chaque contributeur personnellement',
     author: 'GreenPioneer',
     authorAvatar: '🌱',
     category: 'environment',

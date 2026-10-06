@@ -89,7 +89,7 @@ self.addEventListener('fetch', (event) => {
 // Push notification event
 self.addEventListener('push', (event) => {
   const data = event.data ? event.data.json() : {};
-  const title = data.title || 'AtlaspherePi';
+  const title = data.title || 'Atlasphere';
   const options = {
     body: data.body || 'Nouvelle notification',
     icon: '/icons/icon-192.png',

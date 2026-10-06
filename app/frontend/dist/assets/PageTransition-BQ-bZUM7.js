@@ -1,1 +1,0 @@
-import{j as t}from"./ui-vendor-BQZ3by1t.js";import{m as a}from"./index-CRWohAhG.js";const n={initial:{opacity:0,y:20},animate:{opacity:1,y:0,transition:{duration:.4,ease:[.25,.46,.45,.94]}},exit:{opacity:0,y:-10,transition:{duration:.2}}};function e({children:i}){return t.jsx(a.div,{variants:n,initial:"initial",animate:"animate",exit:"exit",children:i})}export{e as P};

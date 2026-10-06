@@ -108,7 +108,7 @@ export default function ProjectMap() {
           <h1 className="text-3xl font-bold text-white mb-2">
             🗺️ {t('map.title') || 'Carte des Projets'}
           </h1>
-          <p className="text-gray-400">{t('map.subtitle') || 'Explorez les projets AtlaspherePi à travers le monde'}</p>
+          <p className="text-gray-400">{t('map.subtitle') || 'Explorez les projets Atlasphere à travers le monde'}</p>
         </div>
 
         {/* Filters */}

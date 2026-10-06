@@ -18,7 +18,7 @@ import {
 } from '@/lib/pi-sdk';
 import { Crown, Zap, Shield, Clock, CheckCircle2, XCircle, Share2, RefreshCw } from 'lucide-react';
 
-// AtlaspherePi subscription services (aligned with PiRC2 smart contract spec)
+// Atlasphere subscription services (aligned with PiRC2 smart contract spec)
 const ATLASPHERE_SERVICES: PiRC2Service[] = [
   {
     service_id: 0,
@@ -118,7 +118,7 @@ export default function Subscriptions() {
         // Per PiRC2 spec: immediate payment for first period (no trial) or approval for auto-renew
         const success = await createPiPayment(
           hasTrial ? 0 : piAmount,
-          `AtlaspherePi ${service.name} - Abonnement`,
+          `Atlasphere ${service.name} - Abonnement`,
           {
             type: 'subscription',
             service_id: service.service_id.toString(),
@@ -157,7 +157,7 @@ export default function Subscriptions() {
       setMySubscriptions(updated);
       localStorage.setItem('atlasphere_subscriptions', JSON.stringify(updated));
     } catch (error) {
-      console.error('[AtlaspherePi] Subscription failed:', error);
+      console.error('[Atlasphere] Subscription failed:', error);
     } finally {
       setSubscribing(null);
     }
@@ -198,7 +198,7 @@ export default function Subscriptions() {
         {/* Header */}
         <div className="text-center mb-12">
           <h1 className="text-4xl font-bold text-white mb-4">
-            Abonnements AtlaspherePi
+            Abonnements Atlasphere
           </h1>
           <p className="text-lg text-slate-300 max-w-2xl mx-auto">
             Débloquez des fonctionnalités avancées de gouvernance avec les abonnements récurrents Pi.
@@ -412,8 +412,8 @@ export default function Subscriptions() {
             variant="outline"
             className="border-slate-600 text-slate-300 hover:text-white"
             onClick={() => shareOnPi(
-              'AtlaspherePi Subscriptions',
-              '🚀 Découvrez les abonnements AtlaspherePi propulsés par le smart contract PiRC2 sur Soroban! Gouvernance décentralisée pour tous les Pioneers. ' + window.location.href
+              'Atlasphere Subscriptions',
+              '🚀 Découvrez les abonnements Atlasphere propulsés par le smart contract PiRC2 sur Soroban! Gouvernance décentralisée pour tous les Pioneers. ' + window.location.href
             )}
           >
             <Share2 className="w-4 h-4 mr-2" />

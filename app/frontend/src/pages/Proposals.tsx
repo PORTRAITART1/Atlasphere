@@ -269,7 +269,11 @@ function ProjectCard({ project, index }: { project: Project; index: number }) {
   const fundingPercentage =
     project.budget > 0 ? ((project.raised || 0) / project.budget) * 100 : 0;
 
-  const isDemo = project.id?.startsWith('demo-');
+  // CORRECTION : project.id peut être un nombre ou une chaîne
+  const idStr = String(project.id ?? '');
+  const isDemo = idStr.startsWith('demo-');
+  // Lien : les vrais projets vont vers /proposal/:id, les démos vers la même route (sera gérée)
+  const linkTo = isDemo ? `/proposal/${idStr}` : `/proposal/${project.id}`;
 
   return (
     <motion.div
@@ -278,7 +282,8 @@ function ProjectCard({ project, index }: { project: Project; index: number }) {
       transition={{ duration: 0.5, delay: index * 0.08, ease: [0.25, 0.46, 0.45, 0.94] }}
       whileHover={{ y: -4, transition: { duration: 0.2 } }}
     >
-      <div
+      <Link
+        to={linkTo}
         className="block bg-slate-800/50 border border-slate-700/50 rounded-xl p-5 hover:border-indigo-500/40 hover:bg-slate-800/80 transition-all group h-full cursor-pointer"
       >
         {/* Demo badge */}
@@ -353,7 +358,7 @@ function ProjectCard({ project, index }: { project: Project; index: number }) {
             </div>
           </div>
         )}
-      </div>
+      </Link>
     </motion.div>
   );
 }

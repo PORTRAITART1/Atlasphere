@@ -48,7 +48,7 @@ const allBadges: Badge[] = [
   { id: 'carbon-zero', name: 'Neutralité Carbone', description: 'Compenser 100% de votre empreinte carbone', icon: '♻️', category: 'eco', rarity: 'legendary', unlocked: false, progress: 15, requirement: '100% compensation' },
 
   // Special
-  { id: 'early-adopter', name: 'Pionnier Alpha', description: 'Rejoindre AtlaspherePi pendant la phase beta', icon: '⭐', category: 'special', rarity: 'legendary', unlocked: true, unlockedAt: '2026-05-10', progress: 100, requirement: 'Inscription beta' },
+  { id: 'early-adopter', name: 'Pionnier Alpha', description: 'Rejoindre Atlasphere pendant la phase beta', icon: '⭐', category: 'special', rarity: 'legendary', unlocked: true, unlockedAt: '2026-05-10', progress: 100, requirement: 'Inscription beta' },
   { id: 'streak-30', name: 'Infatigable', description: 'Se connecter 30 jours consécutifs', icon: '🔥', category: 'special', rarity: 'epic', unlocked: false, progress: 80, requirement: '30 jours (24/30)' },
   { id: 'all-quests', name: 'Maître des Quêtes', description: 'Compléter toutes les quêtes disponibles', icon: '🏅', category: 'special', rarity: 'legendary', unlocked: false, progress: 55, requirement: 'Toutes les quêtes (11/20)' },
 ];

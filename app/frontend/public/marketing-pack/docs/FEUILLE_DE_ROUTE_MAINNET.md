@@ -5,7 +5,7 @@
 
 ## 📋 RÉSUMÉ EXÉCUTIF
 
-**Objectif** : Faire accepter AtlaspherePi sur le Mainnet Pi Network
+**Objectif** : Faire accepter Atlasphere sur le Mainnet Pi Network
 **Durée estimée** : 16-20 semaines
 **KPI principal** : 1000+ testeurs actifs avec métriques d'engagement solides
 **Prérequis technique** : Pi SDK v2.0 conforme (✅ déjà implémenté)
@@ -53,7 +53,7 @@
   - Non-transférable, permanent, visible sur le profil
 
 ### Étape 1.3 — Créer les Canaux de Communication
-- [ ] Créer un groupe Telegram "AtlaspherePi Pioneers"
+- [ ] Créer un groupe Telegram "Atlasphere Pioneers"
 - [ ] Créer un compte Twitter/X @AtlasphereDAO
 - [ ] Préparer un mini-site landing page (optionnel)
 - [ ] Configurer un canal Discord (optionnel)
@@ -190,7 +190,7 @@ Le dossier doit contenir :
 
 #### A. Description de l'Application
 ```
-Nom : AtlaspherePi
+Nom : Atlasphere
 Catégorie : Governance / Crowdfunding / Climate Tech
 Description : Plateforme DAO décentralisée permettant aux Pionniers Pi de 
 voter sur des projets communautaires, financer des initiatives locales, 
@@ -356,10 +356,10 @@ et contribuer à l'action climatique via EcoChain AI.
 3. [ ] Poster le premier message sur Fireside
 4. [ ] Recruter 10 premiers ambassadeurs
 5. [ ] Configurer le tracking des métriques
-6. [ ] Créer le groupe Telegram AtlaspherePi
+6. [ ] Créer le groupe Telegram Atlasphere
 
 ---
 
-*Feuille de route générée le 2026-08-03 — AtlaspherePi v1.0*
+*Feuille de route générée le 2026-08-03 — Atlasphere v1.0*
 *Durée estimée jusqu'au Mainnet : 16-20 semaines*
 *Facteur clé de succès : Volume de testeurs actifs + conformité SDK parfaite*

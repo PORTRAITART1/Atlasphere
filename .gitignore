@@ -1,24 +1,47 @@
-
-# Python cache / bytecode
+# Dependencies and environments
+node_modules/
+.venv/
+venv/
+env/
 __pycache__/
 *.py[cod]
 *$py.class
 
-# Python virtual environments
-.venv/
-venv/
-app/backend/venv/
-
-.env
-
-*.db
-node_modules/
-
 # Build outputs
-app/frontend/dist/
 dist/
+build/
+*.egg-info/
 
-# Logs
+# Secrets and credentials
+.env
+.env.*
+!.env.example
+*.key
+*.pem
+secrets/
+credentials.json
+validation-key.txt
+
+# Logs and databases
 logs/
 *.log
+*.db
+*.sqlite
+*.sqlite3
+
+# IDE and OS
+.vscode/
+.idea/
+*.swp
+*.swo
 .DS_Store
+
+# Temporary archives and uploads
+uploads/*.zip
+uploads/*.tar.gz
+marketing-pack-atlasphere.tar.gz
+
+# Project-specific generated content
+app/backend/.venv/
+app/frontend/node_modules/
+app/frontend/dist/

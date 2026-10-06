@@ -1,10 +1,10 @@
-# 📖 Guide Utilisateur AtlaspherePi
+# 📖 Guide Utilisateur Atlasphere
 
 ## Premiers Pas
 
 ### 1. Connexion avec Pi Network
 
-1. Ouvrez AtlaspherePi dans le **Pi Browser**
+1. Ouvrez Atlasphere dans le **Pi Browser**
 2. Cliquez sur **"Connecter avec Pi"** dans la barre de navigation
 3. Autorisez l'accès à votre compte Pi (username + payments)
 4. Vous êtes connecté ! Votre @username apparaît dans la navbar

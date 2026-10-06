@@ -1,12 +1,12 @@
-# AtlaspherePi — Plateforme de Gouvernance Décentralisée Pi Network
+# Atlasphere — Plateforme de Gouvernance Décentralisée Pi Network
 
-![AtlaspherePi](https://img.shields.io/badge/Pi%20Network-Governance-purple)
+![Atlasphere](https://img.shields.io/badge/Pi%20Network-Governance-purple)
 ![Version](https://img.shields.io/badge/version-2.0.0-blue)
 ![License](https://img.shields.io/badge/license-PiOS-green)
 
 ## 🎯 Présentation
 
-**AtlaspherePi** est une plateforme de gouvernance décentralisée construite sur Pi Network, permettant aux Pionniers de :
+**Atlasphere** est une plateforme de gouvernance décentralisée construite sur Pi Network, permettant aux Pionniers de :
 - 🗳️ Voter sur les projets communautaires
 - 💰 Financer les initiatives locales en Pi (π)
 - ⭐ Construire leur réputation et influence
@@ -106,4 +106,4 @@ Ce projet est sous licence [PiOS](https://github.com/pi-apps/pi-os-license).
 
 ---
 
-© 2026 AtlaspherePi — Gouvernance par les Pionniers, pour les Pionniers.
+© 2026 Atlasphere — Gouvernance par les Pionniers, pour les Pionniers.

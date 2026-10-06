@@ -16,7 +16,7 @@ export default function Partners() {
           <Handshake className="w-8 h-8 text-emerald-400" />
           <div>
             <h1 className="text-3xl font-bold text-white">Partenaires & ONG</h1>
-            <p className="text-sm text-gray-400">Organisations environnementales partenaires d'AtlaspherePi</p>
+            <p className="text-sm text-gray-400">Organisations environnementales partenaires d'Atlasphere</p>
           </div>
         </div>
 
@@ -69,7 +69,7 @@ export default function Partners() {
 
         {/* CTA */}
         <div className="mt-8 bg-gradient-to-r from-emerald-900/30 to-cyan-900/20 border border-emerald-500/20 rounded-2xl p-6 text-center">
-          <h3 className="text-xl font-bold text-white mb-2">Votre ONG souhaite rejoindre AtlaspherePi ?</h3>
+          <h3 className="text-xl font-bold text-white mb-2">Votre ONG souhaite rejoindre Atlasphere ?</h3>
           <p className="text-sm text-gray-400 mb-4">Accédez à des données environnementales vérifiées et à une communauté engagée</p>
           <button className="px-6 py-3 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-medium transition-colors">
             Devenir Partenaire

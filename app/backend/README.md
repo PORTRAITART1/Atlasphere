@@ -1,6 +1,6 @@
 # Backend Development Guide
 
-AtlaspherePi backend is enabled and provides Auth, Database, File Storage, Edge Functions, and AI capabilities.
+Atlasphere backend is enabled and provides Auth, Database, File Storage, Edge Functions, and AI capabilities.
 
 ## CRITICAL: DATABASE SETUP MUST BE COMPLETED BEFORE ANY CODE IMPLEMENTATION OR MODIFICATION
 
@@ -86,7 +86,7 @@ When developing a web application with backend capabilities:
 - Read `core/config.py` `settings` for env vars: `settings.stripe_secret_key` reads `STRIPE_SECRET_KEY` dynamically.
 
 ## Table Management Rules
-- IMPORTANT: User management is handled by the AtlaspherePi backend authentication layer.
+- IMPORTANT: User management is handled by the Atlasphere backend authentication layer.
 
 ## Privacy / Header UI
 - By default, do NOT display the logged-in user's email/name/userId in the header/top-right area.

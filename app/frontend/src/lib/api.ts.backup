@@ -1,37 +1,14 @@
-// Atlasphere API Service - Version locale (fetch direct)
-// Remplace les appels SDK MetagptX par des appels fetch() natifs
+// AtlaspherePi API Service - Connects frontend to real backend
+import { createClient } from '@metagptx/web-sdk';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
-
-// ============================================
-// Helper fetchAPI - Remplace getClient()
-// ============================================
-async function fetchAPI<T>(endpoint: string, options?: RequestInit): Promise<T> {
-  const url = API_BASE_URL + endpoint;
-  console.log('[API]', options?.method || 'GET', url);
-
-  const response = await fetch(url, {
-    headers: {
-      'Content-Type': 'application/json',
-      ...options?.headers,
-    },
-    ...options,
-  });
-
-  if (!response.ok) {
-    throw new Error('API error: ' + response.status + ' ' + response.statusText);
-  }
-
-  if (response.status === 204) {
-    return undefined as T;
-  }
-
-  return response.json();
+// Lazy-initialize client to avoid blocking on module load
+let _client: ReturnType<typeof createClient> | null = null;
+function getClient() {
+  if (!_client) _client = createClient();
+  return _client;
 }
 
-// ============================================
-// Types (inchangés)
-// ============================================
+// Types matching backend schemas
 export interface Project {
   id: number;
   title: string;
@@ -134,8 +111,9 @@ export async function fetchAllProjects(params?: {
   if (params?.skip !== undefined) searchParams.set('skip', String(params.skip));
   if (params?.limit !== undefined) searchParams.set('limit', String(params.limit));
 
-  const url = '/api/v1/entities/projects/all' + (searchParams.toString() ? '?' + searchParams.toString() : '');
-  return await fetchAPI<ProjectListResponse>(url);
+  const url = `/api/v1/entities/projects/all${searchParams.toString() ? '?' + searchParams.toString() : ''}`;
+  const response = await getClient().apiCall.invoke({ url, method: 'GET' });
+  return response?.data as ProjectListResponse;
 }
 
 export async function fetchMyProjects(params?: {
@@ -150,14 +128,18 @@ export async function fetchMyProjects(params?: {
   if (params?.skip !== undefined) searchParams.set('skip', String(params.skip));
   if (params?.limit !== undefined) searchParams.set('limit', String(params.limit));
 
-  const url = '/api/v1/entities/projects' + (searchParams.toString() ? '?' + searchParams.toString() : '');
-  return await fetchAPI<ProjectListResponse>(url);
+  const url = `/api/v1/entities/projects${searchParams.toString() ? '?' + searchParams.toString() : ''}`;
+  const response = await getClient().apiCall.invoke({ url, method: 'GET' });
+  return response?.data as ProjectListResponse;
 }
 
 export async function fetchProjectById(id: number): Promise<Project | null> {
   try {
-    const url = '/api/v1/entities/projects/all?query=' + encodeURIComponent(JSON.stringify({ id }));
-    const data = await fetchAPI<ProjectListResponse>(url);
+    const response = await getClient().apiCall.invoke({
+      url: `/api/v1/entities/projects/all?query=${encodeURIComponent(JSON.stringify({ id }))}`,
+      method: 'GET',
+    });
+    const data = response?.data as ProjectListResponse;
     return data?.items?.[0] || null;
   } catch {
     return null;
@@ -174,24 +156,28 @@ export async function createProject(data: {
   milestones?: string;
   status?: string;
 }): Promise<Project> {
-  return await fetchAPI<Project>('/api/v1/entities/projects', {
+  const response = await getClient().apiCall.invoke({
+    url: '/api/v1/entities/projects',
     method: 'POST',
-    body: JSON.stringify({
+    data: {
       ...data,
       status: data.status || 'voting',
       raised: 0,
       votes_for: 0,
       votes_against: 0,
       voter_count: 0,
-    }),
+    },
   });
+  return response?.data as Project;
 }
 
 export async function updateProject(id: number, data: Partial<Project>): Promise<Project> {
-  return await fetchAPI<Project>('/api/v1/entities/projects/' + id, {
+  const response = await getClient().apiCall.invoke({
+    url: `/api/v1/entities/projects/${id}`,
     method: 'PUT',
-    body: JSON.stringify(data),
+    data,
   });
+  return response?.data as Project;
 }
 
 // ============ VOTES API ============
@@ -208,8 +194,9 @@ export async function fetchAllVotes(params?: {
   if (params?.skip !== undefined) searchParams.set('skip', String(params.skip));
   if (params?.limit !== undefined) searchParams.set('limit', String(params.limit));
 
-  const url = '/api/v1/entities/votes/all' + (searchParams.toString() ? '?' + searchParams.toString() : '');
-  return await fetchAPI<VoteListResponse>(url);
+  const url = `/api/v1/entities/votes/all${searchParams.toString() ? '?' + searchParams.toString() : ''}`;
+  const response = await getClient().apiCall.invoke({ url, method: 'GET' });
+  return response?.data as VoteListResponse;
 }
 
 export async function fetchMyVotes(params?: {
@@ -224,8 +211,9 @@ export async function fetchMyVotes(params?: {
   if (params?.skip !== undefined) searchParams.set('skip', String(params.skip));
   if (params?.limit !== undefined) searchParams.set('limit', String(params.limit));
 
-  const url = '/api/v1/entities/votes' + (searchParams.toString() ? '?' + searchParams.toString() : '');
-  return await fetchAPI<VoteListResponse>(url);
+  const url = `/api/v1/entities/votes${searchParams.toString() ? '?' + searchParams.toString() : ''}`;
+  const response = await getClient().apiCall.invoke({ url, method: 'GET' });
+  return response?.data as VoteListResponse;
 }
 
 export async function createVote(data: {
@@ -234,10 +222,12 @@ export async function createVote(data: {
   weight: number;
   pi_uid: string;
 }): Promise<Vote> {
-  return await fetchAPI<Vote>('/api/v1/entities/votes', {
+  const response = await getClient().apiCall.invoke({
+    url: '/api/v1/entities/votes',
     method: 'POST',
-    body: JSON.stringify(data),
+    data,
   });
+  return response?.data as Vote;
 }
 
 // ============ CONTRIBUTIONS API ============
@@ -254,8 +244,9 @@ export async function fetchAllContributions(params?: {
   if (params?.skip !== undefined) searchParams.set('skip', String(params.skip));
   if (params?.limit !== undefined) searchParams.set('limit', String(params.limit));
 
-  const url = '/api/v1/entities/contributions/all' + (searchParams.toString() ? '?' + searchParams.toString() : '');
-  return await fetchAPI<ContributionListResponse>(url);
+  const url = `/api/v1/entities/contributions/all${searchParams.toString() ? '?' + searchParams.toString() : ''}`;
+  const response = await getClient().apiCall.invoke({ url, method: 'GET' });
+  return response?.data as ContributionListResponse;
 }
 
 export async function fetchMyContributions(params?: {
@@ -270,8 +261,9 @@ export async function fetchMyContributions(params?: {
   if (params?.skip !== undefined) searchParams.set('skip', String(params.skip));
   if (params?.limit !== undefined) searchParams.set('limit', String(params.limit));
 
-  const url = '/api/v1/entities/contributions' + (searchParams.toString() ? '?' + searchParams.toString() : '');
-  return await fetchAPI<ContributionListResponse>(url);
+  const url = `/api/v1/entities/contributions${searchParams.toString() ? '?' + searchParams.toString() : ''}`;
+  const response = await getClient().apiCall.invoke({ url, method: 'GET' });
+  return response?.data as ContributionListResponse;
 }
 
 export async function createContribution(data: {
@@ -282,10 +274,12 @@ export async function createContribution(data: {
   status?: string;
   pi_uid: string;
 }): Promise<Contribution> {
-  return await fetchAPI<Contribution>('/api/v1/entities/contributions', {
+  const response = await getClient().apiCall.invoke({
+    url: '/api/v1/entities/contributions',
     method: 'POST',
-    body: JSON.stringify({ ...data, status: data.status || 'completed' }),
+    data: { ...data, status: data.status || 'completed' },
   });
+  return response?.data as Contribution;
 }
 
 // ============ NOTIFICATIONS API ============
@@ -302,27 +296,30 @@ export async function fetchMyNotifications(params?: {
   if (params?.skip !== undefined) searchParams.set('skip', String(params.skip));
   if (params?.limit !== undefined) searchParams.set('limit', String(params.limit || 20));
 
-  const url = '/api/v1/entities/notifications' + (searchParams.toString() ? '?' + searchParams.toString() : '');
-  return await fetchAPI<NotificationListResponse>(url);
+  const url = `/api/v1/entities/notifications${searchParams.toString() ? '?' + searchParams.toString() : ''}`;
+  const response = await getClient().apiCall.invoke({ url, method: 'GET' });
+  return response?.data as NotificationListResponse;
 }
 
 export async function markNotificationRead(id: number): Promise<void> {
-  await fetchAPI<void>('/api/v1/entities/notifications/' + id, {
+  await getClient().apiCall.invoke({
+    url: `/api/v1/entities/notifications/${id}`,
     method: 'PUT',
-    body: JSON.stringify({ read: true }),
+    data: { read: true },
   });
 }
 
 export async function markAllNotificationsRead(ids: number[]): Promise<void> {
-  await fetchAPI<void>('/api/v1/entities/notifications/batch', {
+  await getClient().apiCall.invoke({
+    url: '/api/v1/entities/notifications/batch',
     method: 'PUT',
-    body: JSON.stringify({
+    data: {
       items: ids.map((id) => ({ id, updates: { read: true } })),
-    }),
+    },
   });
 }
 
-// ============ HELPERS (inchangés) ============
+// ============ HELPERS ============
 
 export function getStatusLabel(status: string | null): string {
   const map: Record<string, string> = {
@@ -377,48 +374,26 @@ export function parseTeam(team: string | null): { name: string; role: string; av
   }
 }
 
-// ============================================
-// Convenience API object - Version locale
-// ============================================
+// Convenience API object for generic CRUD operations
 export const api = {
   async listAll(entity: string, params?: { query?: string; sort?: string; skip?: number; limit?: number }) {
-    const searchParams = new URLSearchParams();
-    if (params?.query) searchParams.set('query', params.query);
-    if (params?.sort) searchParams.set('sort', params.sort);
-    if (params?.skip !== undefined) searchParams.set('skip', String(params.skip));
-    searchParams.set('limit', String(params?.limit || 2000));
-
-    const url = '/api/v1/entities/' + entity + '/all?' + searchParams.toString();
-    return await fetchAPI<{ items: Record<string, unknown>[]; total: number; skip: number; limit: number }>(url);
+    const res = await getClient().entities.list(entity, { ...params, limit: params?.limit || 2000 });
+    return res as { items: Record<string, unknown>[]; total: number; skip: number; limit: number };
   },
   async listMy(entity: string, params?: { query?: string; sort?: string; skip?: number; limit?: number }) {
-    const searchParams = new URLSearchParams();
-    if (params?.query) searchParams.set('query', params.query);
-    if (params?.sort) searchParams.set('sort', params.sort);
-    if (params?.skip !== undefined) searchParams.set('skip', String(params.skip));
-    searchParams.set('limit', String(params?.limit || 2000));
-
-    const url = '/api/v1/entities/' + entity + '?' + searchParams.toString();
-    return await fetchAPI<{ items: Record<string, unknown>[]; total: number; skip: number; limit: number }>(url);
+    const res = await getClient().entities.list(entity, { ...params, owned: true, limit: params?.limit || 2000 });
+    return res as { items: Record<string, unknown>[]; total: number; skip: number; limit: number };
   },
   async get(entity: string, id: number) {
-    return await fetchAPI<Record<string, unknown>>('/api/v1/entities/' + entity + '/' + id);
+    return await getClient().entities.get(entity, id);
   },
   async create(entity: string, data: Record<string, unknown>) {
-    return await fetchAPI<Record<string, unknown>>('/api/v1/entities/' + entity, {
-      method: 'POST',
-      body: JSON.stringify(data),
-    });
+    return await getClient().entities.create(entity, data);
   },
   async update(entity: string, id: number, data: Record<string, unknown>) {
-    return await fetchAPI<Record<string, unknown>>('/api/v1/entities/' + entity + '/' + id, {
-      method: 'PUT',
-      body: JSON.stringify(data),
-    });
+    return await getClient().entities.update(entity, id, data);
   },
   async remove(entity: string, id: number) {
-    await fetchAPI<void>('/api/v1/entities/' + entity + '/' + id, {
-      method: 'DELETE',
-    });
+    return await getClient().entities.delete(entity, id);
   },
 };

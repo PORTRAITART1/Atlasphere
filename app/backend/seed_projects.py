@@ -6,8 +6,8 @@ import sys
 from datetime import datetime
 from sqlalchemy import select
 
-# Ajouter le chemin du backend pour importer les modules core
-sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+# Ajouter la RACINE du dépôt au chemin Python (pour que "app" soit importable)
+sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
 from app.backend.core.database import db_manager
 from app.backend.models.projects import Projects
@@ -21,7 +21,7 @@ sample_projects = [
         "raised": 12500.0,
         "status": "active",
         "category": "Environnement",
-        "creator_id": "pi_pioneer_1", # ID fictif pour le créateur
+        "user_id": "pi_pioneer_1",
     },
     {
         "title": "Plateforme d'Éducation Numérique Mobile",
@@ -30,7 +30,7 @@ sample_projects = [
         "raised": 62000.0,
         "status": "active",
         "category": "Éducation",
-        "creator_id": "pi_pioneer_2",
+        "user_id": "pi_pioneer_2",
     },
     {
         "title": "Unité Mobile de Soins de Santé Solaire",
@@ -39,7 +39,7 @@ sample_projects = [
         "raised": 5000.0,
         "status": "active",
         "category": "Santé",
-        "creator_id": "pi_pioneer_3",
+        "user_id": "pi_pioneer_3",
     },
     {
         "title": "Coopérative d'Artisanat Équitable 'Pi-Craft'",
@@ -48,7 +48,7 @@ sample_projects = [
         "raised": 28500.0,
         "status": "active",
         "category": "Économie",
-        "creator_id": "pi_pioneer_4",
+        "user_id": "pi_pioneer_4",
     }
 ]
 
@@ -64,7 +64,7 @@ async def seed_projects():
             existing_project = result.scalar_one_or_none()
             
             if existing_project:
-                print("⚠️ La table des projets n'est pas vide. Peuplement annulé pour éviter les doublons.")
+                print("⚠️ La liste des projets n'est pas vide. Peuplement annulé pour éviter les doublons.")
                 return
 
             # Créer les objets de projet

@@ -19,7 +19,7 @@ interface PiPaymentButtonProps {
 export default function PiPaymentButton({
   amount,
   projectId,
-  memo = 'AtlaspherePi contribution',
+  memo = 'Atlasphere contribution',
   onSuccess,
   onError,
   className = '',
