@@ -181,7 +181,7 @@ export default function Navbar() {
                 }`}
               >
                 <span className="text-xs">🌱</span>
-                <span>{t('nav.ecochain_title')}</span>
+                <span>{t('nav.ecochain')}</span>
                 <svg
                   className={`w-3 h-3 transition-transform duration-200 ${activeDropdown === 'eco' ? 'rotate-180' : ''}`}
                   fill="none"
@@ -196,7 +196,7 @@ export default function Navbar() {
                 <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-[420px] bg-slate-800/95 backdrop-blur-xl border border-white/[0.08] rounded-2xl shadow-2xl shadow-black/40 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200 z-50">
                   <div className="p-2">
                     <div className="px-3 py-2 mb-1">
-                      <p className="text-xs font-semibold text-emerald-400 uppercase tracking-wider">{t('nav.ecochain_title')} AI</p>
+                      <p className="text-xs font-semibold text-emerald-400 uppercase tracking-wider">{t('nav.ecochain')} AI</p>
                       <p className="text-[11px] text-gray-500 mt-0.5">{t('nav.ecochain_desc')}</p>
                     </div>
                     <div className="grid grid-cols-2 gap-0.5">
@@ -237,7 +237,7 @@ export default function Navbar() {
                 }`}
               >
                 <span className="text-xs">🏛️</span>
-                <span>{t('nav.dao_title')}</span>
+                <span>{t('nav.dao')}</span>
                 <svg
                   className={`w-3 h-3 transition-transform duration-200 ${activeDropdown === 'dao' ? 'rotate-180' : ''}`}
                   fill="none"
@@ -453,7 +453,7 @@ export default function Navbar() {
 
             {/* EcoChain section */}
             <div className="space-y-0.5 mb-4">
-              <p className="px-3 py-1.5 text-[10px] font-bold text-emerald-500 uppercase tracking-widest">🌱 {t('nav.ecochain_title')} AI</p>
+              <p className="px-3 py-1.5 text-[10px] font-bold text-emerald-500 uppercase tracking-widest">🌱 {t('nav.ecochain')} AI</p>
               <div className="grid grid-cols-2 gap-0.5">
                 {ecoLinks.map((link) => (
                   <Link

@@ -52,6 +52,8 @@ export default function Footer() {
               <Link to="/security" className="block text-gray-400 hover:text-indigo-400 text-sm transition-colors">{t('footer.security')}</Link>
               <Link to="/reputation" className="block text-gray-400 hover:text-indigo-400 text-sm transition-colors">{t('footer.reputation')}</Link>
               <Link to="/settings" className="block text-gray-400 hover:text-indigo-400 text-sm transition-colors">{t('footer.settings')}</Link>
+              <a href="/privacy.html" className="block text-gray-400 hover:text-emerald-400 text-sm transition-colors">Privacy Policy</a>
+              <a href="/terms.html" className="block text-gray-400 hover:text-emerald-400 text-sm transition-colors">Terms of Service</a>
             </div>
           </div>
         </div>
