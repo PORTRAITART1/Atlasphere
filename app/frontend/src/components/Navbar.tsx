@@ -8,7 +8,6 @@ import GlobalSearch from '@/components/GlobalSearch';
 import ThemeToggle from '@/components/ThemeToggle';
 import PushNotifications from '@/components/PushNotifications';
 import { getTotalUnread } from '@/lib/messaging';
-import { useTranslation } from 'react-i18next';
 
 export default function Navbar() {
   const [user, setUser] = useState<PiUser | null>(getCurrentUser());
@@ -18,7 +17,6 @@ export default function Navbar() {
   const [, setLangTick] = useState(0);
   const location = useLocation();
   const navRef = useRef<HTMLDivElement>(null);
-  const { t } = useTranslation();
   const dropdownTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
