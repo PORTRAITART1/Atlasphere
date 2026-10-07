@@ -76,7 +76,7 @@ export default function Index() {
           {/* Logo overlay on hero */}
           <div className="absolute top-8 left-1/2 -translate-x-1/2 z-10">
             <img
-              src="/icons/icon-192.png"
+              src="/icons/icon-192-color.png"
               alt="Atlasphere"
               className="w-16 h-16 md:w-20 md:h-20 object-contain drop-shadow-2xl"
             />
