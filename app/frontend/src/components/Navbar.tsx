@@ -5,7 +5,6 @@ import { t, subscribeI18n } from '@/lib/i18n';
 import LanguageSelector from '@/components/LanguageSelector';
 import NotificationBell from '@/components/NotificationBell';
 import GlobalSearch from '@/components/GlobalSearch';
-import ThemeToggle from '@/components/ThemeToggle';
 import PushNotifications from '@/components/PushNotifications';
 import { getTotalUnread } from '@/lib/messaging';
 
@@ -357,7 +356,6 @@ export default function Navbar() {
             </Link>
 
             <LanguageSelector />
-            <div className="hidden sm:block"><ThemeToggle /></div>
             <div className="hidden sm:block"><PushNotifications /></div>
             <NotificationBell />
 
