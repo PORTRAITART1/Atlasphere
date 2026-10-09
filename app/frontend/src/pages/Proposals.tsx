@@ -16,72 +16,9 @@ import {
 type StatusFilter = 'all' | 'voting' | 'approved' | 'funding' | 'funded' | 'completed';
 type CategoryFilter = 'all' | 'education' | 'commerce' | 'technology' | 'social' | 'environment';
 
-const DEMO_PROJECTS: Project[] = [
-  {
-    id: 'demo-1',
-    title: 'PiMarket – Marketplace Pi Network',
-    description:
-      'Une plateforme décentralisée permettant aux Pionniers d\'acheter et vendre des produits et services directement en Pi. Zéro frais bancaires, 100% communautaire.',
-    status: 'voting',
-    category: 'commerce',
-    budget: 50000,
-    raised: 18000,
-    voter_count: 342,
-    votes_for: 289,
-    votes_against: 53,
-    created_at: '2024-11-15T10:00:00Z',
-    pioneer_id: 'portraitart1',
-    pioneer_name: 'PortraitArt1',
-  },
-  {
-    id: 'demo-2',
-    title: 'PiLearn – Éducation Blockchain',
-    description:
-      'Plateforme d\'apprentissage en ligne dédiée à la blockchain et au Web3. Les apprenants sont récompensés en Pi pour chaque cours complété. Accès mondial, contenu multilingue.',
-    status: 'approved',
-    category: 'education',
-    budget: 30000,
-    raised: 30000,
-    voter_count: 518,
-    votes_for: 470,
-    votes_against: 48,
-    created_at: '2024-10-20T08:30:00Z',
-    pioneer_id: 'portraitart1',
-    pioneer_name: 'PortraitArt1',
-  },
-  {
-    id: 'demo-3',
-    title: 'PiGreen – Financement Écologique',
-    description:
-      'Initiative de financement participatif pour des projets environnementaux : reforestation, énergie solaire, eau potable. Chaque don en Pi plante un arbre réel.',
-    status: 'funding',
-    category: 'environment',
-    budget: 75000,
-    raised: 41200,
-    voter_count: 621,
-    votes_for: 590,
-    votes_against: 31,
-    created_at: '2024-09-05T14:00:00Z',
-    pioneer_id: 'portraitart1',
-    pioneer_name: 'PortraitArt1',
-  },
-  {
-    id: 'demo-4',
-    title: 'PiHealth – Téléconsultation Médicale',
-    description:
-      'Application de télémédecine accessible aux communautés isolées. Les consultations médicales sont payées en Pi, rendant la santé accessible à tous les Pionniers.',
-    status: 'voting',
-    category: 'social',
-    budget: 60000,
-    raised: 9500,
-    voter_count: 198,
-    votes_for: 161,
-    votes_against: 37,
-    created_at: '2024-12-01T09:15:00Z',
-    pioneer_id: 'portraitart1',
-    pioneer_name: 'PortraitArt1',
-  },
-];
+// REMOVED: DEMO_PROJECTS hardcoded data
+// All projects now come from unified backend via API
+// This ensures single source of truth and consistency across the app
 
 export default function Proposals() {
   const [search, setSearch] = useState('');
@@ -108,13 +45,17 @@ export default function Proposals() {
         setProjects(result.items);
         setTotal(result.total);
       } else {
-        setProjects(DEMO_PROJECTS);
-        setTotal(DEMO_PROJECTS.length);
+        // No fallback to DEMO_PROJECTS - show empty state
+        // This ensures we always see real data or nothing
+        setProjects([]);
+        setTotal(0);
       }
     } catch (err) {
       console.error('Failed to load projects:', err);
-      setProjects(DEMO_PROJECTS);
-      setTotal(DEMO_PROJECTS.length);
+      // No fallback - show empty state on error
+      // User will see loading failed message
+      setProjects([]);
+      setTotal(0);
     } finally {
       setLoading(false);
     }
@@ -269,11 +210,8 @@ function ProjectCard({ project, index }: { project: Project; index: number }) {
   const fundingPercentage =
     project.budget > 0 ? ((project.raised || 0) / project.budget) * 100 : 0;
 
-  // CORRECTION : project.id peut être un nombre ou une chaîne
-  const idStr = String(project.id ?? '');
-  const isDemo = idStr.startsWith('demo-');
-  // Lien : les vrais projets vont vers /proposal/:id, les démos vers la même route (sera gérée)
-  const linkTo = isDemo ? `/proposal/${idStr}` : `/proposal/${project.id}`;
+  // Link to proposal detail page
+  const linkTo = `/proposal/${project.id}`;
 
   return (
     <motion.div
@@ -286,15 +224,6 @@ function ProjectCard({ project, index }: { project: Project; index: number }) {
         to={linkTo}
         className="block bg-slate-800/50 border border-slate-700/50 rounded-xl p-5 hover:border-indigo-500/40 hover:bg-slate-800/80 transition-all group h-full cursor-pointer"
       >
-        {/* Demo badge */}
-        {isDemo && (
-          <div className="flex justify-end mb-1">
-            <span className="text-xs px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-400 border border-amber-500/30">
-              ✨ Projet Pionnier
-            </span>
-          </div>
-        )}
-
         <div className="flex items-start justify-between mb-3">
           <span className={`px-2.5 py-1 rounded-full text-xs font-medium ${getStatusColor(project.status)}`}>
             {getStatusLabel(project.status)}
@@ -340,7 +269,7 @@ function ProjectCard({ project, index }: { project: Project; index: number }) {
           </div>
         )}
 
-        {(project.status === 'funding' || project.status === 'funded' || project.status === 'completed') && (
+        {(project.status === 'funding' || project.status === 'funded' || project.status === 'completed' || project.status === 'active') && (
           <div className="space-y-1.5">
             <div className="flex justify-between text-xs text-gray-400">
               <span>
