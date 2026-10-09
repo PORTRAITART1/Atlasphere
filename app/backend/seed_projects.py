@@ -7,7 +7,7 @@ import asyncio
 import os
 import sys
 from datetime import datetime
-from sqlalchemy import select
+from sqlalchemy import select, delete
 
 # Add root to Python path
 sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
@@ -25,13 +25,9 @@ async def seed_projects():
     
     async with db_manager.async_session_maker() as session:
         async with session.begin():
-            # Check if projects already exist
-            result = await session.execute(select(Projects).limit(1))
-            existing_project = result.scalar_one_or_none()
-            
-            if existing_project:
-                print("⚠️ Base de données déjà peuplée. Peuplement annulé pour éviter les doublons.")
-                return
+            # Delete existing projects to replace with unified data
+            await session.execute(delete(Projects))
+            print("🗑️  Anciens projets supprimés. Insertion des projets unifiés...")
 
             # Create projects from unified source
             for proj_data in unified_projects:
