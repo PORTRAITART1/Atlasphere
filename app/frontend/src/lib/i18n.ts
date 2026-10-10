@@ -35,6 +35,8 @@ type Translations = Record<TranslationKey, string>;
 
 const messages: Record<Locale, Translations> = {
   en: {
+    'footer.privacy': 'Privacy Policy',
+    'footer.terms': 'Terms of Service',
     'nav.home': 'Home',
     'nav.proposals': 'Proposals',
     'nav.funding': 'Funding',
@@ -646,6 +648,8 @@ const messages: Record<Locale, Translations> = {
 
 
   ar: {
+    'footer.privacy': 'سياسة الخصوصية',
+    'footer.terms': 'شروط الخدمة',
     // Navigation
     'nav.home': 'الرئيسية',
     'nav.proposals': 'المقترحات',
@@ -1268,6 +1272,8 @@ const messages: Record<Locale, Translations> = {
   },
 
   zh: {
+    'footer.privacy': '隐私政策',
+    'footer.terms': '服务条款',
     'nav.home': '首页',
     'nav.proposals': '提案',
     'nav.funding': '资助',
@@ -2153,6 +2159,8 @@ const messages: Record<Locale, Translations> = {
     'footer.discord': 'Discord',
   },
   es: {
+    'footer.privacy': 'Política de Privacidad',
+    'footer.terms': 'Términos de Servicio',
     'nav.home': 'Inicio',
     'nav.proposals': 'Propuestas',
     'nav.funding': 'Financiamiento',
@@ -2763,6 +2771,8 @@ const messages: Record<Locale, Translations> = {
 
 
   de: {
+    'footer.privacy': 'Datenschutzerklärung',
+    'footer.terms': 'Nutzungsbedingungen',
     'nav.home': 'Startseite',
     'nav.proposals': 'Vorschläge',
     'nav.funding': 'Finanzierung',
@@ -3322,6 +3332,8 @@ const messages: Record<Locale, Translations> = {
     'settings.env_missing': 'Fehlt',
   },
   pt: {
+    'footer.privacy': 'Política de Privacidade',
+    'footer.terms': 'Termos de Serviço',
     'nav.home': 'Início',
     'nav.proposals': 'Propostas',
     'nav.funding': 'Financiamento',
@@ -3943,6 +3955,8 @@ const messages: Record<Locale, Translations> = {
 
 
   ja: {
+    'footer.privacy': 'プライバシーポリシー',
+    'footer.terms': '利用規約',
     'nav.home': 'ホーム',
     'nav.proposals': '提案',
     'nav.funding': '資金調達',
@@ -4502,6 +4516,8 @@ const messages: Record<Locale, Translations> = {
     'settings.env_missing': '未設定',
   },
   it: {
+    'footer.privacy': 'Informativa sulla Privacy',
+    'footer.terms': 'Termini di Servizio',
     'nav.home': 'Home',
     'nav.proposals': 'Proposte',
     'nav.funding': 'Finanziamento',
@@ -5061,6 +5077,8 @@ const messages: Record<Locale, Translations> = {
     'settings.env_missing': 'Mancante',
   },
   fr: {
+    'footer.privacy': 'Politique de Confidentialité',
+    'footer.terms': 'Conditions d\'Utilisation',
     // Navigation
     'nav.home': 'Accueil',
     'nav.proposals': 'Propositions',
