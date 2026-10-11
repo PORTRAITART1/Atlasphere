@@ -65,7 +65,7 @@ export default function Index() {
       <PageTransition>
         {/* Hero */}
         <section className="relative overflow-hidden">
-          <div className="absolute inset-0">
+          <div className="fixed inset-0 z-0 pointer-events-none">
             <img
               src="/marketing-pack/images/branded-hero-governance-globe.png"
               alt="Atlasphere Governance"
