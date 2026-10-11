@@ -64,15 +64,16 @@ export default function Index() {
 
       <PageTransition>
         {/* Hero */}
-        <section className="relative overflow-hidden">
-          <div className="absolute inset-0">
-            <img
-              src="/marketing-pack/images/branded-hero-governance-globe.png"
-              alt="Atlasphere Governance"
-              className="w-full h-full object-contain object-center opacity-30"
-            />
-            <div className="absolute inset-0 bg-gradient-to-b from-slate-950/60 via-slate-950/80 to-slate-950" />
-          </div>
+        <section 
+          className="relative overflow-hidden"
+          style={{
+            backgroundImage: 'linear-gradient(rgba(2,6,23,0.6), rgba(2,6,23,0.8), rgba(2,6,23,1)), url(/marketing-pack/images/branded-hero-governance-globe.png)',
+            backgroundAttachment: 'fixed',
+            backgroundSize: 'contain',
+            backgroundPosition: 'center',
+            backgroundRepeat: 'no-repeat',
+          }}
+        >
           {/* Logo overlay on hero */}
           <div className="absolute top-8 left-1/2 -translate-x-1/2 z-10">
             <img
