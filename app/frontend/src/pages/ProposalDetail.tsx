@@ -408,7 +408,7 @@ export default function ProposalDetail() {
               )}
 
               {/* Funding */}
-              {(project.status === 'funding' || project.status === 'approved') && (
+              {(project.status === 'funding' || project.status === 'approved' || project.status === 'active') && (
                 <motion.div
                   className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-5"
                   initial={{ opacity: 0, x: 16 }}
