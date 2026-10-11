@@ -69,7 +69,7 @@ export default function Index() {
             <img
               src="/marketing-pack/images/branded-hero-governance-globe.png"
               alt="Atlasphere Governance"
-              className="w-full h-full object-cover opacity-30"
+              className="w-full h-full object-contain object-center opacity-30"
             />
             <div className="absolute inset-0 bg-gradient-to-b from-slate-950/60 via-slate-950/80 to-slate-950" />
           </div>
