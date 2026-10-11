@@ -440,13 +440,6 @@ export default function ProposalDetail() {
                         className="w-full px-3 py-2 rounded-lg bg-slate-900 border border-slate-700 text-white text-sm focus:outline-none focus:border-amber-500"
                         placeholder={t('detail.amount_placeholder')}
                       />
-                      <button
-                        onClick={handleContribute}
-                        disabled={contributing}
-                        className="w-full px-4 py-2 rounded-lg bg-gradient-to-r from-amber-600 to-amber-500 text-white text-sm font-medium hover:from-amber-500 hover:to-amber-400 transition-all disabled:opacity-50"
-                      >
-                        {contributing ? t('detail.contributing') : t('detail.contribute_pi')}
-                      </button>
                       <PiPaymentButton
                         amount={parseFloat(contributionAmount) || 10}
                         projectId={project.id}
