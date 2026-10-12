@@ -480,8 +480,9 @@ export async function createPiPayment(
 
     return true;
   } catch (error) {
-    console.error('[Atlasphere] Payment creation failed:', error);
-    return false;
+    const msg = error instanceof Error ? error.message : String(error);
+    console.error('[Atlasphere] Payment creation failed:', msg);
+    throw new Error(`createPiPayment: ${msg}`);
   }
 }
 
