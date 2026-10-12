@@ -216,7 +216,7 @@ async function onIncompletePaymentFound(payment: APIPayment) {
 
       const approveResponse = await fetch(`${getAPIBaseURL()}/api/pi-payments/approve`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('atlasphere_pi_token') || ''}` },
         body: JSON.stringify({ payment_id: payment.identifier }),
       });
 
@@ -233,7 +233,7 @@ async function onIncompletePaymentFound(payment: APIPayment) {
 
       const completeResponse = await fetch(`${getAPIBaseURL()}/api/pi-payments/complete`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('atlasphere_pi_token') || ''}` },
         body: JSON.stringify({
           payment_id: payment.identifier,
           txid: payment.transaction.txid,
@@ -262,7 +262,7 @@ async function verifyWithBackend(accessToken: string): Promise<PiUser | null> {
   try {
     const response = await fetch(`${getAPIBaseURL()}/api/v1/pi-auth/verify`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('atlasphere_pi_token') || ''}` },
       body: JSON.stringify({ access_token: accessToken }),
     });
 
@@ -304,7 +304,7 @@ async function fetchProfileFromBackend(): Promise<PiUser | null> {
   try {
     const response = await fetch(`${getAPIBaseURL()}/api/v1/pi-auth/profile`, {
       method: 'GET',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('atlasphere_pi_token') || ''}` },
     });
 
     if (!response.ok) return null;
@@ -422,7 +422,7 @@ export async function createPiPayment(
           try {
             const response = await fetch(`${getAPIBaseURL()}/api/pi-payments/approve`, {
               method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
+              headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('atlasphere_pi_token') || ''}` },
               body: JSON.stringify({ payment_id: paymentId })
             });
 
@@ -444,7 +444,7 @@ export async function createPiPayment(
           try {
             const response = await fetch(`${getAPIBaseURL()}/api/pi-payments/complete`, {
               method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
+              headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('atlasphere_pi_token') || ''}` },
               body: JSON.stringify({
                 payment_id: paymentId,
                 txid,
@@ -501,7 +501,7 @@ export async function submitGovernanceVote(projectId: number, voteType: 'for' | 
   try {
     const response = await fetch(`${getAPIBaseURL()}/api/v1/governance/vote`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('atlasphere_pi_token') || ''}` },
       body: JSON.stringify({
         project_id: projectId,
         vote_type: voteType,
@@ -582,7 +582,7 @@ export async function checkQuestProgress(actionType: 'vote' | 'fund' | 'login' |
   try {
     const response = await fetch(`${getAPIBaseURL()}/api/v1/quests/check-progress`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('atlasphere_pi_token') || ''}` },
       body: JSON.stringify({
         pi_uid: currentUser.uid,
         action_type: actionType,
