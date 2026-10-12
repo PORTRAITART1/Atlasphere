@@ -70,7 +70,6 @@ class PaymentResponse(BaseModel):
 @router.post("/approve-pi-real", response_model=PaymentResponse)
 async def approve_payment(
     data: ApprovePaymentRequest,
-    current_user: UserResponse = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
     """Approve a Pi payment (called by frontend after Pi.createPayment)"""
@@ -116,7 +115,6 @@ async def approve_payment(
 @router.post("/complete-pi-real", response_model=PaymentResponse)
 async def complete_payment(
     data: CompletePaymentRequest,
-    current_user: UserResponse = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
     """Complete a Pi payment and update project funding"""
@@ -166,7 +164,7 @@ async def complete_payment(
             payment_id=payment_id,
             status="completed",
             pi_uid=data.pi_uid,
-            user_id=str(current_user.id)
+            user_id=data.pi_uid
         )
         db.add(contribution)
         await db.commit()
