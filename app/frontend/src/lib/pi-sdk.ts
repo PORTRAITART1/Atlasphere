@@ -413,7 +413,7 @@ export async function createPiPayment(
       throw new Error('Pi payment requires Pi Browser and Pi SDK');
     }
 
-    await window.Pi.authenticate(['username'], onIncompletePaymentFound);
+    await window.Pi.authenticate(['payments', 'username'], onIncompletePaymentFound);
 
     await window.Pi.createPayment(
       { amount, memo, metadata },
