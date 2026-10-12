@@ -79,6 +79,7 @@ export interface PiUser {
   streakDays: number;
   kycVerified: boolean;
   language: string;
+  atlasphere_jwt?: string;  // JWT Atlasphere pour les appels API authentifiés
 }
 
 // --- PiRC2 Subscription Types (Soroban Smart Contract) ---
@@ -160,6 +161,15 @@ export function isInPiBrowser(): boolean {
   return isPiBrowser && !!window.Pi;
 }
 
+// Helper : retourne le header Authorization avec le JWT Atlasphere
+function authHeaders(): Record<string, string> {
+  const jwt = localStorage.getItem('atlasphere_jwt') || '';
+  return {
+    'Content-Type': 'application/json',
+    'Authorization': `Bearer ${jwt}`,
+  };
+}
+
 let _piInitPromise: Promise<void> | null = null;
 
 export async function initPiSdk(): Promise<void> {
@@ -216,7 +226,7 @@ async function onIncompletePaymentFound(payment: APIPayment) {
 
       const approveResponse = await fetch(`${getAPIBaseURL()}/api/pi-payments/approve`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('atlasphere_pi_token') || ''}` },
+        headers: authHeaders(),
         body: JSON.stringify({ payment_id: payment.identifier }),
       });
 
@@ -233,7 +243,7 @@ async function onIncompletePaymentFound(payment: APIPayment) {
 
       const completeResponse = await fetch(`${getAPIBaseURL()}/api/pi-payments/complete`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('atlasphere_pi_token') || ''}` },
+        headers: authHeaders(),
         body: JSON.stringify({
           payment_id: payment.identifier,
           txid: payment.transaction.txid,
@@ -260,9 +270,13 @@ async function onIncompletePaymentFound(payment: APIPayment) {
 // Verify Pi token with backend and get/create profile
 async function verifyWithBackend(accessToken: string): Promise<PiUser | null> {
   try {
+    // Note : la vérification initiale utilise le token Pi, pas le JWT
     const response = await fetch(`${getAPIBaseURL()}/api/v1/pi-auth/verify`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('atlasphere_pi_token') || ''}` },
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${accessToken}`,
+      },
       body: JSON.stringify({ access_token: accessToken }),
     });
 
@@ -273,6 +287,12 @@ async function verifyWithBackend(accessToken: string): Promise<PiUser | null> {
 
     const data = await response.json();
     if (data) {
+      // ⭐ Stocker le JWT Atlasphere retourné par le backend
+      if (data.atlasphere_jwt) {
+        localStorage.setItem('atlasphere_jwt', data.atlasphere_jwt);
+        console.log('[Atlasphere] JWT Atlasphere stocké');
+      }
+
       return {
         uid: data.pi_uid,
         username: data.username,
@@ -291,6 +311,7 @@ async function verifyWithBackend(accessToken: string): Promise<PiUser | null> {
         streakDays: data.streak_days || 0,
         kycVerified: data.kyc_verified || false,
         language: data.language || 'en',
+        atlasphere_jwt: data.atlasphere_jwt,
       };
     }
   } catch (error) {
@@ -304,7 +325,7 @@ async function fetchProfileFromBackend(): Promise<PiUser | null> {
   try {
     const response = await fetch(`${getAPIBaseURL()}/api/v1/pi-auth/profile`, {
       method: 'GET',
-      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('atlasphere_pi_token') || ''}` },
+      headers: authHeaders(),
     });
 
     if (!response.ok) return null;
@@ -361,6 +382,7 @@ export async function authenticate(): Promise<PiUser> {
       'Pi authentication timeout'
     );
 
+    // Note : on garde le token Pi pour la vérification initiale
     localStorage.setItem('atlasphere_pi_token', auth.accessToken);
 
     const backendUser = await verifyWithBackend(auth.accessToken);
@@ -422,7 +444,7 @@ export async function createPiPayment(
           try {
             const response = await fetch(`${getAPIBaseURL()}/api/pi-payments/approve`, {
               method: 'POST',
-              headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('atlasphere_pi_token') || ''}` },
+              headers: authHeaders(),
               body: JSON.stringify({ payment_id: paymentId })
             });
 
@@ -444,7 +466,7 @@ export async function createPiPayment(
           try {
             const response = await fetch(`${getAPIBaseURL()}/api/pi-payments/complete`, {
               method: 'POST',
-              headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('atlasphere_pi_token') || ''}` },
+              headers: authHeaders(),
               body: JSON.stringify({
                 payment_id: paymentId,
                 txid,
@@ -501,7 +523,7 @@ export async function submitGovernanceVote(projectId: number, voteType: 'for' | 
   try {
     const response = await fetch(`${getAPIBaseURL()}/api/v1/governance/vote`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('atlasphere_pi_token') || ''}` },
+      headers: authHeaders(),
       body: JSON.stringify({
         project_id: projectId,
         vote_type: voteType,
@@ -555,6 +577,7 @@ export async function fetchReputation(piUid?: string): Promise<{
   try {
     const response = await fetch(`${getAPIBaseURL()}/api/v1/governance/reputation/${uid}`, {
       method: 'GET',
+      headers: authHeaders(),
     });
 
     if (!response.ok) return null;
@@ -582,7 +605,7 @@ export async function checkQuestProgress(actionType: 'vote' | 'fund' | 'login' |
   try {
     const response = await fetch(`${getAPIBaseURL()}/api/v1/quests/check-progress`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('atlasphere_pi_token') || ''}` },
+      headers: authHeaders(),
       body: JSON.stringify({
         pi_uid: currentUser.uid,
         action_type: actionType,
@@ -605,6 +628,7 @@ export function logout() {
   currentUser = null;
   localStorage.removeItem('atlaspherepi_user');
   localStorage.removeItem('atlasphere_pi_token');
+  localStorage.removeItem('atlasphere_jwt');
   notifyListeners();
 }
 
