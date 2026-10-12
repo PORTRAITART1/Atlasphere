@@ -1,10 +1,7 @@
 import { useState } from 'react';
-import { createClient } from '@metagptx/web-sdk';
 import { createPiPayment, getCurrentUser } from '@/lib/pi-sdk';
+import { getAPIBaseURL } from '@/lib/config';
 import { t } from '@/lib/i18n';
-
-let _client: ReturnType<typeof createClient> | null = null;
-function getClient() { if (!_client) _client = createClient(); return _client; }
 
 interface PiPaymentButtonProps {
   amount: number;
@@ -27,11 +24,16 @@ export default function PiPaymentButton({
 }: PiPaymentButtonProps) {
   const [isProcessing, setIsProcessing] = useState(false);
   const [status, setStatus] = useState<'idle' | 'approving' | 'completing' | 'done' | 'error'>('idle');
+  const [errorMessage, setErrorMessage] = useState<string>('');
 
   const handlePayment = async () => {
+    setErrorMessage('');
     const user = getCurrentUser();
     if (!user) {
-      onError?.('Please connect with Pi Network first');
+      const msg = 'Please connect with Pi Network first';
+      setStatus('error');
+      setErrorMessage(msg);
+      onError?.(msg);
       return;
     }
 
@@ -47,68 +49,93 @@ export default function PiPaymentButton({
         async (paymentId: string) => {
           setStatus('approving');
           try {
-            await getClient().apiCall.invoke({
-              url: '/api/v1/pi-payments/approve',
+            const url = `${getAPIBaseURL()}/api/pi-payments/approve`;
+            console.log('[Payment] Approving:', url, 'paymentId:', paymentId);
+
+            const response = await fetch(url, {
               method: 'POST',
-              data: { payment_id: paymentId },
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ payment_id: paymentId }),
             });
+
+            if (!response.ok) {
+              const errText = await response.text().catch(() => '');
+              throw new Error(`HTTP ${response.status}: ${errText}`);
+            }
+            console.log('[Payment] Approved OK');
           } catch (err) {
-            console.error('Server approval failed:', err);
+            const msg = err instanceof Error ? err.message : 'Unknown approval error';
+            console.error('[Payment] Server approval failed:', msg);
+            setErrorMessage(`Approve: ${msg}`);
+            throw err;
           }
         },
         // onReadyForServerCompletion
         async (paymentId: string, txid: string) => {
           setStatus('completing');
           try {
-            await getClient().apiCall.invoke({
-              url: '/api/v1/pi-payments/complete',
+            const url = `${getAPIBaseURL()}/api/pi-payments/complete`;
+            console.log('[Payment] Completing:', url, 'paymentId:', paymentId, 'txid:', txid);
+
+            const response = await fetch(url, {
               method: 'POST',
-              data: {
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
                 payment_id: paymentId,
                 txid,
                 project_id: projectId,
                 amount,
                 pi_uid: user.uid,
-              },
+              }),
             });
 
-            // Check quest progress after funding
-            await getClient().apiCall.invoke({
-              url: '/api/v1/quests/check-progress',
-              method: 'POST',
-              data: { pi_uid: user.uid, action_type: 'fund' },
-            });
-
+            if (!response.ok) {
+              const errText = await response.text().catch(() => '');
+              throw new Error(`HTTP ${response.status}: ${errText}`);
+            }
+            console.log('[Payment] Completed OK');
             setStatus('done');
             onSuccess?.();
           } catch (err) {
-            console.error('Server completion failed:', err);
+            const msg = err instanceof Error ? err.message : 'Unknown completion error';
+            console.error('[Payment] Server completion failed:', msg);
             setStatus('error');
-            onError?.('Payment completion failed');
+            setErrorMessage(`Complete: ${msg}`);
+            onError?.(msg);
           }
         }
       );
 
       if (!success) {
+        const msg = 'Payment was cancelled or failed (SDK returned false)';
         setStatus('error');
-        onError?.('Payment was cancelled or failed');
+        setErrorMessage(msg);
+        onError?.(msg);
       }
     } catch (error) {
+      const msg = error instanceof Error ? error.message : 'Payment failed';
       setStatus('error');
-      onError?.('Payment failed');
+      setErrorMessage(msg);
+      onError?.(msg);
     } finally {
       setIsProcessing(false);
-      // Reset status after delay
-      setTimeout(() => setStatus('idle'), 3000);
+      // Reset to idle after 8 seconds, but keep error message visible during error
+      setTimeout(() => {
+        setStatus((s) => (s === 'error' ? 'idle' : s));
+        setErrorMessage('');
+      }, 8000);
     }
   };
 
   const getButtonContent = () => {
+    if (status === 'error' && errorMessage) {
+      return `❌ ${errorMessage}`;
+    }
     switch (status) {
       case 'approving':
-        return `⏳ ${t('common.loading')}`;
+        return `⏳ ${t('common.loading')} (approving)`;
       case 'completing':
-        return `⏳ ${t('common.loading')}`;
+        return `⏳ ${t('common.loading')} (completing)`;
       case 'done':
         return `✅ ${t('common.success')}`;
       case 'error':
@@ -119,18 +146,26 @@ export default function PiPaymentButton({
   };
 
   return (
-    <button
-      onClick={handlePayment}
-      disabled={isProcessing || status === 'done'}
-      className={`px-4 py-2.5 rounded-xl font-medium transition-all disabled:opacity-50 ${
-        status === 'done'
-          ? 'bg-emerald-600 text-white'
-          : status === 'error'
-          ? 'bg-red-600 text-white'
-          : 'bg-gradient-to-r from-amber-500 to-orange-600 text-white hover:from-amber-400 hover:to-orange-500'
-      } ${className}`}
-    >
-      {getButtonContent()}
-    </button>
+    <div className="w-full">
+      <button
+        onClick={handlePayment}
+        disabled={isProcessing || status === 'done'}
+        className={`w-full px-4 py-2.5 rounded-xl font-medium transition-all disabled:opacity-50 ${
+          status === 'done'
+            ? 'bg-emerald-600 text-white'
+            : status === 'error'
+            ? 'bg-red-600 text-white'
+            : 'bg-gradient-to-r from-amber-500 to-orange-600 text-white hover:from-amber-400 hover:to-orange-500'
+        } ${className}`}
+      >
+        {getButtonContent()}
+      </button>
+
+      {errorMessage && status === 'error' && (
+        <div className="mt-2 text-xs text-red-400 break-words bg-red-950/30 border border-red-800/50 rounded-lg p-2">
+          <strong>Erreur :</strong> {errorMessage}
+        </div>
+      )}
+    </div>
   );
 }
