@@ -51,6 +51,7 @@ export default function Footer() {
 </Link>
               <Link to="/security" className="block text-gray-400 hover:text-indigo-400 text-sm transition-colors">{t('footer.security')}</Link>
               <Link to="/reputation" className="block text-gray-400 hover:text-indigo-400 text-sm transition-colors">{t('footer.reputation')}</Link>
+              <Link to="/feedback" className="block text-gray-400 hover:text-amber-400 text-sm transition-colors">{t('nav.more.feedback')}</Link>
               <Link to="/settings" className="block text-gray-400 hover:text-indigo-400 text-sm transition-colors">{t('footer.settings')}</Link>
               <a href={getLocale() === "en" ? "/privacy.html" : `/privacy.${getLocale()}.html`} className="block text-gray-400 hover:text-emerald-400 text-sm transition-colors">{t("footer.privacy")}</a>
               <a href={getLocale() === "en" ? "/terms.html" : `/terms.${getLocale()}.html`} className="block text-gray-400 hover:text-emerald-400 text-sm transition-colors">{t("footer.terms")}</a>

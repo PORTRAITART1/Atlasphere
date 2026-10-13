@@ -4981,7 +4981,7 @@ const messages: Record<Locale, Translations> = {
     'privacy.title': 'Informativa sulla privacy',
     'privacy.lastUpdate': 'Ultimo aggiornamento: 20 giugno 2026',
     'privacy.s1.title': '1. Introduzione',
-    'privacy.s1.text': 'Atlasphere (\"noi\", \"nostro\") si impegna a proteggere la privacy dei propri utenti (\"voi\"). Questa politica descrive come raccogliamo, utilizziamo e proteggiamo i tuoi dati personali quando utilizzi la nostra piattaforma di governance decentralizzata su Pi Network.',
+    'privacy.s1.text': 'Atlasphere ("noi", "nostro") si impegna a proteggere la privacy dei propri utenti ("voi"). Questa politica descrive come raccogliamo, utilizziamo e proteggiamo i tuoi dati personali quando utilizzi la nostra piattaforma di governance decentralizzata su Pi Network.',
     'privacy.s2.title': '2. Dati raccolti',
     'privacy.s2.intro': 'Raccogliamo i seguenti dati:',
     'privacy.s2.item1': 'Identificatore Pi Network (UID) e nome utente durante l\'autenticazione',

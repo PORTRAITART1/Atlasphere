@@ -101,6 +101,7 @@ export default function Navbar() {
   ];
 
   const moreLinks = [
+    { path: '/feedback', label: t('nav.more.feedback'), icon: '⭐', desc: t('nav.more.feedback_desc') },
     { path: '/my-dashboard', label: t('nav.more.dashboard'), icon: '📊', desc: t('nav.more.dashboard_desc') },
     { path: '/rewards', label: t('nav.more.rewards'), icon: '🎁', desc: t('nav.more.rewards_desc') },
     { path: '/badges', label: t('nav.more.badges'), icon: '🏅', desc: t('nav.more.badges_desc') },

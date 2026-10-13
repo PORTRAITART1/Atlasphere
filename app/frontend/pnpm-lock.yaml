@@ -15,7 +15,7 @@ importers:
         specifier: latest
         version: 0.0.16(rollup@4.60.1)(vite@5.4.21(@types/node@22.19.15)(terser@5.46.1))
       '@metagptx/web-sdk':
-        specifier: latest
+        specifier: ^0.0.68
         version: 0.0.68(@babel/parser@7.29.2)(@babel/traverse@7.29.0)(@babel/types@7.29.0)(eslint@9.39.4(jiti@1.21.7))(prettier@3.8.1)(vite@5.4.21(@types/node@22.19.15)(terser@5.46.1))
       '@playwright/mcp':
         specifier: ^0.0.36

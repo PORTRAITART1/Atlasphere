@@ -7,7 +7,6 @@ import FeedbackForm from '@/components/FeedbackForm';
 import EcoChatbot from '@/components/EcoChatbot';
 import { autoAuthenticate, isInPiBrowser } from '@/lib/pi-sdk';
 import { applyTheme } from '@/lib/theme';
-import { useTranslation } from 'react-i18next';
 
 // Lazy-loaded pages for performance
 const Index = lazy(() => import('./pages/Index'));
@@ -61,6 +60,7 @@ const EcoAdsPage = lazy(() => import('./pages/EcoAds'));
 const UserProfile = lazy(() => import('./pages/UserProfile'));
 const MarketingDownload = lazy(() => import('./pages/MarketingDownload'));
 const ValidationKey = lazy(() => import('./pages/ValidationKey'));
+const PioneerFeedback = lazy(() => import('./pages/PioneerFeedback'));
 
 const queryClient = new QueryClient();
 
@@ -129,13 +129,12 @@ const AppRoutes = () => (
       <Route path="/profile" element={<UserProfile />} />
       <Route path="/marketing-download" element={<MarketingDownload />} />
       <Route path="/validation-key.txt" element={<ValidationKey />} />
+      <Route path="/feedback" element={<PioneerFeedback />} />
     </Routes>
   </Suspense>
 );
 
 const App = () => {
-  const { t } = useTranslation(); // Initialisation de la traduction
-
   useEffect(() => {
     // Apply saved theme on mount
     applyTheme();
