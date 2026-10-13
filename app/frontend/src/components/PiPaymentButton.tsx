@@ -13,6 +13,51 @@ interface PiPaymentButtonProps {
   children?: React.ReactNode;
 }
 
+/**
+ * Nettoie un message d'erreur brut pour l'afficher proprement.
+ * - Détecte "already_completed" → retourne un flag de succès
+ * - Tronque les JSON trop longs
+ */
+function cleanErrorMessage(raw: string): { isSuccess: boolean; rawMessage: string } {
+  // Cas 1 : paiement déjà complété (pas une vraie erreur)
+  if (raw.includes('already_completed') || raw.includes('already completed')) {
+    return { isSuccess: true, rawMessage: '' };
+  }
+
+  // Cas 2 : message d'erreur simple (pas de JSON)
+  if (raw.length < 120 && !raw.includes('{')) {
+    return { isSuccess: false, rawMessage: raw };
+  }
+
+  // Cas 3 : JSON détecté → extraire le champ "message" ou "detail"
+  try {
+    const jsonMatch = raw.match(/\{.*\}/s);
+    if (jsonMatch) {
+      const parsed = JSON.parse(jsonMatch[0]);
+      const msg =
+        parsed?.detail ||
+        parsed?.error_message ||
+        parsed?.message ||
+        parsed?.error;
+      if (typeof msg === 'string') {
+        // Récursif si le detail est lui-même un JSON
+        if (msg.includes('{')) {
+          return cleanErrorMessage(msg);
+        }
+        return { isSuccess: false, rawMessage: msg.slice(0, 120) };
+      }
+    }
+  } catch {
+    // Ignore parse errors
+  }
+
+  // Fallback : tronquer le message brut
+  return {
+    isSuccess: false,
+    rawMessage: raw.length > 120 ? raw.slice(0, 117) + '...' : raw,
+  };
+}
+
 export default function PiPaymentButton({
   amount,
   projectId,
@@ -23,17 +68,16 @@ export default function PiPaymentButton({
   children,
 }: PiPaymentButtonProps) {
   const [isProcessing, setIsProcessing] = useState(false);
-  const [status, setStatus] = useState<'idle' | 'approving' | 'completing' | 'done' | 'error'>('idle');
-  const [errorMessage, setErrorMessage] = useState<string>('');
+  const [status, setStatus] = useState<'idle' | 'approving' | 'completing' | 'done' | 'error' | 'success'>('idle');
+  const [message, setMessage] = useState<string>('');
 
   const handlePayment = async () => {
-    setErrorMessage('');
+    setMessage('');
     const user = getCurrentUser();
     if (!user) {
-      const msg = 'Please connect with Pi Network first';
       setStatus('error');
-      setErrorMessage(msg);
-      onError?.(msg);
+      setMessage(t('payment.login_required'));
+      onError?.(t('payment.login_required'));
       return;
     }
 
@@ -60,13 +104,16 @@ export default function PiPaymentButton({
 
             if (!response.ok) {
               const errText = await response.text().catch(() => '');
-              throw new Error(`HTTP ${response.status}: ${errText}`);
+              throw new Error(errText || `HTTP ${response.status}`);
             }
             console.log('[Payment] Approved OK');
           } catch (err) {
-            const msg = err instanceof Error ? err.message : 'Unknown approval error';
+            const msg = err instanceof Error ? err.message : '';
             console.error('[Payment] Server approval failed:', msg);
-            setErrorMessage(`Approve: ${msg}`);
+            const cleaned = cleanErrorMessage(msg);
+            if (!cleaned.isSuccess) {
+              setMessage(t('common.error'));
+            }
             throw err;
           }
         },
@@ -91,55 +138,71 @@ export default function PiPaymentButton({
 
             if (!response.ok) {
               const errText = await response.text().catch(() => '');
-              throw new Error(`HTTP ${response.status}: ${errText}`);
+              throw new Error(errText || `HTTP ${response.status}`);
             }
             console.log('[Payment] Completed OK');
             setStatus('done');
+            setMessage(t('common.success'));
             onSuccess?.();
           } catch (err) {
-            const msg = err instanceof Error ? err.message : 'Unknown completion error';
+            const msg = err instanceof Error ? err.message : '';
             console.error('[Payment] Server completion failed:', msg);
-            setStatus('error');
-            setErrorMessage(`Complete: ${msg}`);
-            onError?.(msg);
+
+            const cleaned = cleanErrorMessage(msg);
+            if (cleaned.isSuccess) {
+              // Cas spécial : paiement déjà complété = SUCCÈS
+              setStatus('success');
+              setMessage(t('common.success'));
+              onSuccess?.();
+            } else {
+              setStatus('error');
+              setMessage(t('common.error'));
+              onError?.(t('common.error'));
+            }
           }
         }
       );
 
       if (!success) {
-        const msg = 'Payment was cancelled or failed (SDK returned false)';
         setStatus('error');
-        setErrorMessage(msg);
-        onError?.(msg);
+        setMessage(t('common.error'));
+        onError?.(t('common.error'));
       }
     } catch (error) {
-      const msg = error instanceof Error ? error.message : 'Payment failed';
-      setStatus('error');
-      setErrorMessage(msg);
-      onError?.(msg);
+      const msg = error instanceof Error ? error.message : '';
+      const cleaned = cleanErrorMessage(msg);
+      if (cleaned.isSuccess) {
+        setStatus('success');
+        setMessage(t('common.success'));
+        onSuccess?.();
+      } else {
+        setStatus('error');
+        setMessage(t('common.error'));
+        onError?.(t('common.error'));
+      }
     } finally {
       setIsProcessing(false);
-      // Reset to idle after 8 seconds, but keep error message visible during error
       setTimeout(() => {
-        setStatus((s) => (s === 'error' ? 'idle' : s));
-        setErrorMessage('');
+        setStatus((s) => (s === 'error' || s === 'success' ? 'idle' : s));
+        setMessage('');
       }, 8000);
     }
   };
 
   const getButtonContent = () => {
-    if (status === 'error' && errorMessage) {
-      return `❌ ${errorMessage}`;
+    if (status === 'success') {
+      return `✅ ${t('common.success')}`;
+    }
+    if (status === 'error') {
+      return `❌ ${t('common.error')}`;
     }
     switch (status) {
       case 'approving':
-        return `⏳ ${t('common.loading')} (approving)`;
+        return `⏳ ${t('common.loading')}`;
       case 'completing':
-        return `⏳ ${t('common.loading')} (completing)`;
+        return `⏳ ${t('common.loading')}`;
       case 'done':
         return `✅ ${t('common.success')}`;
-      case 'error':
-        return `❌ ${t('common.error')}`;
       default:
         return children || `${t('fund.contribute')} ${amount} π`;
     }
@@ -149,9 +212,9 @@ export default function PiPaymentButton({
     <div className="w-full">
       <button
         onClick={handlePayment}
-        disabled={isProcessing || status === 'done'}
+        disabled={isProcessing || status === 'done' || status === 'success'}
         className={`w-full px-4 py-2.5 rounded-xl font-medium transition-all disabled:opacity-50 ${
-          status === 'done'
+          status === 'done' || status === 'success'
             ? 'bg-emerald-600 text-white'
             : status === 'error'
             ? 'bg-red-600 text-white'
@@ -161,9 +224,15 @@ export default function PiPaymentButton({
         {getButtonContent()}
       </button>
 
-      {errorMessage && status === 'error' && (
-        <div className="mt-2 text-xs text-red-400 break-words bg-red-950/30 border border-red-800/50 rounded-lg p-2">
-          <strong>Erreur :</strong> {errorMessage}
+      {message && (status === 'error' || status === 'success') && (
+        <div
+          className={`mt-2 text-xs break-words rounded-lg p-2 border ${
+            status === 'success'
+              ? 'text-emerald-400 bg-emerald-950/30 border-emerald-800/50'
+              : 'text-red-400 bg-red-950/30 border-red-800/50'
+          }`}
+        >
+          <strong>{status === 'success' ? '✅' : '❌'}</strong> {message}
         </div>
       )}
     </div>
