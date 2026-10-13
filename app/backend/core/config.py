@@ -19,7 +19,7 @@ class Settings(BaseSettings):
 
     # AWS Lambda Configuration
     is_lambda: bool = False
-    lambda_function_name: str = "fastapi-backend"
+    lambda_function_name: str = "atlasphere-backend"
     aws_region: str = "us-east-1"
 
     @property

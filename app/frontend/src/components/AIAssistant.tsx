@@ -1,8 +1,5 @@
 import { useState, useRef } from 'react';
-import { createClient } from '@metagptx/web-sdk';
-
-let _client: ReturnType<typeof createClient> | null = null;
-function getClient() { if (!_client) _client = createClient(); return _client; }
+import { getAPIBaseURL } from '@/lib/config';
 
 interface AIAssistantProps {
   title: string;
@@ -99,35 +96,57 @@ Réponds en français.`;
     abortRef.current = false;
 
     const prompt = buildPrompt(mode);
+    const url = `${getAPIBaseURL()}/api/v1/aihub/gentxt`;
+    console.log('[AIAssistant] Calling:', url);
 
     try {
-      await getClient().ai.gentxt({
-        messages: [
-          {
-            role: 'system',
-            content: 'Tu es un assistant IA spécialisé dans l\'aide à la rédaction de propositions pour Atlasphere, une plateforme de gouvernance décentralisée sur Pi Network. Tu fournis des conseils pratiques, concis et actionnables en français.',
-          },
-          { role: 'user', content: prompt },
-        ],
-        model: 'deepseek-v3.2',
-        stream: true,
-        onChunk: (chunk) => {
-          if (!abortRef.current && chunk.content) {
-            setResponse((prev) => prev + chunk.content);
-          }
-        },
-        onComplete: () => {
-          setLoading(false);
-        },
-        onError: (error) => {
-          setLoading(false);
-          setResponse(`Erreur: ${error?.message || 'Une erreur est survenue. Veuillez réessayer.'}`);
-        },
-        timeout: 60_000,
+      const res = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          messages: [
+            {
+              role: 'system',
+              content: 'Tu es un assistant IA spécialisé dans l\'aide à la rédaction de propositions pour Atlasphere, une plateforme de gouvernance décentralisée sur Pi Network. Tu fournis des conseils pratiques, concis et actionnables en français.',
+            },
+            { role: 'user', content: prompt },
+          ],
+          model: 'deepseek-v3.2',
+        }),
       });
-    } catch {
+
+      if (!res.ok) {
+        const errText = await res.text().catch(() => '');
+        throw new Error(`HTTP ${res.status}: ${errText}`);
+      }
+
+      const data = await res.json();
+
+      // The backend might return different shapes; try to extract text
+      let text = '';
+      if (typeof data === 'string') {
+        text = data;
+      } else if (data?.content) {
+        text = data.content;
+      } else if (data?.text) {
+        text = data.text;
+      } else if (data?.message?.content) {
+        text = data.message.content;
+      } else if (data?.choices?.[0]?.message?.content) {
+        text = data.choices[0].message.content;
+      } else if (data?.response) {
+        text = data.response;
+      } else {
+        text = JSON.stringify(data, null, 2);
+      }
+
+      setResponse(text);
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'Unknown error';
+      console.error('[AIAssistant] Failed:', msg);
+      setResponse(`Erreur: ${msg}`);
+    } finally {
       setLoading(false);
-      setResponse('Erreur: Impossible de contacter l\'assistant IA. Veuillez réessayer.');
     }
   };
 
@@ -159,7 +178,6 @@ Réponds en français.`;
 
   return (
     <div className="relative">
-      {/* Toggle Button */}
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
@@ -177,7 +195,6 @@ Réponds en français.`;
         </svg>
       </button>
 
-      {/* Assistant Panel */}
       {isOpen && (
         <div className="mt-3 bg-slate-800/80 border border-purple-500/20 rounded-xl p-5 space-y-4">
           <div className="flex items-center gap-2 mb-3">
@@ -190,7 +207,6 @@ Réponds en français.`;
             </div>
           </div>
 
-          {/* Mode Selection */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
             {modes.map((mode) => (
               <button
@@ -213,7 +229,6 @@ Réponds en français.`;
             ))}
           </div>
 
-          {/* Response Area */}
           {(response || loading) && (
             <div className="mt-4 space-y-3">
               <div className="bg-slate-900/70 border border-slate-700/50 rounded-lg p-4 max-h-64 overflow-y-auto">
@@ -232,12 +247,8 @@ Réponds en français.`;
                     {response}
                   </div>
                 )}
-                {loading && response && (
-                  <span className="inline-block w-2 h-4 bg-purple-400 animate-pulse ml-0.5" />
-                )}
               </div>
 
-              {/* Action Buttons */}
               {!loading && response && (
                 <div className="flex gap-2">
                   {(activeMode === 'improve-title' || activeMode === 'enrich-description' || activeMode === 'estimate-budget') && (
@@ -264,7 +275,6 @@ Réponds en français.`;
             </div>
           )}
 
-          {/* Helper Text */}
           {!response && !loading && (
             <p className="text-gray-500 text-xs text-center mt-2">
               💡 Remplissez d&apos;abord les champs du formulaire, puis utilisez l&apos;assistant pour améliorer votre proposition.

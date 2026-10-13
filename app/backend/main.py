@@ -6,16 +6,17 @@ import traceback
 from contextlib import asynccontextmanager
 from datetime import datetime
 
-from core.config import settings
+from app.backend.core.config import settings
 from fastapi import FastAPI, HTTPException, Request, status
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.openapi.docs import get_swagger_ui_html
 from fastapi.responses import JSONResponse
 from fastapi.routing import APIRouter
 
 # MODULE_IMPORTS_START
-from services.database import initialize_database, close_database
-from services.mock_data import initialize_mock_data
-from services.auth import initialize_admin_user
+from app.backend.services.database import initialize_database, close_database
+from app.backend.services.mock_data import initialize_mock_data
+from app.backend.services.auth import initialize_admin_user
 # MODULE_IMPORTS_END
 
 
@@ -51,7 +52,6 @@ def setup_logging():
     # Set log levels for specific modules
     logging.getLogger("uvicorn").setLevel(logging.DEBUG)
     logging.getLogger("fastapi").setLevel(logging.DEBUG)
-
     logging.getLogger("watchfiles").setLevel(logging.WARNING)
 
     # Log configuration details
@@ -70,11 +70,14 @@ async def lifespan(app: FastAPI):
     # MODULE_STARTUP_START
     await initialize_database()
     await initialize_mock_data()
+    # Seed disabled - keep existing projects in DB
+    logger.info("Seed skipped - using existing projects from database")
     await initialize_admin_user()
     # MODULE_STARTUP_END
 
     logger.info("=== Application startup completed successfully ===")
     yield
+
     # MODULE_SHUTDOWN_START
     await close_database()
     # MODULE_SHUTDOWN_END
@@ -86,6 +89,18 @@ app = FastAPI(
     version="1.0.0",
     lifespan=lifespan,
 )
+
+
+@app.get("/docs", include_in_schema=False)
+async def custom_swagger_ui_html():
+    return get_swagger_ui_html(
+        openapi_url=app.openapi_url,
+        title=app.title + " - 中文文档",
+        swagger_favicon_url="https://fastapi.tiangolo.com/img/favicon.png",
+        swagger_js_url="https://unpkg.com/swagger-ui-dist@5/swagger-ui-bundle.js",
+        swagger_css_url="https://unpkg.com/swagger-ui-dist@5/swagger-ui.css",
+        swagger_ui_parameters={"locale": "zh", "displayRequestDuration": True},
+    )
 
 
 # MODULE_MIDDLEWARE_START
@@ -101,15 +116,12 @@ app.add_middleware(
 
 
 # Auto-discover and include all routers from the local `routers` package
-def include_routers_from_package(app: FastAPI, package_name: str = "routers") -> None:
+def include_routers_from_package(app: FastAPI, package_name: str = "app.backend.routers") -> None:
     """Discover and include all APIRouter objects from a package.
-
     This scans the given package (and subpackages) for module-level variables that
     are instances of FastAPI's APIRouter. It supports "router", "admin_router" names.
     """
-
     logger = logging.getLogger(__name__)
-
     try:
         pkg = importlib.import_module(package_name)
     except Exception as exc:  # pragma: no cover - defensive logging
@@ -121,6 +133,7 @@ def include_routers_from_package(app: FastAPI, package_name: str = "routers") ->
         # Only import leaf modules; subpackages will be walked automatically
         if is_pkg:
             continue
+
         try:
             module = importlib.import_module(module_name)
         except Exception as exc:  # pragma: no cover - defensive logging
@@ -133,7 +146,6 @@ def include_routers_from_package(app: FastAPI, package_name: str = "routers") ->
                 continue
 
             attr = getattr(module, attr_name)
-
             if isinstance(attr, APIRouter):
                 app.include_router(attr)
                 discovered += 1
@@ -151,14 +163,13 @@ def include_routers_from_package(app: FastAPI, package_name: str = "routers") ->
 
 # Setup logging before router discovery
 setup_logging()
-include_routers_from_package(app, "routers")
+include_routers_from_package(app, "app.backend.routers")
 
 
 # Add exception handler for all exceptions except HTTPException
 @app.exception_handler(Exception)
 async def general_exception_handler(request: Request, exc: Exception):
     """Handle all exceptions except HTTPException
-
     - Dev environment: Return full stack trace and exception details
     - Prod environment: Return only "Internal server error"
     """
@@ -179,11 +190,15 @@ async def general_exception_handler(request: Request, exc: Exception):
     if is_dev:
         # Dev environment: return full stack trace and exception details
         error_detail = f"{error_type}: {error_message}\n{traceback.format_exc()}"
-        return JSONResponse(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, content={"detail": error_detail})
+        return JSONResponse(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            content={"detail": error_detail}
+        )
     else:
         # Prod environment: return only generic error message
         return JSONResponse(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, content={"detail": "Internal Server Error"}
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            content={"detail": "Internal Server Error"}
         )
 
 
@@ -209,10 +224,8 @@ def pi_validation_key():
 
 def run_in_debug_mode(app: FastAPI):
     """Run the FastAPI app in debug mode with proper asyncio handling.
-
     This function handles the special case of running in a debugger (PyCharm, VS Code, etc.)
     where asyncio is patched, causing conflicts with uvicorn's asyncio_run.
-
     It loads environment variables from ../.env and uses asyncio.run() directly
     to avoid uvicorn's asyncio_run conflicts.
 

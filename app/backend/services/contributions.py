@@ -4,7 +4,7 @@ from typing import Optional, Dict, Any, List
 from sqlalchemy import select, func
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from models.contributions import Contributions
+from app.backend.models.contributions import Contributions
 
 logger = logging.getLogger(__name__)
 

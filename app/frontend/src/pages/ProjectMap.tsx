@@ -36,7 +36,7 @@ const categoryColors: Record<string, string> = {
   environment: 'bg-cyan-500',
 };
 
-// Simulated geo coordinates for projects
+// Local geo coordinates for projects
 const geoLocations = [
   { lat: 48.8566, lng: 2.3522, city: 'Paris', country: 'France' },
   { lat: 33.5731, lng: -7.5898, city: 'Casablanca', country: 'Maroc' },

@@ -16,6 +16,10 @@ import {
 type StatusFilter = 'all' | 'voting' | 'approved' | 'funding' | 'funded' | 'completed';
 type CategoryFilter = 'all' | 'education' | 'commerce' | 'technology' | 'social' | 'environment';
 
+// REMOVED: DEMO_PROJECTS hardcoded data
+// All projects now come from unified backend via API
+// This ensures single source of truth and consistency across the app
+
 export default function Proposals() {
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('all');
@@ -37,12 +41,21 @@ export default function Proposals() {
     setLoading(true);
     try {
       const result = await fetchAllProjects({ limit: 100, sort: '-created_at' });
-      if (result?.items) {
+      if (result?.items && result.items.length > 0) {
         setProjects(result.items);
         setTotal(result.total);
+      } else {
+        // No fallback to DEMO_PROJECTS - show empty state
+        // This ensures we always see real data or nothing
+        setProjects([]);
+        setTotal(0);
       }
     } catch (err) {
       console.error('Failed to load projects:', err);
+      // No fallback - show empty state on error
+      // User will see loading failed message
+      setProjects([]);
+      setTotal(0);
     } finally {
       setLoading(false);
     }
@@ -141,7 +154,7 @@ export default function Proposals() {
             </div>
           </motion.div>
 
-          {/* Results */}
+          {/* Results count */}
           <motion.div
             className="mb-4 text-sm text-gray-400"
             initial={{ opacity: 0 }}
@@ -197,6 +210,9 @@ function ProjectCard({ project, index }: { project: Project; index: number }) {
   const fundingPercentage =
     project.budget > 0 ? ((project.raised || 0) / project.budget) * 100 : 0;
 
+  // Link to proposal detail page
+  const linkTo = `/proposal/${project.id}`;
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 24 }}
@@ -205,8 +221,8 @@ function ProjectCard({ project, index }: { project: Project; index: number }) {
       whileHover={{ y: -4, transition: { duration: 0.2 } }}
     >
       <Link
-        to={`/proposal/${project.id}`}
-        className="block bg-slate-800/50 border border-slate-700/50 rounded-xl p-5 hover:border-indigo-500/40 hover:bg-slate-800/80 transition-all group h-full"
+        to={linkTo}
+        className="block bg-slate-800/50 border border-slate-700/50 rounded-xl p-5 hover:border-indigo-500/40 hover:bg-slate-800/80 transition-all group h-full cursor-pointer"
       >
         <div className="flex items-start justify-between mb-3">
           <span className={`px-2.5 py-1 rounded-full text-xs font-medium ${getStatusColor(project.status)}`}>
@@ -219,6 +235,16 @@ function ProjectCard({ project, index }: { project: Project; index: number }) {
           {project.title}
         </h3>
         <p className="text-gray-400 text-sm line-clamp-2 mb-4">{project.description}</p>
+
+        {/* Pioneer info */}
+        {project.pioneer_name && (
+          <div className="flex items-center gap-2 mb-3">
+            <div className="w-6 h-6 rounded-full bg-indigo-600/40 flex items-center justify-center text-xs text-indigo-300">
+              π
+            </div>
+            <span className="text-xs text-gray-400">{project.pioneer_name}</span>
+          </div>
+        )}
 
         <div className="flex items-center gap-2 mb-4">
           <span className="text-xs text-gray-500 ml-auto">
@@ -243,7 +269,7 @@ function ProjectCard({ project, index }: { project: Project; index: number }) {
           </div>
         )}
 
-        {(project.status === 'funding' || project.status === 'funded' || project.status === 'completed') && (
+        {(project.status === 'funding' || project.status === 'funded' || project.status === 'completed' || project.status === 'active') && (
           <div className="space-y-1.5">
             <div className="flex justify-between text-xs text-gray-400">
               <span>

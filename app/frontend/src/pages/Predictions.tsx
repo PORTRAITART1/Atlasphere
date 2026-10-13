@@ -2,14 +2,7 @@ import { useState } from 'react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { getClimatePredictions, getSeverityColor, type ClimatePrediction } from '@/lib/eco-data';
-import { createClient } from '@metagptx/web-sdk';
-
-// Lazy client for AI predictions
-let _client: ReturnType<typeof createClient> | null = null;
-function getClient() {
-  if (!_client) _client = createClient();
-  return _client;
-}
+import { getAPIBaseURL } from '@/lib/config';
 
 const TYPE_ICONS: Record<string, string> = {
   flood: '🌊',
@@ -87,21 +80,56 @@ export default function Predictions() {
     if (!aiQuery.trim()) return;
     setAiLoading(true);
     setAiResponse('');
+
+    const url = `${getAPIBaseURL()}/api/v1/aihub/gentxt`;
+    console.log('[Predictions] AI query:', url);
+
     try {
-      const result = await getClient().ai.gentxt({
-        model: 'deepseek-v4-pro',
-        messages: [
-          {
-            role: 'system',
-            content: `Tu es un expert en climatologie et environnement pour l'application Atlasphere EcoChain AI. Tu analyses les risques climatiques et donnes des recommandations personnalisées. Réponds en français, de manière concise et actionnable. Utilise des emojis pour rendre la réponse plus lisible.`,
-          },
-          { role: 'user', content: aiQuery },
-        ],
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          model: 'deepseek-v4-pro',
+          messages: [
+            {
+              role: 'system',
+              content: `Tu es un expert en climatologie et environnement pour l'application Atlasphere EcoChain AI. Tu analyses les risques climatiques et donnes des recommandations personnalisées. Réponds en français, de manière concise et actionnable. Utilise des emojis pour rendre la réponse plus lisible.`,
+            },
+            { role: 'user', content: aiQuery },
+          ],
+        }),
       });
-      setAiResponse(result.content || 'Aucune réponse générée.');
+
+      if (!response.ok) {
+        const errText = await response.text().catch(() => '');
+        throw new Error(`HTTP ${response.status}: ${errText}`);
+      }
+
+      const data = await response.json();
+
+      // Extract text from various possible response shapes
+      let text = '';
+      if (typeof data === 'string') {
+        text = data;
+      } else if (data?.content) {
+        text = data.content;
+      } else if (data?.text) {
+        text = data.text;
+      } else if (data?.message?.content) {
+        text = data.message.content;
+      } else if (data?.choices?.[0]?.message?.content) {
+        text = data.choices[0].message.content;
+      } else if (data?.response) {
+        text = data.response;
+      } else {
+        text = JSON.stringify(data, null, 2);
+      }
+
+      setAiResponse(text || 'Aucune réponse générée.');
     } catch (err) {
-      console.error('[EcoChain] AI prediction error:', err);
-      setAiResponse('❌ Erreur lors de la génération de la prédiction. Veuillez réessayer.');
+      const msg = err instanceof Error ? err.message : 'Unknown error';
+      console.error('[Predictions] AI error:', msg);
+      setAiResponse(`❌ Erreur : ${msg}`);
     } finally {
       setAiLoading(false);
     }

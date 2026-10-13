@@ -13,11 +13,11 @@ from pathlib import Path
 from typing import AsyncGenerator, Optional
 
 import fitz
-from core.config import settings
+from app.backend.core.config import settings
 import httpx
 from openai import AsyncOpenAI
-from schemas.aihub import AnalyzePdfRequest, AnalyzePdfResponse
-from schemas.aihub import (
+from app.backend.schemas.aihub import AnalyzePdfRequest, AnalyzePdfResponse
+from app.backend.schemas.aihub import (
     GenAudioRequest,
     GenAudioResponse,
     GenImgRequest,
@@ -282,7 +282,7 @@ class AIHubService:
                     resp.raise_for_status()
                     image_bytes = resp.content
 
-                # Extract filename from URL (fallback if missing)
+                # Extract filename from URL (default if missing)
                 name = image.split("?")[0].rstrip("/").split("/")[-1] or f"{name_prefix}.png"
                 upload = io.BytesIO(image_bytes)
                 upload.name = name  # type: ignore[attr-defined]
@@ -616,7 +616,7 @@ User instruction:
             request: Generate image request parameters.
 
         Returns:
-            GenImgResponse: generated image response, where `images` is a list of image refs (URL preferred; fallback to base64 data URI).
+            GenImgResponse: generated image response, where `images` is a list of image refs (URL preferred; use base64 data URI).
         """
         try:
             client = self._require_ai_client()
@@ -647,7 +647,7 @@ User instruction:
             if not response.data:
                 raise RuntimeError("Image generation returned empty result")
 
-            # Prefer URL to avoid huge response bodies; fallback to base64 data URI.
+            # Prefer URL to avoid huge response bodies; use base64 data URI.
             images = [self._extract_image_ref(item) for item in response.data]
 
             return GenImgResponse(
@@ -662,7 +662,7 @@ User instruction:
 
     @staticmethod
     def _safe_int(value: object, default: int) -> int:
-        """Best-effort convert to int, fallback to default."""
+        """Best-effort convert to int, use default."""
         try:
             return int(value)  # type: ignore[arg-type]
         except (TypeError, ValueError):

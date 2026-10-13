@@ -1,0 +1,67 @@
+{
+  "api_doc": {
+    "title": "Документация API",
+    "intro": "Добро пожаловать в официальную документацию API AtlaspherePI.",
+    "auth_section": "Аутентификация",
+    "endpoints_section": "Конечные точки"
+  },
+  "security": {
+    "title": "Безопасность",
+    "2fa": "Двухфакторная аутентификация",
+    "api_keys": "API-ключи",
+    "activity_log": "Журнал активности"
+  },
+  "reputation": {
+    "title": "Репутация",
+    "score": "Общий балл",
+    "trends": "Тенденции",
+    "factors": "Влияющие факторы"
+  },
+  "settings": {
+    "title": "Настройки",
+    "profile": "Профиль пользователя",
+    "lang_pref": "Языковые настройки",
+    "theme": "Параметры темы",
+    "pi_network": {
+      "title": "Сеть Pi Network",
+      "sandbox_mode": "Режим Sandbox",
+      "sandbox_desc": "Тестирование платежей без реального Pi",
+      "mainnet_mode": "Режим Mainnet",
+      "mainnet_desc": "Реальные транзакции Pi включены",
+      "pi_app_id": "ID приложения Pi",
+      "pi_api_key": "API-ключ Pi"
+    },
+    "feature_flags": {
+      "title": "Функции",
+      "enable_payments": "Включить платежи Pi",
+      "enable_kyc": "Включить верификацию KYC",
+      "enable_marketplace": "Включить маркетплейс",
+      "enable_notifications": "Включить уведомления"
+    },
+    "mainnet_checklist": {
+      "title": "Чеклист Mainnet",
+      "kyc_verified": "KYC подтверждён",
+      "wallet_connected": "Кошелёк подключён",
+      "test_payment_done": "Тестовый платёж выполнен",
+      "app_approved": "Приложение одобрено командой Pi Core"
+    },
+    "env_variables": {
+      "title": "Переменные окружения",
+      "current_env": "Текущая среда",
+      "api_url": "URL API",
+      "frontend_url": "URL Frontend",
+      "db_status": "Статус базы данных"
+    }
+  },
+  "common": {
+    "save": "Сохранить изменения",
+    "cancel": "Отмена",
+    "enabled": "Включено",
+    "disabled": "Отключено",
+    "status_ok": "ОК",
+    "status_error": "Ошибка",
+    "loading": "Загрузка...",
+    "connected": "Подключено",
+    "disconnected": "Отключено"
+  }
+}

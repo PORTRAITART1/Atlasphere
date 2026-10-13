@@ -1,0 +1,23 @@
+2026-08-16 01:03:54,025 - app.backend.main - INFO - === Logging system initialized ===
+2026-08-16 01:03:54,025 - app.backend.main - INFO - Log file: logs/app_20260816_010354.log
+2026-08-16 01:03:54,025 - app.backend.main - INFO - Log level: INFO
+2026-08-16 01:03:54,025 - app.backend.main - INFO - Timestamp: 20260816_010354
+2026-08-16 01:03:54,028 - app.backend.main - WARNING - Failed to import module 'app.backend.routers.aihub': No module named 'schemas'
+2026-08-16 01:03:54,036 - app.backend.main - WARNING - Failed to import module 'app.backend.routers.auth': No module named 'dependencies'
+2026-08-16 01:03:54,046 - app.backend.main - WARNING - Failed to import module 'app.backend.routers.comments': No module named 'services'
+2026-08-16 01:03:54,057 - app.backend.main - WARNING - Failed to import module 'app.backend.routers.contributions': No module named 'services'
+2026-08-16 01:03:54,063 - app.backend.main - WARNING - Failed to import module 'app.backend.routers.governance': No module named 'dependencies'
+2026-08-16 01:03:54,064 - app.backend.main - WARNING - Failed to import module 'app.backend.routers.health': No module named 'services'
+2026-08-16 01:03:54,077 - app.backend.main - WARNING - Failed to import module 'app.backend.routers.notifications': No module named 'services'
+2026-08-16 01:03:54,083 - app.backend.main - WARNING - Failed to import module 'app.backend.routers.pi_auth': No module named 'dependencies'
+2026-08-16 01:03:54,090 - app.backend.main - WARNING - Failed to import module 'app.backend.routers.pi_payments': No module named 'dependencies'
+2026-08-16 01:03:54,102 - app.backend.main - WARNING - Failed to import module 'app.backend.routers.pi_profiles': No module named 'services'
+2026-08-16 01:03:54,106 - app.backend.main - INFO - Included router: app.backend.routers.pi_validation.router
+2026-08-16 01:03:54,122 - app.backend.main - WARNING - Failed to import module 'app.backend.routers.projects': No module named 'services'
+2026-08-16 01:03:54,158 - app.backend.main - WARNING - Failed to import module 'app.backend.routers.quest_progress': No module named 'services'
+2026-08-16 01:03:54,165 - app.backend.main - WARNING - Failed to import module 'app.backend.routers.quest_system': No module named 'dependencies'
+2026-08-16 01:03:54,179 - app.backend.main - WARNING - Failed to import module 'app.backend.routers.quests': No module named 'services'
+2026-08-16 01:03:54,183 - app.backend.main - WARNING - Failed to import module 'app.backend.routers.settings': No module named 'dependencies'
+2026-08-16 01:03:54,184 - app.backend.main - WARNING - Failed to import module 'app.backend.routers.storage': No module named 'dependencies'
+2026-08-16 01:03:54,189 - app.backend.main - WARNING - Failed to import module 'app.backend.routers.user': No module named 'dependencies'
+2026-08-16 01:03:54,200 - app.backend.main - WARNING - Failed to import module 'app.backend.routers.votes': No module named 'services'

@@ -1,0 +1,67 @@
+{
+  "api_doc": {
+    "title": "API-Dokumentation",
+    "intro": "Willkommen bei der offiziellen AtlaspherePI API-Dokumentation.",
+    "auth_section": "Authentifizierung",
+    "endpoints_section": "Endpunkte"
+  },
+  "security": {
+    "title": "Sicherheit",
+    "2fa": "Zwei-Faktor-Authentifizierung",
+    "api_keys": "API-Schlüssel",
+    "activity_log": "Aktivitätsprotokoll"
+  },
+  "reputation": {
+    "title": "Reputation",
+    "score": "Gesamtpunktzahl",
+    "trends": "Trends",
+    "factors": "Einflussfaktoren"
+  },
+  "settings": {
+    "title": "Einstellungen",
+    "profile": "Benutzerprofil",
+    "lang_pref": "Spracheinstellung",
+    "theme": "Themenoptionen",
+    "pi_network": {
+      "title": "Pi-Netzwerk",
+      "sandbox_mode": "Sandbox-Modus",
+      "sandbox_desc": "Zahlungen ohne echtes Pi testen",
+      "mainnet_mode": "Mainnet-Modus",
+      "mainnet_desc": "Echte Pi-Transaktionen aktiviert",
+      "pi_app_id": "Pi App-ID",
+      "pi_api_key": "Pi API-Schlüssel"
+    },
+    "feature_flags": {
+      "title": "Funktionen",
+      "enable_payments": "Pi-Zahlungen aktivieren",
+      "enable_kyc": "KYC-Verifizierung aktivieren",
+      "enable_marketplace": "Marktplatz aktivieren",
+      "enable_notifications": "Benachrichtigungen aktivieren"
+    },
+    "mainnet_checklist": {
+      "title": "Mainnet-Checkliste",
+      "kyc_verified": "KYC verifiziert",
+      "wallet_connected": "Wallet verbunden",
+      "test_payment_done": "Testzahlung abgeschlossen",
+      "app_approved": "App vom Pi Core Team genehmigt"
+    },
+    "env_variables": {
+      "title": "Umgebungsvariablen",
+      "current_env": "Aktuelle Umgebung",
+      "api_url": "API-URL",
+      "frontend_url": "Frontend-URL",
+      "db_status": "Datenbankstatus"
+    }
+  },
+  "common": {
+    "save": "Änderungen speichern",
+    "cancel": "Abbrechen",
+    "enabled": "Aktiviert",
+    "disabled": "Deaktiviert",
+    "status_ok": "OK",
+    "status_error": "Fehler",
+    "loading": "Laden...",
+    "connected": "Verbunden",
+    "disconnected": "Getrennt"
+  }
+}

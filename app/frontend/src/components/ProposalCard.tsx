@@ -75,7 +75,7 @@ export default function ProposalCard({ proposal, index = 0 }: ProposalCardProps)
                 transition={{ duration: 0.8, delay: 0.3 + index * 0.08, ease: 'easeOut' }}
               />
             </div>
-            <div className="text-xs text-gray-500">{proposal.contributors} contributeurs</div>
+            <div className="text-xs text-gray-500">{proposal.contributors} contributors</div>
           </div>
         )}
       </Link>

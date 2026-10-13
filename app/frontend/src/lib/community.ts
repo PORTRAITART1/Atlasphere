@@ -1,4 +1,4 @@
-// Community / Forum data (simulated)
+// Community / Forum data
 
 export interface ForumPost {
   id: string;

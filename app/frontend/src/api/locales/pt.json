@@ -1,0 +1,67 @@
+{
+  "api_doc": {
+    "title": "Documentação da API",
+    "intro": "Bem-vindo à documentação oficial da API AtlaspherePI.",
+    "auth_section": "Autenticação",
+    "endpoints_section": "Endpoints"
+  },
+  "security": {
+    "title": "Segurança",
+    "2fa": "Autenticação de dois fatores",
+    "api_keys": "Chaves API",
+    "activity_log": "Registro de atividade"
+  },
+  "reputation": {
+    "title": "Reputação",
+    "score": "Pontuação geral",
+    "trends": "Tendências",
+    "factors": "Fatores influentes"
+  },
+  "settings": {
+    "title": "Configurações",
+    "profile": "Perfil do usuário",
+    "lang_pref": "Preferência de idioma",
+    "theme": "Opções de tema",
+    "pi_network": {
+      "title": "Rede Pi Network",
+      "sandbox_mode": "Modo Sandbox",
+      "sandbox_desc": "Testar pagamentos sem Pi real",
+      "mainnet_mode": "Modo Mainnet",
+      "mainnet_desc": "Transações Pi reais habilitadas",
+      "pi_app_id": "ID do app Pi",
+      "pi_api_key": "Chave API Pi"
+    },
+    "feature_flags": {
+      "title": "Funcionalidades",
+      "enable_payments": "Ativar pagamentos Pi",
+      "enable_kyc": "Ativar verificação KYC",
+      "enable_marketplace": "Ativar marketplace",
+      "enable_notifications": "Ativar notificações"
+    },
+    "mainnet_checklist": {
+      "title": "Checklist Mainnet",
+      "kyc_verified": "KYC verificado",
+      "wallet_connected": "Carteira conectada",
+      "test_payment_done": "Pagamento teste concluído",
+      "app_approved": "App aprovado pelo Pi Core Team"
+    },
+    "env_variables": {
+      "title": "Variáveis de Ambiente",
+      "current_env": "Ambiente atual",
+      "api_url": "URL da API",
+      "frontend_url": "URL do Frontend",
+      "db_status": "Status do banco de dados"
+    }
+  },
+  "common": {
+    "save": "Salvar alterações",
+    "cancel": "Cancelar",
+    "enabled": "Ativado",
+    "disabled": "Desativado",
+    "status_ok": "OK",
+    "status_error": "Erro",
+    "loading": "Carregando...",
+    "connected": "Conectado",
+    "disconnected": "Desconectado"
+  }
+}

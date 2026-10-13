@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { createClient } from '@metagptx/web-sdk';
-import { authenticate, getCurrentUser, setCurrentUser, type PiUser } from '@/lib/pi-sdk';
+import { authenticate, getCurrentUser } from '@/lib/pi-sdk';
 import { t } from '@/lib/i18n';
 
 export default function AuthCallback() {
@@ -14,49 +13,14 @@ export default function AuthCallback() {
 
   const handleAuthCallback = async () => {
     try {
-      // Try Atoms Cloud login with a 3-second timeout
-      const client = createClient();
-      const loginPromise = client.auth.login();
-      const timeoutPromise = new Promise((_, reject) =>
-        setTimeout(() => reject(new Error('Login timeout')), 3000)
-      );
-
-      let atomsUser: { username?: string; name?: string; email?: string } | null = null;
-      try {
-        await Promise.race([loginPromise, timeoutPromise]);
-        // After successful login, get the real user profile from Atoms Cloud
-        const meResponse = await client.auth.me();
-        if (meResponse) {
-          atomsUser = meResponse as { username?: string; name?: string; email?: string };
-        }
-      } catch {
-        // Login timed out or failed - continue with sandbox auth
-        console.log('[Atlasphere] Atoms Cloud login skipped (timeout or unavailable)');
-      }
-
       setStatus('Authentification Pi Network...');
 
       // Authenticate with Pi SDK
       await authenticate();
 
-      // If we got a real username from Atoms Cloud, override the sandbox username
       const user = getCurrentUser();
-      if (user && atomsUser) {
-        const realUsername = atomsUser.username || atomsUser.name || user.username;
-        if (realUsername && realUsername !== user.username) {
-          const updatedUser: PiUser = {
-            ...user,
-            username: realUsername,
-            displayName: realUsername,
-          };
-          setCurrentUser(updatedUser);
-          localStorage.setItem('atlasphere_user', JSON.stringify(updatedUser));
-        }
-      }
-
-      const finalUser = getCurrentUser();
-      if (finalUser) {
-        setStatus(`${t('common.success')} @${finalUser.username} !`);
+      if (user) {
+        setStatus(`${t('common.success')} @${user.username} !`);
         setTimeout(() => navigate('/dashboard'), 1000);
       } else {
         setStatus(t('common.success'));
@@ -64,7 +28,8 @@ export default function AuthCallback() {
       }
     } catch (error) {
       console.error('[Atlasphere] Auth callback error:', error);
-      // Even on error, try to authenticate locally
+
+      // Retry local Pi authentication once
       try {
         await authenticate();
         const user = getCurrentUser();
@@ -74,8 +39,9 @@ export default function AuthCallback() {
           return;
         }
       } catch {
-        // Final fallback
+        // Local retry failed
       }
+
       setStatus('Redirection...');
       setTimeout(() => navigate('/'), 1000);
     }

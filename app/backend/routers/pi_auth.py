@@ -10,12 +10,13 @@ from pydantic import BaseModel
 from sqlalchemy import select, func
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from core.database import get_db
-from dependencies.auth import get_current_user
-from schemas.auth import UserResponse
-from models.pi_profiles import Pi_profiles
-from models.votes import Votes
-from models.contributions import Contributions
+from app.backend.core.database import get_db
+from app.backend.core.auth import create_access_token
+from app.backend.dependencies.auth import get_current_user
+from app.backend.schemas.auth import UserResponse
+from app.backend.models.pi_profiles import Pi_profiles
+from app.backend.models.votes import Votes
+from app.backend.models.contributions import Contributions
 
 logger = logging.getLogger(__name__)
 
@@ -40,6 +41,7 @@ class PiProfileResponse(BaseModel):
     language: str = "fr"
     badges: list = []
     level: str = "bronze"
+    atlasphere_jwt: Optional[str] = None  # JWT Atlasphere pour les futures requêtes
 
 
 @router.post("/verify", response_model=PiProfileResponse)
@@ -115,6 +117,16 @@ async def verify_pi_auth(
         except (json.JSONDecodeError, TypeError):
             badges = []
 
+        # Générer un JWT Atlasphere pour les futures requêtes authentifiées
+        atlasphere_jwt = create_access_token({
+            "sub": str(current_user.id),
+            "email": current_user.email or "",
+            "name": username,
+            "role": "user",
+            "pi_uid": pi_uid,
+            "pi_username": username,
+        })
+
         return PiProfileResponse(
             pi_uid=profile.pi_uid,
             username=profile.username,
@@ -126,7 +138,8 @@ async def verify_pi_auth(
             kyc_verified=profile.kyc_verified or False,
             language=profile.language or "fr",
             badges=badges,
-            level=profile.level or "bronze"
+            level=profile.level or "bronze",
+            atlasphere_jwt=atlasphere_jwt,
         )
 
     except HTTPException:
@@ -169,7 +182,7 @@ async def get_pi_profile(
         "kyc_verified": profile.kyc_verified or False,
         "language": profile.language or "fr",
         "badges": badges,
-        "level": profile.level or "bronze"
+        "level": profile.level or "bronze",
     }
 
 

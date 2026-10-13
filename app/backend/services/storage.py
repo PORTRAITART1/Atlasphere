@@ -4,8 +4,8 @@ from urllib.parse import urljoin
 
 import httpx
 import mimetypes
-from core.config import settings
-from schemas.storage import (
+from app.backend.core.config import settings
+from app.backend.schemas.storage import (
     BucketInfo,
     BucketListResponse,
     BucketRequest,

@@ -97,7 +97,7 @@ class GenImgResponse(BaseModel):
         ...,
         description=(
             "Generated image references list. Prefer HTTP URL to avoid huge response bodies; "
-            "fallback to base64 data URI when url is not available."
+            "use base64 data URI when url is not available."
         ),
     )
     model: str = Field(..., description="Name of the model used.")

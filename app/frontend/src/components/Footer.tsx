@@ -1,16 +1,8 @@
-import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { t, useI18nRerender } from '@/lib/i18n';
-import { getCurrentUser, subscribe } from '@/lib/pi-sdk';
-import { isAdminUsername } from '@/lib/admin';
+import { t, useI18nRerender, getLocale } from '@/lib/i18n';
 
 export default function Footer() {
   useI18nRerender();
-  const [username, setUsername] = useState(getCurrentUser()?.username);
-
-  useEffect(() => subscribe(() => setUsername(getCurrentUser()?.username)), []);
-
-  const isAdmin = isAdminUsername(username);
 
   return (
     <footer className="bg-slate-900 border-t border-indigo-500/20 mt-auto">
@@ -20,7 +12,7 @@ export default function Footer() {
           <div className="col-span-1 md:col-span-2">
             <div className="flex items-center gap-2.5 mb-4">
               <img
-                src="/assets/logo-atlasphere-transparent.png"
+                src="/icons/icon-192.png"
                 alt="Atlasphere Logo"
                 className="w-9 h-9 object-contain"
                 style={{ filter: 'brightness(0) saturate(100%) invert(72%) sepia(58%) saturate(600%) hue-rotate(2deg) brightness(103%) contrast(104%)' }}
@@ -51,12 +43,17 @@ export default function Footer() {
             <h4 className="text-white font-semibold mb-4 text-sm uppercase tracking-wider">{t('footer.community')}</h4>
             <div className="space-y-2.5">
               <a href="https://minepi.com" target="_blank" rel="noopener noreferrer" className="block text-gray-400 hover:text-indigo-400 text-sm transition-colors">{t('footer.pi_network')}</a>
-              <Link to="/api-docs" className="block text-gray-400 hover:text-indigo-400 text-sm transition-colors">{t('footer.api_docs')}</Link>
+              <Link
+  to={`/api-docs?lng=${localStorage.getItem('atlaspherepi_locale') || 'en'}`}
+  className="block text-gray-400 hover:text-indigo-400 text-sm transition-colors"
+>
+  {t('footer.api_docs')}
+</Link>
               <Link to="/security" className="block text-gray-400 hover:text-indigo-400 text-sm transition-colors">{t('footer.security')}</Link>
               <Link to="/reputation" className="block text-gray-400 hover:text-indigo-400 text-sm transition-colors">{t('footer.reputation')}</Link>
-              {isAdmin && (
-                <Link to="/settings" className="block text-gray-400 hover:text-indigo-400 text-sm transition-colors">{t('footer.settings')}</Link>
-              )}
+              <Link to="/settings" className="block text-gray-400 hover:text-indigo-400 text-sm transition-colors">{t('footer.settings')}</Link>
+              <a href={getLocale() === "en" ? "/privacy.html" : `/privacy.${getLocale()}.html`} className="block text-gray-400 hover:text-emerald-400 text-sm transition-colors">{t("footer.privacy")}</a>
+              <a href={getLocale() === "en" ? "/terms.html" : `/terms.${getLocale()}.html`} className="block text-gray-400 hover:text-emerald-400 text-sm transition-colors">{t("footer.terms")}</a>
             </div>
           </div>
         </div>

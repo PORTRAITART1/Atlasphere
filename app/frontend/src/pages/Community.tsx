@@ -3,30 +3,8 @@ import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { getForumPosts, addReply, addPost, reactToPost, type ForumPost } from '@/lib/community';
 import { MessagesSquare, ThumbsUp, Flame, Brain, Heart, Pin, Eye, Plus, Send } from 'lucide-react';
-import { t, getLocale, useI18nRerender } from '@/lib/i18n';
-
-const CATEGORY_KEYS: Record<string, string> = {
-  all: 'com.cat_all',
-  general: 'com.cat_general',
-  education: 'com.cat_education',
-  technology: 'com.cat_technology',
-  social: 'com.cat_social',
-  environment: 'com.cat_environment',
-};
-
-const LOCALE_TAGS: Record<string, string> = {
-  en: 'en-US',
-  ar: 'ar',
-  zh: 'zh-CN',
-  ru: 'ru-RU',
-  fr: 'fr-FR',
-  pt: 'pt-BR',
-  es: 'es-ES',
-};
 
 export default function Community() {
-  useI18nRerender();
-
   const [category, setCategory] = useState('all');
   const [posts, setPosts] = useState<ForumPost[]>(getForumPosts());
   const [expandedPost, setExpandedPost] = useState<string | null>(null);
@@ -37,12 +15,12 @@ export default function Community() {
   const [newCategory, setNewCategory] = useState<ForumPost['category']>('general');
 
   const categories = [
-    { id: 'all', icon: '📋' },
-    { id: 'general', icon: '💬' },
-    { id: 'education', icon: '📚' },
-    { id: 'technology', icon: '💻' },
-    { id: 'social', icon: '🤝' },
-    { id: 'environment', icon: '🌍' },
+    { id: 'all', label: 'Tous', icon: '📋' },
+    { id: 'general', label: 'Général', icon: '💬' },
+    { id: 'education', label: 'Éducation', icon: '📚' },
+    { id: 'technology', label: 'Technologie', icon: '💻' },
+    { id: 'social', label: 'Social', icon: '🤝' },
+    { id: 'environment', label: 'Environnement', icon: '🌍' },
   ];
 
   const handleFilter = (cat: string) => {
@@ -74,11 +52,7 @@ export default function Community() {
 
   const formatDate = (ts: string) => {
     const d = new Date(ts);
-    return d.toLocaleDateString(LOCALE_TAGS[getLocale()] || 'en-US', {
-      day: 'numeric',
-      month: 'short',
-      year: 'numeric',
-    });
+    return d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' });
   };
 
   return (
@@ -86,17 +60,17 @@ export default function Community() {
       <Navbar />
       <main className="container mx-auto px-4 pt-24 pb-12">
         {/* Header */}
-        <div className="flex items-center justify-between gap-3 mb-8 flex-wrap">
+        <div className="flex items-center justify-between mb-8">
           <div className="flex items-center gap-3">
             <MessagesSquare className="w-8 h-8 text-purple-400" />
-            <h1 className="text-3xl font-bold text-white">{t('com.title')}</h1>
+            <h1 className="text-3xl font-bold text-white">Communauté</h1>
           </div>
           <button
             onClick={() => setShowNewPost(true)}
             className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded-xl text-sm font-medium transition-colors"
           >
             <Plus className="w-4 h-4" />
-            {t('com.new_topic')}
+            Nouveau sujet
           </button>
         </div>
 
@@ -109,7 +83,7 @@ export default function Community() {
               className={`flex items-center gap-1.5 px-4 py-2 rounded-xl border text-sm whitespace-nowrap transition-all ${category === cat.id ? 'bg-indigo-600/30 border-indigo-500 text-white' : 'bg-white/5 border-white/10 text-gray-400 hover:bg-white/10'}`}
             >
               <span>{cat.icon}</span>
-              <span>{t(CATEGORY_KEYS[cat.id])}</span>
+              <span>{cat.label}</span>
             </button>
           ))}
         </div>
@@ -132,14 +106,14 @@ export default function Community() {
                         {post.title}
                       </h2>
                     </div>
-                    <div className="flex items-center gap-3 mt-1 text-xs text-gray-500 flex-wrap">
+                    <div className="flex items-center gap-3 mt-1 text-xs text-gray-500">
                       <span>{post.author}</span>
                       <span>•</span>
                       <span>{formatDate(post.createdAt)}</span>
                       <span>•</span>
                       <span className="flex items-center gap-1"><Eye className="w-3 h-3" />{post.views}</span>
                       <span>•</span>
-                      <span>{post.replies.length} {t('com.replies')}</span>
+                      <span>{post.replies.length} réponses</span>
                     </div>
                     {(expandedPost === post.id || post.content.length < 200) && (
                       <p className="text-sm text-gray-300 mt-3 whitespace-pre-line">{post.content}</p>
@@ -193,7 +167,7 @@ export default function Community() {
                       value={replyInput[post.id] || ''}
                       onChange={(e) => setReplyInput((prev) => ({ ...prev, [post.id]: e.target.value }))}
                       onKeyDown={(e) => e.key === 'Enter' && handleReply(post.id)}
-                      placeholder={t('com.write_reply')}
+                      placeholder="Écrire une réponse..."
                       className="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-white placeholder-gray-500 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
                     />
                     <button
@@ -213,13 +187,13 @@ export default function Community() {
         {showNewPost && (
           <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={() => setShowNewPost(false)}>
             <div className="bg-slate-900 border border-white/10 rounded-2xl p-6 max-w-lg w-full" onClick={(e) => e.stopPropagation()}>
-              <h2 className="text-xl font-bold text-white mb-4">{t('com.new_topic')}</h2>
+              <h2 className="text-xl font-bold text-white mb-4">Nouveau sujet</h2>
               <div className="space-y-4">
                 <input
                   type="text"
                   value={newTitle}
                   onChange={(e) => setNewTitle(e.target.value)}
-                  placeholder={t('com.topic_title')}
+                  placeholder="Titre du sujet"
                   className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
                 />
                 <select
@@ -227,25 +201,25 @@ export default function Community() {
                   onChange={(e) => setNewCategory(e.target.value as ForumPost['category'])}
                   className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
                 >
-                  <option value="general">{t('com.cat_general')}</option>
-                  <option value="education">{t('com.cat_education')}</option>
-                  <option value="technology">{t('com.cat_technology')}</option>
-                  <option value="social">{t('com.cat_social')}</option>
-                  <option value="environment">{t('com.cat_environment')}</option>
+                  <option value="general">Général</option>
+                  <option value="education">Éducation</option>
+                  <option value="technology">Technologie</option>
+                  <option value="social">Social</option>
+                  <option value="environment">Environnement</option>
                 </select>
                 <textarea
                   value={newContent}
                   onChange={(e) => setNewContent(e.target.value)}
-                  placeholder={t('com.content_ph')}
+                  placeholder="Contenu de votre message..."
                   rows={5}
                   className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 resize-none"
                 />
                 <div className="flex gap-3 justify-end">
                   <button onClick={() => setShowNewPost(false)} className="px-4 py-2 text-gray-400 hover:text-white text-sm transition-colors">
-                    {t('com.cancel')}
+                    Annuler
                   </button>
                   <button onClick={handleNewPost} className="px-6 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-sm font-medium transition-colors">
-                    {t('com.publish')}
+                    Publier
                   </button>
                 </div>
               </div>

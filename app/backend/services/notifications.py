@@ -4,7 +4,7 @@ from typing import Optional, Dict, Any, List
 from sqlalchemy import select, func
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from models.notifications import Notifications
+from app.backend.models.notifications import Notifications
 
 logger = logging.getLogger(__name__)
 

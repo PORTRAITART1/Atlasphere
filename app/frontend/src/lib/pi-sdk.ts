@@ -1,14 +1,7 @@
 // Pi Network SDK v2.0 Integration for Atlasphere
 // Aligned with @pinetwork-js/sdk and Pi Develop platform standards
 // Reference: https://github.com/pi-apps/pi-platform-docs/blob/master/SDK_reference.md
-import { createClient } from '@metagptx/web-sdk';
-
-// Lazy-initialize client only when needed (avoids blocking on module load)
-let _client: ReturnType<typeof createClient> | null = null;
-function getClient() {
-  if (!_client) _client = createClient();
-  return _client;
-}
+import { getAPIBaseURL } from './config';
 
 // --- Pi SDK Types (aligned with @pinetwork-js/api-typing) ---
 
@@ -86,6 +79,7 @@ export interface PiUser {
   streakDays: number;
   kycVerified: boolean;
   language: string;
+  atlasphere_jwt?: string;  // JWT Atlasphere pour les appels API authentifiés
 }
 
 // --- PiRC2 Subscription Types (Soroban Smart Contract) ---
@@ -94,7 +88,7 @@ export interface PiRC2Service {
   service_id: number;
   merchant: string;
   name: string;
-  price: number; // in smallest token unit (1 Pi = 10000000)
+  price: number;
   period_secs: number;
   trial_period_secs: number;
   approve_periods: number;
@@ -123,17 +117,14 @@ export interface PiRC2ProcessResult {
   total: number;
 }
 
-// PiRC2 Contract on Pi Testnet
+// PiRC2 Contract configuration
 export const PIRC2_CONTRACT_ID = 'CCUF75B6W3HRJTJD6O7OXNI72HGJ7DERZ5MUNOMFMSK23ME5GUIKPFYV';
-export const PI_TESTNET_RPC = 'https://rpc.testnet.minepi.com';
 export const PI_NETWORK_PASSPHRASE = 'Pi Testnet';
 
 // --- Declare Pi SDK global type (aligned with official Pi SDK docs) ---
-// Reference: https://pi-apps.github.io/pi-sdk-docs/pi-sdk/Core
 declare global {
   interface Window {
     Pi?: {
-      // Core - must await init() before any other call
       init: (config: { version: string; sandbox?: boolean }) => Promise<void>;
       authenticate: (
         scopes: APIScopes,
@@ -143,14 +134,12 @@ declare global {
         paymentData: APIPartialPayment,
         callbacks: PaymentCallbacks
       ) => Promise<void>;
-      // Utilities
       openShareDialog: (title: string, sharingMessage: string) => void;
       openConversation: (conversationId: number) => void;
       nativeFeaturesList: () => Promise<string[]>;
       requestPermission: (permission: string) => Promise<boolean>;
       copyText: (text: string) => void;
       openUrlInSystemBrowser: (url: string) => void;
-      // Ads
       Ads?: {
         isAdReady: (adType: string) => Promise<boolean>;
         requestAd: (adType: string) => Promise<void>;
@@ -164,82 +153,44 @@ let currentUser: PiUser | null = null;
 const listeners: Set<() => void> = new Set();
 let piSdkInitialized = false;
 
-/**
- * Runtime detection of Pi Browser.
- *
- * The user-agent alone is NOT reliable: Pi Browser does not always expose a
- * recognisable marker, and a false negative used to disable real payments.
- * The authoritative probe is `Pi.nativeFeaturesList()`, which only resolves
- * inside Pi Browser. It runs once at startup and caches its result.
- */
-let _piBrowserProbe: boolean | null = null;
-
-function hasPiBrowserUserAgent(): boolean {
-  const ua = (typeof navigator !== 'undefined' && navigator.userAgent) || '';
-  return /PiBrowser|Pi\s?Browser|Pi\s?Network/i.test(ua);
-}
-
+// Check if running inside Pi Browser
 export function isInPiBrowser(): boolean {
   if (typeof window === 'undefined') return false;
-  // Without the SDK object there is no Pi runtime at all.
-  if (!window.Pi) return false;
-  // A successful native-feature probe is authoritative.
-  if (_piBrowserProbe === true) return true;
-  return hasPiBrowserUserAgent();
+  const ua = navigator.userAgent || '';
+  const isPiBrowser = ua.includes('PiBrowser') || ua.includes('Pi Network');
+  return isPiBrowser && !!window.Pi;
 }
 
-/** Probe the Pi native bridge once; only Pi Browser answers it. */
-export async function detectPiBrowser(): Promise<boolean> {
-  if (typeof window === 'undefined' || !window.Pi) return false;
-  if (_piBrowserProbe !== null) return _piBrowserProbe;
-
-  if (typeof window.Pi.nativeFeaturesList !== 'function') {
-    _piBrowserProbe = hasPiBrowserUserAgent();
-    return _piBrowserProbe;
-  }
-
-  try {
-    const features = await withTimeout(
-      window.Pi.nativeFeaturesList(),
-      4000,
-      'nativeFeaturesList timeout'
-    );
-    _piBrowserProbe = Array.isArray(features);
-  } catch {
-    _piBrowserProbe = hasPiBrowserUserAgent();
-  }
-
-  if (_piBrowserProbe) notifyListeners();
-  return _piBrowserProbe;
+// Helper : retourne le header Authorization avec le JWT Atlasphere
+function authHeaders(): Record<string, string> {
+  const jwt = localStorage.getItem('atlasphere_jwt') || '';
+  return {
+    'Content-Type': 'application/json',
+    'Authorization': `Bearer ${jwt}`,
+  };
 }
 
-// Initialize Pi SDK — Pi.init() returns a Promise per official docs.
-// MUST await this before calling Pi.authenticate() or Pi.createPayment().
 let _piInitPromise: Promise<void> | null = null;
 
 export async function initPiSdk(): Promise<void> {
   if (piSdkInitialized) return;
 
-  if (window.Pi) {
-    if (!_piInitPromise) {
-      // Pi SDK v2.0 requires an explicit, deterministic sandbox flag.
-      // Real payments in Pi Browser MUST use sandbox: false; guessing it from
-      // the hostname or the user-agent caused the wallet to open a sandbox
-      // session and the approval window to expire. Set VITE_PI_SANDBOX=true
-      // only to test in the Pi Sandbox web environment.
-      const sandbox = String(import.meta.env.VITE_PI_SANDBOX || '').toLowerCase() === 'true';
-      _piInitPromise = window.Pi.init({
-        version: '2.0',
-        sandbox,
-      }).then(() => {
-        piSdkInitialized = true;
-        console.log('[Atlasphere] Pi SDK v2.0 initialized', { sandbox });
-      });
-    }
-    await _piInitPromise;
-  } else {
-    console.log('[Atlasphere] Pi SDK not available - running in standalone mode');
+  if (!window.Pi) {
+    console.error('[Atlasphere] Pi SDK not available');
+    throw new Error('Pi SDK not available');
   }
+
+  if (!_piInitPromise) {
+    _piInitPromise = window.Pi.init({
+      version: '2.0',
+      sandbox: true
+    }).then(() => {
+      piSdkInitialized = true;
+      console.log('[Atlasphere] Pi SDK initialized', { sandbox: true });
+    });
+  }
+
+  await _piInitPromise;
 }
 
 function notifyListeners() {
@@ -260,64 +211,55 @@ export function setCurrentUser(user: PiUser | null): void {
   notifyListeners();
 }
 
-/** Pi access token stored at authentication time (proves the payer identity). */
-export function getPiAccessToken(): string {
-  try {
-    return localStorage.getItem('atlasphere_pi_token') || '';
-  } catch {
-    return '';
-  }
-}
-
-/** Extract a readable message from a failed backend call. */
-function extractApiError(error: unknown, fallback: string): string {
-  const err = error as {
-    response?: { data?: { detail?: string }; status?: number };
-    data?: { detail?: string };
-    message?: string;
-  };
-  return (
-    err?.response?.data?.detail ||
-    err?.data?.detail ||
-    err?.message ||
-    fallback
-  );
-}
-
 // Handle incomplete payments found during authentication
-// Per Pi SDK spec, this is called when an unfinished payment is detected
 async function onIncompletePaymentFound(payment: APIPayment) {
   console.log('[Atlasphere] Incomplete payment found:', payment.identifier, payment.status);
 
   try {
-    // Case 1: Payment was cancelled — nothing to do
     if (payment.status.cancelled) {
       console.log('[Atlasphere] Payment was cancelled, skipping:', payment.identifier);
       return;
     }
 
-    // Case 2: Payment not yet approved by server — approve it first
     if (!payment.status.developer_approved) {
       console.log('[Atlasphere] Approving incomplete payment:', payment.identifier);
-      await getClient().apiCall.invoke({
-        url: '/api/v1/pi-pay/approve',
+
+      const approveResponse = await fetch(`${getAPIBaseURL()}/api/pi-payments/approve`, {
         method: 'POST',
-        data: { payment_id: payment.identifier, pi_access_token: getPiAccessToken() },
+        headers: authHeaders(),
+        body: JSON.stringify({ payment_id: payment.identifier }),
       });
+
+      if (!approveResponse.ok) {
+        const errorText = await approveResponse.text().catch(() => '');
+        throw new Error(
+          `Server approval failed with status ${approveResponse.status}${errorText ? `: ${errorText}` : ''}`
+        );
+      }
     }
 
-    // Case 3: Payment approved + transaction verified but not completed — complete it
-    if (payment.status.developer_approved && payment.transaction?.verified && !payment.status.developer_completed) {
+    if (payment.transaction?.verified && !payment.status.developer_completed) {
       console.log('[Atlasphere] Completing incomplete payment:', payment.identifier);
-      await getClient().apiCall.invoke({
-        url: '/api/v1/pi-pay/complete',
+
+      const completeResponse = await fetch(`${getAPIBaseURL()}/api/pi-payments/complete`, {
         method: 'POST',
-        data: {
+        headers: authHeaders(),
+        body: JSON.stringify({
           payment_id: payment.identifier,
           txid: payment.transaction.txid,
-          pi_access_token: getPiAccessToken(),
-        },
+          project_id: 0,
+          amount: payment.amount,
+          pi_uid: payment.user_uid,
+        }),
       });
+
+      if (!completeResponse.ok) {
+        const errorText = await completeResponse.text().catch(() => '');
+        throw new Error(
+          `Server completion failed with status ${completeResponse.status}${errorText ? `: ${errorText}` : ''}`
+        );
+      }
+
       console.log('[Atlasphere] Incomplete payment completed successfully:', payment.identifier);
     }
   } catch (error) {
@@ -328,32 +270,48 @@ async function onIncompletePaymentFound(payment: APIPayment) {
 // Verify Pi token with backend and get/create profile
 async function verifyWithBackend(accessToken: string): Promise<PiUser | null> {
   try {
-    const response = await getClient().apiCall.invoke({
-      url: '/api/v1/pi-auth/verify',
+    // Note : la vérification initiale utilise le token Pi, pas le JWT
+    const response = await fetch(`${getAPIBaseURL()}/api/v1/pi-auth/verify`, {
       method: 'POST',
-      data: { access_token: accessToken },
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${accessToken}`,
+      },
+      body: JSON.stringify({ access_token: accessToken }),
     });
 
-    if (response?.data) {
-      const profile = response.data;
+    if (!response.ok) {
+      console.warn('[Atlasphere] Backend verify failed:', response.status);
+      return null;
+    }
+
+    const data = await response.json();
+    if (data) {
+      // ⭐ Stocker le JWT Atlasphere retourné par le backend
+      if (data.atlasphere_jwt) {
+        localStorage.setItem('atlasphere_jwt', data.atlasphere_jwt);
+        console.log('[Atlasphere] JWT Atlasphere stocké');
+      }
+
       return {
-        uid: profile.pi_uid,
-        username: profile.username,
-        displayName: profile.display_name || profile.username,
+        uid: data.pi_uid,
+        username: data.username,
+        displayName: data.display_name || data.username,
         avatar: '🧑‍💻',
-        reputation: profile.reputation || 0,
-        votingPower: profile.voting_power || 1,
+        reputation: data.reputation || 0,
+        votingPower: data.voting_power || 1,
         piBalance: 0,
         joinedDate: new Date().toISOString().split('T')[0],
         proposalsCreated: 0,
         votescast: 0,
         contributions: 0,
-        badges: profile.badges || [],
-        level: profile.level || 'bronze',
-        piLocked: profile.pi_locked || 0,
-        streakDays: profile.streak_days || 0,
-        kycVerified: profile.kyc_verified || false,
-        language: profile.language || 'fr',
+        badges: data.badges || [],
+        level: data.level || 'bronze',
+        piLocked: data.pi_locked || 0,
+        streakDays: data.streak_days || 0,
+        kycVerified: data.kyc_verified || false,
+        language: data.language || 'en',
+        atlasphere_jwt: data.atlasphere_jwt,
       };
     }
   } catch (error) {
@@ -365,157 +323,100 @@ async function verifyWithBackend(accessToken: string): Promise<PiUser | null> {
 // Get profile from backend
 async function fetchProfileFromBackend(): Promise<PiUser | null> {
   try {
-    const response = await getClient().apiCall.invoke({
-      url: '/api/v1/pi-auth/profile',
+    const response = await fetch(`${getAPIBaseURL()}/api/v1/pi-auth/profile`, {
       method: 'GET',
+      headers: authHeaders(),
     });
 
-    if (response?.data) {
-      const profile = response.data;
+    if (!response.ok) return null;
+
+    const data = await response.json();
+    if (data) {
       return {
-        uid: profile.pi_uid,
-        username: profile.username,
-        displayName: profile.display_name || profile.username,
+        uid: data.pi_uid,
+        username: data.username,
+        displayName: data.display_name || data.username,
         avatar: '🧑‍💻',
-        reputation: profile.reputation || 0,
-        votingPower: profile.voting_power || 1,
+        reputation: data.reputation || 0,
+        votingPower: data.voting_power || 1,
         piBalance: 0,
         joinedDate: new Date().toISOString().split('T')[0],
         proposalsCreated: 0,
         votescast: 0,
         contributions: 0,
-        badges: profile.badges || [],
-        level: profile.level || 'bronze',
-        piLocked: profile.pi_locked || 0,
-        streakDays: profile.streak_days || 0,
-        kycVerified: profile.kyc_verified || false,
-        language: profile.language || 'fr',
+        badges: data.badges || [],
+        level: data.level || 'bronze',
+        piLocked: data.pi_locked || 0,
+        streakDays: data.streak_days || 0,
+        kycVerified: data.kyc_verified || false,
+        language: data.language || 'en',
       };
     }
   } catch {
-    // Profile not found - user hasn't authenticated with Pi yet
+    // Profile not found
   }
   return null;
 }
 
 // Helper: race a promise against a timeout
-function withTimeout<T>(promise: Promise<T>, ms: number, fallbackMsg: string): Promise<T> {
+function withTimeout<T>(promise: Promise<T>, ms: number, timeoutMsg: string): Promise<T> {
   return Promise.race([
     promise,
-    new Promise<never>((_, reject) => setTimeout(() => reject(new Error(fallbackMsg)), ms)),
+    new Promise<never>((_, reject) => setTimeout(() => reject(new Error(timeoutMsg)), ms)),
   ]);
 }
 
-// Authenticate with Pi Network (real SDK or sandbox simulation)
+// Authenticate with Pi Network using the real Pi SDK
 export async function authenticate(): Promise<PiUser> {
-  // Ensure Pi SDK is fully initialized (await Promise) before authenticating
   await initPiSdk();
 
-  if (isInPiBrowser() && window.Pi) {
-    // Real Pi SDK authentication inside Pi Browser
-    try {
-      // Scopes per Pi SDK docs: payments (required), username, wallet_address
-      const scopes: APIScopes = ['payments', 'username', 'wallet_address'];
-      const auth = await withTimeout(
-        window.Pi.authenticate(scopes, onIncompletePaymentFound),
-        15000,
-        'Pi authentication timeout'
-      );
-
-      // Store token for later use
-      localStorage.setItem('atlasphere_pi_token', auth.accessToken);
-
-      // Verify with backend and create/update profile
-      const backendUser = await verifyWithBackend(auth.accessToken);
-
-      if (backendUser) {
-        currentUser = backendUser;
-      } else {
-        // Fallback to local user if backend fails
-        currentUser = {
-          uid: auth.user.uid,
-          username: auth.user.username,
-          displayName: auth.user.username,
-          avatar: '🧑‍💻',
-          reputation: 0,
-          votingPower: 10,
-          piBalance: 0,
-          joinedDate: new Date().toISOString().split('T')[0],
-          proposalsCreated: 0,
-          votescast: 0,
-          contributions: 0,
-          badges: [],
-          level: 'bronze',
-          piLocked: 0,
-          streakDays: 0,
-          kycVerified: false,
-          language: 'fr'
-        };
-      }
-
-      localStorage.setItem('atlasphere_user', JSON.stringify(currentUser));
-      notifyListeners();
-      return currentUser;
-    } catch (error) {
-      console.warn('[Atlasphere] Pi authentication failed or timed out, falling back to sandbox:', error);
-      // Fall through to sandbox mode below
-    }
+  if (!isInPiBrowser() || !window.Pi) {
+    throw new Error('Pi authentication requires Pi Browser and Pi SDK');
   }
 
-  // Sandbox mode - try to get real user info from Atoms Cloud backend first
-  {
-    let realUsername = '';
-    try {
-      const client = getClient();
-      const meResponse = await client.auth.me();
-      if (meResponse && typeof meResponse === 'object') {
-        const me = meResponse as { username?: string; name?: string; email?: string };
-        realUsername = me.username || me.name || '';
-      }
-    } catch {
-      // Atoms Cloud auth not available - use saved or generate
+  try {
+    const scopes: APIScopes = ['username'];
+    const auth = await withTimeout(
+      window.Pi.authenticate(scopes, onIncompletePaymentFound),
+      15000,
+      'Pi authentication timeout'
+    );
+
+    // Note : on garde le token Pi pour la vérification initiale
+    localStorage.setItem('atlasphere_pi_token', auth.accessToken);
+
+    const backendUser = await verifyWithBackend(auth.accessToken);
+
+    if (backendUser) {
+      currentUser = backendUser;
+    } else {
+      currentUser = {
+        uid: auth.user.uid,
+        username: auth.user.username,
+        displayName: auth.user.username,
+        avatar: '🧑‍💻',
+        reputation: 0,
+        votingPower: 10,
+        piBalance: 0,
+        joinedDate: new Date().toISOString().split('T')[0],
+        proposalsCreated: 0,
+        votescast: 0,
+        contributions: 0,
+        badges: [],
+        level: 'bronze',
+        piLocked: 0,
+        streakDays: 0,
+        kycVerified: false,
+        language: 'en'
+      };
     }
 
-    // If no real username from backend, try to restore from localStorage
-    if (!realUsername) {
-      try {
-        const saved = localStorage.getItem('atlasphere_user');
-        if (saved) {
-          const savedUser = JSON.parse(saved);
-          if (savedUser.username && savedUser.username !== 'pioneer_dao') {
-            realUsername = savedUser.username;
-          }
-        }
-      } catch {
-        // ignore
-      }
-    }
-
-    const username = realUsername || 'pioneer_dao';
-
-    currentUser = {
-      uid: 'pioneer_' + Math.random().toString(36).slice(2, 10),
-      username,
-      displayName: username,
-      avatar: '🧑‍💻',
-      reputation: 850,
-      votingPower: 42,
-      piBalance: 1247.5,
-      joinedDate: '2024-03-15',
-      proposalsCreated: 3,
-      votescast: 28,
-      contributions: 12,
-      badges: ['Early Voter', 'Proposal Creator', 'Top Contributor', 'Community Builder'],
-      level: 'silver',
-      piLocked: 500,
-      streakDays: 14,
-      kycVerified: true,
-      language: 'en'
-    };
-
-    localStorage.setItem('atlasphere_user', JSON.stringify(currentUser));
+    localStorage.setItem('atlaspherepi_user', JSON.stringify(currentUser));
     notifyListeners();
     return currentUser;
+  } catch (error) {
+    console.error('[Atlasphere] Pi authentication failed:', error);
+    throw error;
   }
 }
 
@@ -525,118 +426,85 @@ export async function createPiPayment(
   memo: string,
   metadata: Record<string, string>,
   onApprove?: (paymentId: string) => Promise<void>,
-  onComplete?: (paymentId: string, txid: string) => Promise<void>,
-  onFailure?: (message: string) => void
+  onComplete?: (paymentId: string, txid: string) => Promise<void>
 ): Promise<boolean> {
-  // Business purposes accepted by the Atlasphere server whitelist.
-  const purposeMap: Record<string, string> = {
-    contribution: 'project_funding',
-    funding: 'project_funding',
-    fund: 'project_funding',
-    project_funding: 'project_funding',
-    donation: 'donation',
-    subscription: 'subscription',
-    premium: 'premium',
-    payment_test: 'payment_test',
-  };
-  const rawPurpose = String(metadata.purpose || metadata.type || 'project_funding').toLowerCase();
-  const payload: Record<string, string> = {
-    ...metadata,
-    purpose: purposeMap[rawPurpose] || 'project_funding',
-  };
-  if (!payload.project_id && metadata.projectId) {
-    payload.project_id = String(metadata.projectId);
-  }
+  try {
+    await initPiSdk();
 
-  if (isInPiBrowser() && window.Pi) {
-    // A Pi access token MUST exist before the wallet opens: the server uses it
-    // to authenticate the payer, and the wallet only waits a few seconds for
-    // the approval, so there is no time to authenticate afterwards.
-    if (!getPiAccessToken()) {
-      try {
-        await authenticate();
-      } catch (err) {
-        console.error('[Atlasphere] Pi authentication before payment failed:', err);
-      }
-    }
-    if (!getPiAccessToken()) {
-      onFailure?.('Pi Network authentication is required before paying. Please reconnect.');
-      return false;
+    if (!isInPiBrowser() || !window.Pi) {
+      throw new Error('Pi payment requires Pi Browser and Pi SDK');
     }
 
-    // Real Pi payment with backend approval/completion
-    try {
-      await window.Pi.createPayment(
-        { amount, memo, metadata: payload },
-        {
-          onReadyForServerApproval: async (paymentId: string) => {
-            // This call MUST succeed inside the wallet approval window,
-            // otherwise Pi shows "Payment expired / the developer did not
-            // approve this payment".
-            try {
-              await getClient().apiCall.invoke({
-                url: '/api/v1/pi-pay/approve',
-                method: 'POST',
-                data: { payment_id: paymentId, pi_access_token: getPiAccessToken() },
-              });
-              console.log('[Atlasphere] Payment approved by server:', paymentId);
-            } catch (err) {
-              const message = extractApiError(err, 'Server approval failed.');
-              console.error('[Atlasphere] Server approval failed:', message, err);
-              onFailure?.(message);
-            }
-            if (onApprove) await onApprove(paymentId);
-          },
-          onReadyForServerCompletion: async (paymentId: string, txid: string) => {
-            // Call backend to complete the payment and record contribution
-            try {
-              await getClient().apiCall.invoke({
-                url: '/api/v1/pi-pay/complete',
-                method: 'POST',
-                data: { payment_id: paymentId, txid, pi_access_token: getPiAccessToken() },
-              });
-              console.log('[Atlasphere] Payment completed:', paymentId, txid);
+    await window.Pi.authenticate(['payments', 'username'], onIncompletePaymentFound);
 
-              // Check quest progress after funding
-              await checkQuestProgress('fund');
-            } catch (err) {
-              const message = extractApiError(err, 'Server completion failed.');
-              console.error('[Atlasphere] Server completion failed:', message, err);
-              onFailure?.(message);
-              return;
+    await window.Pi.createPayment(
+      { amount, memo, metadata },
+      {
+        onReadyForServerApproval: async (paymentId: string) => {
+          try {
+            const response = await fetch(`${getAPIBaseURL()}/api/pi-payments/approve`, {
+              method: 'POST',
+              headers: authHeaders(),
+              body: JSON.stringify({ payment_id: paymentId })
+            });
+
+            if (!response.ok) {
+              const errText = await response.text().catch(() => '');
+              throw new Error(`Server approval failed (${response.status}): ${errText}`);
             }
-            if (onComplete) await onComplete(paymentId, txid);
-          },
-          onCancel: (paymentId: string) => {
-            console.log('[Atlasphere] Payment cancelled:', paymentId);
-            onFailure?.('Payment cancelled in the Pi Wallet.');
-            void getClient()
-              .apiCall.invoke({
-                url: '/api/v1/pi-pay/cancel',
-                method: 'POST',
-                data: { payment_id: paymentId, reason: 'Cancelled in the Pi Wallet' },
-              })
-              .catch(() => {});
-          },
-          onError: (error: Error) => {
-            console.error('[Atlasphere] Payment error:', error);
-            onFailure?.(error?.message || 'Pi payment error.');
+
+            console.log('[Atlasphere] Payment approved by server:', paymentId);
+          } catch (err) {
+            console.error('[Atlasphere] Server approval failed:', err);
+            throw err;
           }
+
+          if (onApprove) await onApprove(paymentId);
+        },
+
+        onReadyForServerCompletion: async (paymentId: string, txid: string) => {
+          try {
+            const response = await fetch(`${getAPIBaseURL()}/api/pi-payments/complete`, {
+              method: 'POST',
+              headers: authHeaders(),
+              body: JSON.stringify({
+                payment_id: paymentId,
+                txid,
+                project_id: parseInt(metadata.projectId || '0', 10),
+                amount,
+                pi_uid: currentUser?.uid || '',
+              })
+            });
+
+            if (!response.ok) {
+              const errText = await response.text().catch(() => '');
+              throw new Error(`Server completion failed (${response.status}): ${errText}`);
+            }
+
+            console.log('[Atlasphere] Payment completed:', paymentId, txid);
+          } catch (err) {
+            console.error('[Atlasphere] Server completion failed:', err);
+            throw err;
+          }
+
+          if (onComplete) await onComplete(paymentId, txid);
+        },
+
+        onCancel: (paymentId: string) => {
+          console.log('[Atlasphere] Payment cancelled:', paymentId);
+        },
+
+        onError: (error: Error) => {
+          console.error('[Atlasphere] Payment error:', error);
         }
-      );
-      return true;
-    } catch (error) {
-      const message = extractApiError(error, 'Payment creation failed.');
-      console.error('[Atlasphere] Payment creation failed:', message, error);
-      onFailure?.(message);
-      return false;
-    }
-  } else {
-    // No simulated payment: a fake transaction would never be accepted by the
-    // Pi Developer review, and the server refuses any payment it cannot re-read
-    // from the Pi Platform API. Real payments must happen inside Pi Browser.
-    console.warn('[Atlasphere] Real Pi payments require Pi Browser.');
-    return false;
+      }
+    );
+
+    return true;
+  } catch (error) {
+    const msg = error instanceof Error ? error.message : String(error);
+    console.error('[Atlasphere] Payment creation failed:', msg);
+    throw new Error(`createPiPayment: ${msg}`);
   }
 }
 
@@ -653,42 +521,45 @@ export async function submitGovernanceVote(projectId: number, voteType: 'for' | 
   }
 
   try {
-    const response = await getClient().apiCall.invoke({
-      url: '/api/v1/governance/vote',
+    const response = await fetch(`${getAPIBaseURL()}/api/v1/governance/vote`, {
       method: 'POST',
-      data: {
+      headers: authHeaders(),
+      body: JSON.stringify({
         project_id: projectId,
         vote_type: voteType,
         pi_uid: currentUser.uid,
-      },
+      }),
     });
 
-    if (response?.data) {
-      // Update local user state
+    if (!response.ok) {
+      const errText = await response.text().catch(() => '');
+      return { success: false, message: `Vote failed (${response.status}): ${errText}` };
+    }
+
+    const data = await response.json();
+    if (data) {
       currentUser = {
         ...currentUser,
         votescast: currentUser.votescast + 1,
         reputation: currentUser.reputation + 5,
       };
-      localStorage.setItem('atlasphere_user', JSON.stringify(currentUser));
+      localStorage.setItem('atlaspherepi_user', JSON.stringify(currentUser));
       notifyListeners();
 
-      // Check quest progress
       await checkQuestProgress('vote');
 
       return {
         success: true,
-        weight: response.data.weight,
-        votesFor: response.data.project_votes_for,
-        votesAgainst: response.data.project_votes_against,
-        message: response.data.message,
+        weight: data.weight,
+        votesFor: data.project_votes_for,
+        votesAgainst: data.project_votes_against,
+        message: data.message,
       };
     }
     return { success: false, message: 'No response data' };
-  } catch (error: unknown) {
-    const err = error as { response?: { data?: { detail?: string } } };
-    const detail = err?.response?.data?.detail || 'Vote submission failed';
-    return { success: false, message: detail };
+  } catch (error) {
+    const msg = error instanceof Error ? error.message : 'Vote submission failed';
+    return { success: false, message: msg };
   }
 }
 
@@ -704,18 +575,21 @@ export async function fetchReputation(piUid?: string): Promise<{
   if (!uid) return null;
 
   try {
-    const response = await getClient().apiCall.invoke({
-      url: `/api/v1/governance/reputation/${uid}`,
+    const response = await fetch(`${getAPIBaseURL()}/api/v1/governance/reputation/${uid}`, {
       method: 'GET',
+      headers: authHeaders(),
     });
 
-    if (response?.data) {
+    if (!response.ok) return null;
+
+    const data = await response.json();
+    if (data) {
       return {
-        reputation: response.data.reputation,
-        level: response.data.level,
-        votingPower: response.data.voting_power,
-        votesCast: response.data.votes_cast,
-        projectsFunded: response.data.projects_funded,
+        reputation: data.reputation,
+        level: data.level,
+        votingPower: data.voting_power,
+        votesCast: data.votes_cast,
+        projectsFunded: data.projects_funded,
       };
     }
   } catch {
@@ -729,19 +603,22 @@ export async function checkQuestProgress(actionType: 'vote' | 'fund' | 'login' |
   if (!currentUser) return [];
 
   try {
-    const response = await getClient().apiCall.invoke({
-      url: '/api/v1/quests/check-progress',
+    const response = await fetch(`${getAPIBaseURL()}/api/v1/quests/check-progress`, {
       method: 'POST',
-      data: {
+      headers: authHeaders(),
+      body: JSON.stringify({
         pi_uid: currentUser.uid,
         action_type: actionType,
-      },
+      }),
     });
 
-    if (response?.data?.newly_completed?.length > 0) {
-      console.log('[Atlasphere] Quests completed:', response.data.newly_completed);
+    if (!response.ok) return [];
+
+    const data = await response.json();
+    if (data?.newly_completed?.length > 0) {
+      console.log('[Atlasphere] Quests completed:', data.newly_completed);
     }
-    return response?.data?.newly_completed || [];
+    return data?.newly_completed || [];
   } catch {
     return [];
   }
@@ -749,8 +626,9 @@ export async function checkQuestProgress(actionType: 'vote' | 'fund' | 'login' |
 
 export function logout() {
   currentUser = null;
-  localStorage.removeItem('atlasphere_user');
+  localStorage.removeItem('atlaspherepi_user');
   localStorage.removeItem('atlasphere_pi_token');
+  localStorage.removeItem('atlasphere_jwt');
   notifyListeners();
 }
 
@@ -771,7 +649,7 @@ export async function castVote(): Promise<boolean> {
       votescast: currentUser.votescast + 1,
       reputation: currentUser.reputation + 5
     };
-    localStorage.setItem('atlasphere_user', JSON.stringify(currentUser));
+    localStorage.setItem('atlaspherepi_user', JSON.stringify(currentUser));
     notifyListeners();
     return true;
   }
@@ -781,7 +659,7 @@ export async function castVote(): Promise<boolean> {
 // Restore user from localStorage on load
 export function restoreSession(): void {
   try {
-    const saved = localStorage.getItem('atlasphere_user');
+    const saved = localStorage.getItem('atlaspherepi_user');
     if (saved) {
       currentUser = JSON.parse(saved);
       notifyListeners();
@@ -792,36 +670,27 @@ export function restoreSession(): void {
 }
 
 // Auto-authenticate when running inside Pi Browser
-// This detects the Pioneer's Pi username automatically
 export async function autoAuthenticate(): Promise<PiUser | null> {
-  // If already authenticated, return current user
   if (currentUser) return currentUser;
 
-  // Only auto-auth inside Pi Browser
   if (!isInPiBrowser()) {
-    // Try to restore from localStorage
     restoreSession();
     return currentUser;
   }
 
-  // Initialize Pi SDK first — await the Promise per official docs
   await initPiSdk();
 
   try {
-    // Scopes per Pi SDK docs: payments (required), username, wallet_address
     const scopes: APIScopes = ['payments', 'username', 'wallet_address'];
     const auth = await window.Pi!.authenticate(scopes, onIncompletePaymentFound);
 
-    // Store token
     localStorage.setItem('atlasphere_pi_token', auth.accessToken);
 
-    // Verify with backend
     const backendUser = await verifyWithBackend(auth.accessToken);
 
     if (backendUser) {
       currentUser = backendUser;
     } else {
-      // Use Pi SDK response directly
       currentUser = {
         uid: auth.user.uid,
         username: auth.user.username,
@@ -839,30 +708,27 @@ export async function autoAuthenticate(): Promise<PiUser | null> {
         piLocked: 0,
         streakDays: 0,
         kycVerified: false,
-        language: 'fr'
+        language: 'en'
       };
     }
 
-    localStorage.setItem('atlasphere_user', JSON.stringify(currentUser));
+    localStorage.setItem('atlaspherepi_user', JSON.stringify(currentUser));
     notifyListeners();
     console.log('[Atlasphere] Auto-authenticated Pioneer:', currentUser.username);
     return currentUser;
   } catch (error) {
-    console.warn('[Atlasphere] Auto-authentication failed, user can authenticate manually:', error);
-    // Restore from localStorage as fallback
+    console.warn('[Atlasphere] Auto-authentication failed:', error);
     restoreSession();
     return currentUser;
   }
 }
 
-// --- Pi Social Features (Pi Browser native) ---
+// --- Pi Social Features ---
 
-/** Open Pi Browser's native share dialog */
 export function shareOnPi(title: string, message: string): void {
   if (window.Pi) {
     window.Pi.openShareDialog(title, message);
   } else {
-    // Fallback: use Web Share API or copy to clipboard
     if (navigator.share) {
       navigator.share({ title, text: message }).catch(() => {});
     } else {
@@ -871,7 +737,6 @@ export function shareOnPi(title: string, message: string): void {
   }
 }
 
-/** Open a Pi conversation (Pi Browser native messaging) */
 export function openPiConversation(conversationId: number): void {
   if (window.Pi) {
     window.Pi.openConversation(conversationId);
@@ -880,13 +745,11 @@ export function openPiConversation(conversationId: number): void {
   }
 }
 
-/** Share a proposal on Pi Network */
 export function shareProposal(proposalTitle: string, proposalId: number): void {
   const message = `🗳️ Découvrez cette proposition sur Atlasphere: "${proposalTitle}" - Votez et participez à la gouvernance Pi! ${window.location.origin}/proposal/${proposalId}`;
   shareOnPi('Atlasphere - Proposition', message);
 }
 
-/** Share a funding project on Pi Network */
 export function shareFundingProject(projectTitle: string, projectId: number): void {
   const message = `💰 Projet à financer sur Atlasphere: "${projectTitle}" - Contribuez avec vos Pi! ${window.location.origin}/proposal/${projectId}`;
   shareOnPi('Atlasphere - Financement', message);
@@ -894,17 +757,14 @@ export function shareFundingProject(projectTitle: string, projectId: number): vo
 
 // --- PiRC2 Subscription Helpers ---
 
-/** Convert Pi amount to smallest unit (7 decimals) */
 export function piToStroops(piAmount: number): number {
   return Math.round(piAmount * 10_000_000);
 }
 
-/** Convert smallest unit to Pi amount */
 export function stroopsToPi(stroops: number): number {
   return stroops / 10_000_000;
 }
 
-/** Format subscription period in human-readable format */
 export function formatPeriod(periodSecs: number): string {
   const days = Math.round(periodSecs / 86400);
   if (days >= 365) return `${Math.round(days / 365)} an(s)`;
@@ -913,7 +773,6 @@ export function formatPeriod(periodSecs: number): string {
   return `${days} jour(s)`;
 }
 
-/** Check if a subscription is currently active */
 export function isSubscriptionActive(subscription: PiRC2Subscription): boolean {
   return Date.now() / 1000 < subscription.service_end_ts;
 }
@@ -921,13 +780,9 @@ export function isSubscriptionActive(subscription: PiRC2Subscription): boolean {
 // Initialize on module load
 if (typeof window !== 'undefined') {
   restoreSession();
-  // Try to init Pi SDK after DOM is ready (fire-and-forget, authenticate() will await it)
-  const bootstrap = () => {
-    void initPiSdk().then(() => detectPiBrowser());
-  };
   if (document.readyState === 'complete') {
-    bootstrap();
+    void initPiSdk();
   } else {
-    window.addEventListener('load', bootstrap);
+    window.addEventListener('load', () => void initPiSdk());
   }
 }

@@ -1,0 +1,67 @@
+{
+  "api_doc": {
+    "title": "Documentation de l'API",
+    "intro": "Bienvenue dans la documentation officielle de l'API AtlaspherePI.",
+    "auth_section": "Authentification",
+    "endpoints_section": "Points de terminaison"
+  },
+  "security": {
+    "title": "Sécurité",
+    "2fa": "Authentification à deux facteurs",
+    "api_keys": "Clés API",
+    "activity_log": "Journal d'activité"
+  },
+  "reputation": {
+    "title": "Réputation",
+    "score": "Score global",
+    "trends": "Tendances",
+    "factors": "Facteurs d'influence"
+  },
+  "settings": {
+    "title": "Paramètres",
+    "profile": "Profil de l'utilisateur",
+    "lang_pref": "Préférence de langue",
+    "theme": "Options de thème",
+    "pi_network": {
+      "title": "Réseau Pi Network",
+      "sandbox_mode": "Mode Sandbox",
+      "sandbox_desc": "Tester les paiements sans Pi réel",
+      "mainnet_mode": "Mode Mainnet",
+      "mainnet_desc": "Transactions Pi réelles activées",
+      "pi_app_id": "ID de l'application Pi",
+      "pi_api_key": "Clé API Pi"
+    },
+    "feature_flags": {
+      "title": "Fonctionnalités",
+      "enable_payments": "Activer les paiements Pi",
+      "enable_kyc": "Activer la vérification KYC",
+      "enable_marketplace": "Activer la marketplace",
+      "enable_notifications": "Activer les notifications"
+    },
+    "mainnet_checklist": {
+      "title": "Checklist Mainnet",
+      "kyc_verified": "KYC vérifié",
+      "wallet_connected": "Portefeuille connecté",
+      "test_payment_done": "Paiement test effectué",
+      "app_approved": "Application approuvée par Pi Core Team"
+    },
+    "env_variables": {
+      "title": "Variables d'Environnement",
+      "current_env": "Environnement actuel",
+      "api_url": "URL de l'API",
+      "frontend_url": "URL du Frontend",
+      "db_status": "Statut de la base de données"
+    }
+  },
+  "common": {
+    "save": "Enregistrer les modifications",
+    "cancel": "Annuler",
+    "enabled": "Activé",
+    "disabled": "Désactivé",
+    "status_ok": "OK",
+    "status_error": "Erreur",
+    "loading": "Chargement...",
+    "connected": "Connecté",
+    "disconnected": "Déconnecté"
+  }
+}

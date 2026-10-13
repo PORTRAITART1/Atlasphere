@@ -4,7 +4,7 @@ from typing import Optional
 from urllib.parse import urlencode
 
 import httpx
-from core.auth import (
+from app.backend.core.auth import (
     IDTokenValidationError,
     build_authorization_url,
     build_logout_url,
@@ -14,18 +14,18 @@ from core.auth import (
     generate_state,
     validate_id_token,
 )
-from core.config import settings
-from core.database import get_db
-from dependencies.auth import get_current_user
+from app.backend.core.config import settings
+from app.backend.core.database import get_db
+from app.backend.dependencies.auth import get_current_user
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 from fastapi.responses import RedirectResponse
-from models.auth import User
-from schemas.auth import (
+from app.backend.models.auth import User
+from app.backend.schemas.auth import (
     PlatformTokenExchangeRequest,
     TokenExchangeResponse,
     UserResponse,
 )
-from services.auth import AuthService
+from app.backend.services.auth import AuthService
 from sqlalchemy.ext.asyncio import AsyncSession
 
 router = APIRouter(prefix="/api/v1/auth", tags=["authentication"])
@@ -54,7 +54,7 @@ def get_dynamic_backend_url(request: Request) -> str:
 
     effective_host = mgx_external_domain or x_forwarded_host or host
     if not effective_host:
-        logger.warning("[get_dynamic_backend_url] No host found, fallback to %s", settings.backend_url)
+        logger.warning("[get_dynamic_backend_url] No host found, using default %s", settings.backend_url)
         return settings.backend_url
 
     dynamic_url = _local_patch(f"{scheme}://{effective_host}")

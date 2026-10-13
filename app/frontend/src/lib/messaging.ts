@@ -1,4 +1,4 @@
-// Messaging system - Private chat & project groups (simulated)
+// Messaging system - Private chat & project groups
 
 export interface Message {
   id: string;

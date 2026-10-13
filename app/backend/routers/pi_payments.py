@@ -1,99 +1,270 @@
-"""Read-only access to the Pi payment ledger.
-
-The ledger is written exclusively by the server-side Pi payment flow in
-``routers/pi_pay.py`` after the Pi Platform API has been queried. Exposing
-public create/update/delete routes would let a browser forge a "completed"
-payment, so this router only offers authenticated read access, scoped to the
-records owned by the caller.
-"""
-
+import json
 import logging
-from typing import List, Optional
+import os
+from typing import Optional
 
-from datetime import datetime
-
-from fastapi import APIRouter, Depends, HTTPException, Query
+import httpx
+from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from core.database import get_db
-from dependencies.auth import get_current_user
-from models.pi_payments import Pi_payments
-from schemas.auth import UserResponse
+from app.backend.core.database import get_db
+from app.backend.dependencies.auth import get_current_user
+from app.backend.schemas.auth import UserResponse
+from app.backend.models.projects import Projects
+from app.backend.models.contributions import Contributions
+from app.backend.models.pi_profiles import Pi_profiles
 
 logger = logging.getLogger(__name__)
 
-router = APIRouter(prefix="/api/v1/entities/pi_payments", tags=["pi_payments"])
+router = APIRouter(prefix="/api/pi-payments", tags=["pi-payments"])
+
+PI_API_BASE = "https://api.minepi.com"
 
 
-class Pi_paymentsResponse(BaseModel):
-    """Public projection of a ledger row."""
+class ApprovePaymentRequest(BaseModel):
+    payment_id: Optional[str] = None
+    paymentId: Optional[str] = None
 
-    id: int
-    payment_id: str
-    txid: Optional[str] = None
-    pi_uid: Optional[str] = None
-    pi_username: Optional[str] = None
+    def get_payment_id(self) -> str:
+        payment_id = self.payment_id or self.paymentId
+        if not payment_id:
+            raise HTTPException(status_code=400, detail="payment_id/paymentId is required")
+        return payment_id
+
+
+class CompletePaymentRequest(BaseModel):
+    payment_id: Optional[str] = None
+    paymentId: Optional[str] = None
+    txid: str
+    project_id: int
     amount: float
-    memo: Optional[str] = None
-    purpose: Optional[str] = None
-    project_id: Optional[int] = None
+    pi_uid: str
+
+    def get_payment_id(self) -> str:
+        payment_id = self.payment_id or self.paymentId
+        if not payment_id:
+            raise HTTPException(status_code=400, detail="payment_id/paymentId is required")
+        return payment_id
+
+
+class PaymentStatusRequest(BaseModel):
+    payment_id: str
+
+
+class A2UPaymentRequest(BaseModel):
+    recipient_uid: str
+    amount: float
+    memo: str = "PoliGov reward"
+
+
+class PaymentResponse(BaseModel):
     status: str
-    network: Optional[str] = None
-    approved_at: Optional[datetime] = None
-    completed_at: Optional[datetime] = None
-    created_at: Optional[datetime] = None
-
-    class Config:
-        from_attributes = True
+    payment_id: Optional[str] = None
+    txid: Optional[str] = None
+    message: str = ""
 
 
-class Pi_paymentsListResponse(BaseModel):
-    items: List[Pi_paymentsResponse]
-    total: int
-    skip: int
-    limit: int
-
-
-@router.get("", response_model=Pi_paymentsListResponse)
-async def list_own_pi_payments(
-    skip: int = Query(0, ge=0, description="Number of records to skip"),
-    limit: int = Query(20, ge=1, le=200, description="Max number of records to return"),
+@router.post("/approve", response_model=PaymentResponse)
+@router.post("/approve-pi-real", response_model=PaymentResponse)
+async def approve_payment(
+    data: ApprovePaymentRequest,
     db: AsyncSession = Depends(get_db),
-    current_user: UserResponse = Depends(get_current_user),
 ):
-    """List the ledger rows owned by the authenticated account."""
-    user_id = str(current_user.id)
+    """Approve a Pi payment (called by frontend after Pi.createPayment)"""
+    pi_api_key = os.environ.get("PI_API_KEY", "")
+
+    if not pi_api_key:
+        raise HTTPException(status_code=500, detail="PI_API_KEY not configured")
+
     try:
-        base = select(Pi_payments).where(Pi_payments.user_id == user_id)
-        rows = await db.execute(base.order_by(Pi_payments.id.desc()).offset(skip).limit(limit))
-        items = list(rows.scalars().all())
+        payment_id = data.get_payment_id()
 
-        counted = await db.execute(base)
-        total = len(list(counted.scalars().all()))
+        async with httpx.AsyncClient(timeout=20.0) as client:
+            response = await client.post(
+                f"{PI_API_BASE}/v2/payments/{payment_id}/approve",
+                headers={
+                    "Authorization": f"Key {pi_api_key}",
+                    "Content-Type": "application/json"
+                }
+            )
 
-        return {"items": items, "total": total, "skip": skip, "limit": limit}
-    except Exception as exc:  # pragma: no cover - defensive
-        logger.error("Error listing pi_payments: %s", exc, exc_info=True)
-        raise HTTPException(status_code=500, detail="Internal server error")
+        if response.status_code == 200:
+            return PaymentResponse(
+                status="approved",
+                payment_id=payment_id,
+                message="Payment approved successfully"
+            )
+        else:
+            error_detail = response.text
+            logger.error(f"Pi API approve error: {error_detail}")
+            raise HTTPException(
+                status_code=response.status_code,
+                detail=f"Pi API error: {error_detail}"
+            )
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Payment approval error: {str(e)}", exc_info=True)
+        raise HTTPException(status_code=500, detail=f"Payment approval failed: {str(e)}")
 
 
-@router.get("/{id}", response_model=Pi_paymentsResponse)
-async def get_own_pi_payment(
-    id: int,
+@router.post("/complete", response_model=PaymentResponse)
+@router.post("/complete-pi-real", response_model=PaymentResponse)
+async def complete_payment(
+    data: CompletePaymentRequest,
     db: AsyncSession = Depends(get_db),
+):
+    """Complete a Pi payment and update project funding"""
+    pi_api_key = os.environ.get("PI_API_KEY", "")
+
+    if not pi_api_key:
+        raise HTTPException(status_code=500, detail="PI_API_KEY not configured")
+
+    try:
+        payment_id = data.get_payment_id()
+
+        # Call Pi API to complete the payment
+        async with httpx.AsyncClient(timeout=20.0) as client:
+            response = await client.post(
+                f"{PI_API_BASE}/v2/payments/{payment_id}/complete",
+                headers={
+                    "Authorization": f"Key {pi_api_key}",
+                    "Content-Type": "application/json"
+                },
+                json={"txid": data.txid}
+            )
+
+        if response.status_code != 200:
+            error_detail = response.text
+            logger.error(f"Pi API complete error: {error_detail}")
+            raise HTTPException(
+                status_code=response.status_code,
+                detail=f"Pi API error: {error_detail}"
+            )
+
+        # Update project raised amount
+        project_stmt = select(Projects).where(Projects.id == data.project_id)
+        project_result = await db.execute(project_stmt)
+        project = project_result.scalar_one_or_none()
+
+        if project:
+            project.raised = (project.raised or 0) + data.amount
+            # Check if project is fully funded
+            if project.raised >= project.budget:
+                project.status = "funded"
+
+        # Create contribution record
+        contribution = Contributions(
+            project_id=data.project_id,
+            amount=data.amount,
+            transaction_id=data.txid,
+            payment_id=payment_id,
+            status="completed",
+            pi_uid=data.pi_uid,
+            user_id=data.pi_uid
+        )
+        db.add(contribution)
+        await db.commit()
+
+        return PaymentResponse(
+            status="completed",
+            payment_id=payment_id,
+            txid=data.txid,
+            message=f"Payment completed. {data.amount} π contributed to project."
+        )
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Payment completion error: {str(e)}", exc_info=True)
+        raise HTTPException(status_code=500, detail=f"Payment completion failed: {str(e)}")
+
+
+@router.post("/status")
+async def get_payment_status(
+    data: PaymentStatusRequest,
     current_user: UserResponse = Depends(get_current_user),
 ):
-    """Fetch a single ledger row owned by the authenticated account."""
-    user_id = str(current_user.id)
-    result = await db.execute(
-        select(Pi_payments).where(
-            Pi_payments.id == id,
-            Pi_payments.user_id == user_id,
-        )
-    )
-    row = result.scalars().first()
-    if row is None:
-        raise HTTPException(status_code=404, detail="Pi payment not found")
-    return row
+    """Get payment status from Pi API"""
+    pi_api_key = os.environ.get("PI_API_KEY", "")
+
+    if not pi_api_key:
+        raise HTTPException(status_code=500, detail="PI_API_KEY not configured")
+
+    try:
+        async with httpx.AsyncClient(timeout=20.0) as client:
+            response = await client.get(
+                f"{PI_API_BASE}/v2/payments/{data.payment_id}",
+                headers={
+                    "Authorization": f"Key {pi_api_key}",
+                    "Content-Type": "application/json"
+                }
+            )
+
+        if response.status_code == 200:
+            return response.json()
+        else:
+            raise HTTPException(
+                status_code=response.status_code,
+                detail=f"Pi API error: {response.text}"
+            )
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Payment status error: {str(e)}", exc_info=True)
+        raise HTTPException(status_code=500, detail=f"Failed to get payment status: {str(e)}")
+
+
+@router.post("/a2u", response_model=PaymentResponse)
+async def create_a2u_payment(
+    data: A2UPaymentRequest,
+    current_user: UserResponse = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """Create an App-to-User payment (for rewards/refunds)"""
+    pi_api_key = os.environ.get("PI_API_KEY", "")
+
+    if not pi_api_key:
+        raise HTTPException(status_code=500, detail="PI_API_KEY not configured")
+
+    try:
+        # Create A2U payment via Pi API
+        async with httpx.AsyncClient(timeout=20.0) as client:
+            response = await client.post(
+                f"{PI_API_BASE}/v2/payments",
+                headers={
+                    "Authorization": f"Key {pi_api_key}",
+                    "Content-Type": "application/json"
+                },
+                json={
+                    "amount": data.amount,
+                    "memo": data.memo,
+                    "metadata": {"type": "reward", "app": "poligov"},
+                    "uid": data.recipient_uid
+                }
+            )
+
+        if response.status_code in (200, 201):
+            payment_data = response.json()
+            return PaymentResponse(
+                status="created",
+                payment_id=payment_data.get("identifier", ""),
+                message=f"A2U payment of {data.amount} π created for {data.recipient_uid}"
+            )
+        else:
+            error_detail = response.text
+            logger.error(f"Pi API A2U error: {error_detail}")
+            raise HTTPException(
+                status_code=response.status_code,
+                detail=f"Pi API error: {error_detail}"
+            )
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"A2U payment error: {str(e)}", exc_info=True)
+        raise HTTPException(status_code=500, detail=f"A2U payment failed: {str(e)}")

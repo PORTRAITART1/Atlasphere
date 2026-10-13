@@ -2,7 +2,7 @@ import logging
 import time
 from typing import Optional
 
-from models.auth import User
+from app.backend.models.auth import User
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 

@@ -1,15 +1,37 @@
-// Atlasphere API Service - Connects frontend to real backend
-import { createClient } from '@metagptx/web-sdk';
-import { t } from './i18n';
+// Atlasphere API Service - Version locale (fetch direct)
+// Remplace les appels SDK MetagptX par des appels fetch() natifs
 
-// Lazy-initialize client to avoid blocking on module load
-let _client: ReturnType<typeof createClient> | null = null;
-function getClient() {
-  if (!_client) _client = createClient();
-  return _client;
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
+
+// ============================================
+// Helper fetchAPI - Remplace getClient()
+// ============================================
+async function fetchAPI<T>(endpoint: string, options?: RequestInit): Promise<T> {
+  const url = API_BASE_URL + endpoint;
+  console.log('[API]', options?.method || 'GET', url);
+
+  const response = await fetch(url, {
+    headers: {
+      'Content-Type': 'application/json',
+      ...options?.headers,
+    },
+    ...options,
+  });
+
+  if (!response.ok) {
+    throw new Error('API error: ' + response.status + ' ' + response.statusText);
+  }
+
+  if (response.status === 204) {
+    return undefined as T;
+  }
+
+  return response.json();
 }
 
-// Types matching backend schemas
+// ============================================
+// Types (inchangés)
+// ============================================
 export interface Project {
   id: number;
   title: string;
@@ -100,42 +122,6 @@ export interface NotificationListResponse {
 
 // ============ PROJECTS API ============
 
-// Seeded projects store their text as i18n keys (e.g. "p1.t", "p1.m1.t") so the
-// same record can be rendered in the 7 supported languages. User-submitted
-// projects keep their raw text and are returned untouched.
-const I18N_KEY_RE = /^(p\d+|ms)\.[a-z0-9_.]+$/;
-
-function tr(value: string | null | undefined): string {
-  if (!value) return '';
-  return I18N_KEY_RE.test(value) ? t(value) : value;
-}
-
-function localizeMilestones(raw: string): string {
-  try {
-    const list = JSON.parse(raw) as { title?: string; description?: string }[];
-    if (!Array.isArray(list)) return raw;
-    return JSON.stringify(
-      list.map((m) => ({ ...m, title: tr(m.title), description: tr(m.description) }))
-    );
-  } catch {
-    return raw;
-  }
-}
-
-export function localizeProject(p: Project): Project {
-  return {
-    ...p,
-    title: tr(p.title),
-    description: tr(p.description),
-    milestones: p.milestones ? localizeMilestones(p.milestones) : p.milestones,
-  };
-}
-
-function localizeList(data: ProjectListResponse): ProjectListResponse {
-  if (!data?.items) return data;
-  return { ...data, items: data.items.map(localizeProject) };
-}
-
 export async function fetchAllProjects(params?: {
   query?: Record<string, unknown>;
   sort?: string;
@@ -148,9 +134,8 @@ export async function fetchAllProjects(params?: {
   if (params?.skip !== undefined) searchParams.set('skip', String(params.skip));
   if (params?.limit !== undefined) searchParams.set('limit', String(params.limit));
 
-  const url = `/api/v1/entities/projects/all${searchParams.toString() ? '?' + searchParams.toString() : ''}`;
-  const response = await getClient().apiCall.invoke({ url, method: 'GET' });
-  return localizeList(response?.data as ProjectListResponse);
+  const url = '/api/v1/entities/projects/all' + (searchParams.toString() ? '?' + searchParams.toString() : '');
+  return await fetchAPI<ProjectListResponse>(url);
 }
 
 export async function fetchMyProjects(params?: {
@@ -165,20 +150,15 @@ export async function fetchMyProjects(params?: {
   if (params?.skip !== undefined) searchParams.set('skip', String(params.skip));
   if (params?.limit !== undefined) searchParams.set('limit', String(params.limit));
 
-  const url = `/api/v1/entities/projects${searchParams.toString() ? '?' + searchParams.toString() : ''}`;
-  const response = await getClient().apiCall.invoke({ url, method: 'GET' });
-  return localizeList(response?.data as ProjectListResponse);
+  const url = '/api/v1/entities/projects' + (searchParams.toString() ? '?' + searchParams.toString() : '');
+  return await fetchAPI<ProjectListResponse>(url);
 }
 
 export async function fetchProjectById(id: number): Promise<Project | null> {
   try {
-    const response = await getClient().apiCall.invoke({
-      url: `/api/v1/entities/projects/all?query=${encodeURIComponent(JSON.stringify({ id }))}`,
-      method: 'GET',
-    });
-    const data = response?.data as ProjectListResponse;
-    const found = data?.items?.[0];
-    return found ? localizeProject(found) : null;
+    const url = '/api/v1/entities/projects/all?query=' + encodeURIComponent(JSON.stringify({ id }));
+    const data = await fetchAPI<ProjectListResponse>(url);
+    return data?.items?.[0] || null;
   } catch {
     return null;
   }
@@ -194,28 +174,24 @@ export async function createProject(data: {
   milestones?: string;
   status?: string;
 }): Promise<Project> {
-  const response = await getClient().apiCall.invoke({
-    url: '/api/v1/entities/projects',
+  return await fetchAPI<Project>('/api/v1/entities/projects', {
     method: 'POST',
-    data: {
+    body: JSON.stringify({
       ...data,
       status: data.status || 'voting',
       raised: 0,
       votes_for: 0,
       votes_against: 0,
       voter_count: 0,
-    },
+    }),
   });
-  return response?.data as Project;
 }
 
 export async function updateProject(id: number, data: Partial<Project>): Promise<Project> {
-  const response = await getClient().apiCall.invoke({
-    url: `/api/v1/entities/projects/${id}`,
+  return await fetchAPI<Project>('/api/v1/entities/projects/' + id, {
     method: 'PUT',
-    data,
+    body: JSON.stringify(data),
   });
-  return response?.data as Project;
 }
 
 // ============ VOTES API ============
@@ -232,9 +208,8 @@ export async function fetchAllVotes(params?: {
   if (params?.skip !== undefined) searchParams.set('skip', String(params.skip));
   if (params?.limit !== undefined) searchParams.set('limit', String(params.limit));
 
-  const url = `/api/v1/entities/votes/all${searchParams.toString() ? '?' + searchParams.toString() : ''}`;
-  const response = await getClient().apiCall.invoke({ url, method: 'GET' });
-  return response?.data as VoteListResponse;
+  const url = '/api/v1/entities/votes/all' + (searchParams.toString() ? '?' + searchParams.toString() : '');
+  return await fetchAPI<VoteListResponse>(url);
 }
 
 export async function fetchMyVotes(params?: {
@@ -249,9 +224,8 @@ export async function fetchMyVotes(params?: {
   if (params?.skip !== undefined) searchParams.set('skip', String(params.skip));
   if (params?.limit !== undefined) searchParams.set('limit', String(params.limit));
 
-  const url = `/api/v1/entities/votes${searchParams.toString() ? '?' + searchParams.toString() : ''}`;
-  const response = await getClient().apiCall.invoke({ url, method: 'GET' });
-  return response?.data as VoteListResponse;
+  const url = '/api/v1/entities/votes' + (searchParams.toString() ? '?' + searchParams.toString() : '');
+  return await fetchAPI<VoteListResponse>(url);
 }
 
 export async function createVote(data: {
@@ -260,12 +234,10 @@ export async function createVote(data: {
   weight: number;
   pi_uid: string;
 }): Promise<Vote> {
-  const response = await getClient().apiCall.invoke({
-    url: '/api/v1/entities/votes',
+  return await fetchAPI<Vote>('/api/v1/entities/votes', {
     method: 'POST',
-    data,
+    body: JSON.stringify(data),
   });
-  return response?.data as Vote;
 }
 
 // ============ CONTRIBUTIONS API ============
@@ -282,9 +254,8 @@ export async function fetchAllContributions(params?: {
   if (params?.skip !== undefined) searchParams.set('skip', String(params.skip));
   if (params?.limit !== undefined) searchParams.set('limit', String(params.limit));
 
-  const url = `/api/v1/entities/contributions/all${searchParams.toString() ? '?' + searchParams.toString() : ''}`;
-  const response = await getClient().apiCall.invoke({ url, method: 'GET' });
-  return response?.data as ContributionListResponse;
+  const url = '/api/v1/entities/contributions/all' + (searchParams.toString() ? '?' + searchParams.toString() : '');
+  return await fetchAPI<ContributionListResponse>(url);
 }
 
 export async function fetchMyContributions(params?: {
@@ -299,9 +270,8 @@ export async function fetchMyContributions(params?: {
   if (params?.skip !== undefined) searchParams.set('skip', String(params.skip));
   if (params?.limit !== undefined) searchParams.set('limit', String(params.limit));
 
-  const url = `/api/v1/entities/contributions${searchParams.toString() ? '?' + searchParams.toString() : ''}`;
-  const response = await getClient().apiCall.invoke({ url, method: 'GET' });
-  return response?.data as ContributionListResponse;
+  const url = '/api/v1/entities/contributions' + (searchParams.toString() ? '?' + searchParams.toString() : '');
+  return await fetchAPI<ContributionListResponse>(url);
 }
 
 export async function createContribution(data: {
@@ -312,12 +282,10 @@ export async function createContribution(data: {
   status?: string;
   pi_uid: string;
 }): Promise<Contribution> {
-  const response = await getClient().apiCall.invoke({
-    url: '/api/v1/entities/contributions',
+  return await fetchAPI<Contribution>('/api/v1/entities/contributions', {
     method: 'POST',
-    data: { ...data, status: data.status || 'completed' },
+    body: JSON.stringify({ ...data, status: data.status || 'completed' }),
   });
-  return response?.data as Contribution;
 }
 
 // ============ NOTIFICATIONS API ============
@@ -334,42 +302,38 @@ export async function fetchMyNotifications(params?: {
   if (params?.skip !== undefined) searchParams.set('skip', String(params.skip));
   if (params?.limit !== undefined) searchParams.set('limit', String(params.limit || 20));
 
-  const url = `/api/v1/entities/notifications${searchParams.toString() ? '?' + searchParams.toString() : ''}`;
-  const response = await getClient().apiCall.invoke({ url, method: 'GET' });
-  return response?.data as NotificationListResponse;
+  const url = '/api/v1/entities/notifications' + (searchParams.toString() ? '?' + searchParams.toString() : '');
+  return await fetchAPI<NotificationListResponse>(url);
 }
 
 export async function markNotificationRead(id: number): Promise<void> {
-  await getClient().apiCall.invoke({
-    url: `/api/v1/entities/notifications/${id}`,
+  await fetchAPI<void>('/api/v1/entities/notifications/' + id, {
     method: 'PUT',
-    data: { read: true },
+    body: JSON.stringify({ read: true }),
   });
 }
 
 export async function markAllNotificationsRead(ids: number[]): Promise<void> {
-  await getClient().apiCall.invoke({
-    url: '/api/v1/entities/notifications/batch',
+  await fetchAPI<void>('/api/v1/entities/notifications/batch', {
     method: 'PUT',
-    data: {
+    body: JSON.stringify({
       items: ids.map((id) => ({ id, updates: { read: true } })),
-    },
+    }),
   });
 }
 
-// ============ HELPERS ============
+// ============ HELPERS (inchangés) ============
 
 export function getStatusLabel(status: string | null): string {
   const map: Record<string, string> = {
-    voting: 'proposals.filter.voting',
-    approved: 'proposals.filter.approved',
-    funding: 'proposals.filter.funding',
-    funded: 'proposals.filter.funded',
-    completed: 'proposals.filter.completed',
-    rejected: 'status.rejected',
+    voting: '🗳️ En Vote',
+    approved: '✅ Approuvé',
+    funding: '💰 En Financement',
+    funded: '🎉 Financé',
+    completed: '🏆 Terminé',
+    rejected: '❌ Rejeté',
   };
-  const key = map[status || ''];
-  return key ? t(key) : status || '—';
+  return map[status || ''] || status || 'Inconnu';
 }
 
 export function getStatusColor(status: string | null): string {
@@ -386,14 +350,13 @@ export function getStatusColor(status: string | null): string {
 
 export function getCategoryLabel(category: string): string {
   const map: Record<string, string> = {
-    education: 'proposals.cat.education',
-    commerce: 'proposals.cat.commerce',
-    technology: 'proposals.cat.technology',
-    social: 'proposals.cat.social',
-    environment: 'proposals.cat.environment',
+    education: '📚 Éducation',
+    commerce: '🛍️ Commerce',
+    technology: '💻 Technologie',
+    social: '🤝 Social',
+    environment: '🌍 Environnement',
   };
-  const key = map[category];
-  return key ? t(key) : category;
+  return map[category] || category;
 }
 
 export function parseMilestones(milestones: string | null): { title: string; description: string; completed: boolean }[] {
@@ -414,26 +377,48 @@ export function parseTeam(team: string | null): { name: string; role: string; av
   }
 }
 
-// Convenience API object for generic CRUD operations
+// ============================================
+// Convenience API object - Version locale
+// ============================================
 export const api = {
   async listAll(entity: string, params?: { query?: string; sort?: string; skip?: number; limit?: number }) {
-    const res = await getClient().entities.list(entity, { ...params, limit: params?.limit || 2000 });
-    return res as { items: Record<string, unknown>[]; total: number; skip: number; limit: number };
+    const searchParams = new URLSearchParams();
+    if (params?.query) searchParams.set('query', params.query);
+    if (params?.sort) searchParams.set('sort', params.sort);
+    if (params?.skip !== undefined) searchParams.set('skip', String(params.skip));
+    searchParams.set('limit', String(params?.limit || 2000));
+
+    const url = '/api/v1/entities/' + entity + '/all?' + searchParams.toString();
+    return await fetchAPI<{ items: Record<string, unknown>[]; total: number; skip: number; limit: number }>(url);
   },
   async listMy(entity: string, params?: { query?: string; sort?: string; skip?: number; limit?: number }) {
-    const res = await getClient().entities.list(entity, { ...params, owned: true, limit: params?.limit || 2000 });
-    return res as { items: Record<string, unknown>[]; total: number; skip: number; limit: number };
+    const searchParams = new URLSearchParams();
+    if (params?.query) searchParams.set('query', params.query);
+    if (params?.sort) searchParams.set('sort', params.sort);
+    if (params?.skip !== undefined) searchParams.set('skip', String(params.skip));
+    searchParams.set('limit', String(params?.limit || 2000));
+
+    const url = '/api/v1/entities/' + entity + '?' + searchParams.toString();
+    return await fetchAPI<{ items: Record<string, unknown>[]; total: number; skip: number; limit: number }>(url);
   },
   async get(entity: string, id: number) {
-    return await getClient().entities.get(entity, id);
+    return await fetchAPI<Record<string, unknown>>('/api/v1/entities/' + entity + '/' + id);
   },
   async create(entity: string, data: Record<string, unknown>) {
-    return await getClient().entities.create(entity, data);
+    return await fetchAPI<Record<string, unknown>>('/api/v1/entities/' + entity, {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
   },
   async update(entity: string, id: number, data: Record<string, unknown>) {
-    return await getClient().entities.update(entity, id, data);
+    return await fetchAPI<Record<string, unknown>>('/api/v1/entities/' + entity + '/' + id, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    });
   },
   async remove(entity: string, id: number) {
-    return await getClient().entities.delete(entity, id);
+    await fetchAPI<void>('/api/v1/entities/' + entity + '/' + id, {
+      method: 'DELETE',
+    });
   },
 };

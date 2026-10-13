@@ -3,7 +3,6 @@ import react from '@vitejs/plugin-react-swc';
 import path from 'path';
 import fs from 'fs';
 import { viteSourceLocator } from '@metagptx/vite-plugin-source-locator';
-import { atoms } from '@metagptx/web-sdk/plugins';
 import { vitePrerenderPlugin } from 'vite-prerender-plugin';
 import Sitemap from 'vite-plugin-sitemap';
 import { getBlogRoutes } from './prerender/blog-routes.js';
@@ -11,7 +10,7 @@ import { getSitemapLastmod } from './prerender/blog-sitemap.js';
 
 /**
  * Plugin Vite pour servir validation-key.txt en texte brut,
- * avant tout middleware SPA fallback ou prerender.
+ * avant tout middleware SPA ou prerender.
  * Cela garantit que Pi Network peut valider le domaine.
  */
 function piValidationKeyPlugin() {
@@ -58,7 +57,7 @@ process.env.VITE_APP_TITLE ??= 'Atlasphere';
 process.env.VITE_APP_DESCRIPTION ??= 'Gouvernance décentralisée pour Pi Network. Votez, financez et construisez l\'avenir de votre communauté.';
 process.env.VITE_APP_TITLE = escapeHtmlAttr(process.env.VITE_APP_TITLE);
 process.env.VITE_APP_DESCRIPTION = escapeHtmlAttr(process.env.VITE_APP_DESCRIPTION);
-process.env.VITE_APP_LOGO_URL ??= process.env.OVERVIEW_LOGO_URL ?? 'https://public-frontend-cos.metadl.com/mgx/img/favicon_atoms.ico';
+process.env.VITE_APP_LOGO_URL ??= process.env.OVERVIEW_LOGO_URL ?? '/icons/icon-192.png';
 
 // https://vitejs.dev/config/
 export default defineConfig(({ command }) => {
@@ -71,9 +70,8 @@ export default defineConfig(({ command }) => {
         prefix: 'mgx', // Prefix used to identify source locations; do not change.
       }),
       react(),
-      atoms(),
       Sitemap({
-        hostname: 'https://atoms.template.com',
+        hostname: process.env.VITE_SITE_URL || 'https://atlaspherepi.com',
         lastmod: getSitemapLastmod(),
         readable: true,
         generateRobotsTxt: true,

@@ -1,30 +1,66 @@
 import { useState } from 'react';
-import { createPiPayment, getCurrentUser, isInPiBrowser } from '@/lib/pi-sdk';
+import { createPiPayment, getCurrentUser } from '@/lib/pi-sdk';
+import { getAPIBaseURL } from '@/lib/config';
 import { t } from '@/lib/i18n';
 
 interface PiPaymentButtonProps {
   amount: number;
-  projectId?: number;
-  /** Server-side whitelisted purpose. */
-  purpose?: 'project_funding' | 'payment_test' | 'donation' | 'subscription' | 'premium';
+  projectId: number;
   memo?: string;
-  onSuccess?: (paymentId: string, txid: string) => void;
+  onSuccess?: () => void;
   onError?: (error: string) => void;
   className?: string;
   children?: React.ReactNode;
 }
 
 /**
- * Triggers a real Pi Network U2A payment.
- *
- * The component never records anything itself: approval, completion and the
- * business effect are handled exclusively by the Atlasphere server, which
- * re-reads the payment from the Pi Platform API before trusting it.
+ * Nettoie un message d'erreur brut pour l'afficher proprement.
+ * - Détecte "already_completed" → retourne un flag de succès
+ * - Tronque les JSON trop longs
  */
+function cleanErrorMessage(raw: string): { isSuccess: boolean; rawMessage: string } {
+  // Cas 1 : paiement déjà complété (pas une vraie erreur)
+  if (raw.includes('already_completed') || raw.includes('already completed')) {
+    return { isSuccess: true, rawMessage: '' };
+  }
+
+  // Cas 2 : message d'erreur simple (pas de JSON)
+  if (raw.length < 120 && !raw.includes('{')) {
+    return { isSuccess: false, rawMessage: raw };
+  }
+
+  // Cas 3 : JSON détecté → extraire le champ "message" ou "detail"
+  try {
+    const jsonMatch = raw.match(/\{.*\}/s);
+    if (jsonMatch) {
+      const parsed = JSON.parse(jsonMatch[0]);
+      const msg =
+        parsed?.detail ||
+        parsed?.error_message ||
+        parsed?.message ||
+        parsed?.error;
+      if (typeof msg === 'string') {
+        // Récursif si le detail est lui-même un JSON
+        if (msg.includes('{')) {
+          return cleanErrorMessage(msg);
+        }
+        return { isSuccess: false, rawMessage: msg.slice(0, 120) };
+      }
+    }
+  } catch {
+    // Ignore parse errors
+  }
+
+  // Fallback : tronquer le message brut
+  return {
+    isSuccess: false,
+    rawMessage: raw.length > 120 ? raw.slice(0, 117) + '...' : raw,
+  };
+}
+
 export default function PiPaymentButton({
   amount,
   projectId,
-  purpose = 'project_funding',
   memo = 'Atlasphere contribution',
   onSuccess,
   onError,
@@ -32,16 +68,16 @@ export default function PiPaymentButton({
   children,
 }: PiPaymentButtonProps) {
   const [isProcessing, setIsProcessing] = useState(false);
-  const [status, setStatus] = useState<'idle' | 'approving' | 'completing' | 'done' | 'error'>('idle');
+  const [status, setStatus] = useState<'idle' | 'approving' | 'completing' | 'done' | 'error' | 'success'>('idle');
+  const [message, setMessage] = useState<string>('');
 
   const handlePayment = async () => {
+    setMessage('');
     const user = getCurrentUser();
     if (!user) {
-      onError?.(t('pay.err_login'));
-      return;
-    }
-    if (!isInPiBrowser()) {
-      onError?.(t('pay.err_browser'));
+      setStatus('error');
+      setMessage(t('payment.login_required'));
+      onError?.(t('payment.login_required'));
       return;
     }
 
@@ -49,69 +85,156 @@ export default function PiPaymentButton({
     setStatus('approving');
 
     try {
-      const metadata: Record<string, string> = { purpose };
-      if (projectId) metadata.project_id = String(projectId);
-
-      let failure = '';
-
       const success = await createPiPayment(
         amount,
         memo,
-        metadata,
-        async () => {
-          setStatus('completing');
+        { projectId: String(projectId), type: 'contribution' },
+        // onReadyForServerApproval
+        async (paymentId: string) => {
+          setStatus('approving');
+          try {
+            const url = `${getAPIBaseURL()}/api/pi-payments/approve`;
+            console.log('[Payment] Approving:', url, 'paymentId:', paymentId);
+
+            const response = await fetch(url, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ payment_id: paymentId }),
+            });
+
+            if (!response.ok) {
+              const errText = await response.text().catch(() => '');
+              throw new Error(errText || `HTTP ${response.status}`);
+            }
+            console.log('[Payment] Approved OK');
+          } catch (err) {
+            const msg = err instanceof Error ? err.message : '';
+            console.error('[Payment] Server approval failed:', msg);
+            const cleaned = cleanErrorMessage(msg);
+            if (!cleaned.isSuccess) {
+              setMessage(t('common.error'));
+            }
+            throw err;
+          }
         },
+        // onReadyForServerCompletion
         async (paymentId: string, txid: string) => {
-          setStatus('done');
-          onSuccess?.(paymentId, txid);
-        },
-        (message: string) => {
-          failure = message;
-          setStatus('error');
-          onError?.(message || t('pay.err_failed'));
+          setStatus('completing');
+          try {
+            const url = `${getAPIBaseURL()}/api/pi-payments/complete`;
+            console.log('[Payment] Completing:', url, 'paymentId:', paymentId, 'txid:', txid);
+
+            const response = await fetch(url, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                payment_id: paymentId,
+                txid,
+                project_id: projectId,
+                amount,
+                pi_uid: user.uid,
+              }),
+            });
+
+            if (!response.ok) {
+              const errText = await response.text().catch(() => '');
+              throw new Error(errText || `HTTP ${response.status}`);
+            }
+            console.log('[Payment] Completed OK');
+            setStatus('done');
+            setMessage(t('common.success'));
+            onSuccess?.();
+          } catch (err) {
+            const msg = err instanceof Error ? err.message : '';
+            console.error('[Payment] Server completion failed:', msg);
+
+            const cleaned = cleanErrorMessage(msg);
+            if (cleaned.isSuccess) {
+              // Cas spécial : paiement déjà complété = SUCCÈS
+              setStatus('success');
+              setMessage(t('common.success'));
+              onSuccess?.();
+            } else {
+              setStatus('error');
+              setMessage(t('common.error'));
+              onError?.(t('common.error'));
+            }
+          }
         }
       );
 
-      if (!success && !failure) {
+      if (!success) {
         setStatus('error');
-        onError?.(t('pay.err_failed'));
+        setMessage(t('common.error'));
+        onError?.(t('common.error'));
       }
-    } catch {
-      setStatus('error');
-      onError?.(t('pay.err_failed'));
+    } catch (error) {
+      const msg = error instanceof Error ? error.message : '';
+      const cleaned = cleanErrorMessage(msg);
+      if (cleaned.isSuccess) {
+        setStatus('success');
+        setMessage(t('common.success'));
+        onSuccess?.();
+      } else {
+        setStatus('error');
+        setMessage(t('common.error'));
+        onError?.(t('common.error'));
+      }
     } finally {
       setIsProcessing(false);
-      setTimeout(() => setStatus('idle'), 4000);
+      setTimeout(() => {
+        setStatus((s) => (s === 'error' || s === 'success' ? 'idle' : s));
+        setMessage('');
+      }, 8000);
     }
   };
 
   const getButtonContent = () => {
+    if (status === 'success') {
+      return `✅ ${t('common.success')}`;
+    }
+    if (status === 'error') {
+      return `❌ ${t('common.error')}`;
+    }
     switch (status) {
       case 'approving':
+        return `⏳ ${t('common.loading')}`;
       case 'completing':
         return `⏳ ${t('common.loading')}`;
       case 'done':
         return `✅ ${t('common.success')}`;
-      case 'error':
-        return `❌ ${t('common.error')}`;
       default:
         return children || `${t('fund.contribute')} ${amount} π`;
     }
   };
 
   return (
-    <button
-      onClick={handlePayment}
-      disabled={isProcessing || status === 'done'}
-      className={`px-4 py-2.5 rounded-xl font-medium transition-all disabled:opacity-50 ${
-        status === 'done'
-          ? 'bg-emerald-600 text-white'
-          : status === 'error'
-          ? 'bg-red-600 text-white'
-          : 'bg-gradient-to-r from-amber-500 to-orange-600 text-white hover:from-amber-400 hover:to-orange-500'
-      } ${className}`}
-    >
-      {getButtonContent()}
-    </button>
+    <div className="w-full">
+      <button
+        onClick={handlePayment}
+        disabled={isProcessing || status === 'done' || status === 'success'}
+        className={`w-full px-4 py-2.5 rounded-xl font-medium transition-all disabled:opacity-50 ${
+          status === 'done' || status === 'success'
+            ? 'bg-emerald-600 text-white'
+            : status === 'error'
+            ? 'bg-red-600 text-white'
+            : 'bg-gradient-to-r from-amber-500 to-orange-600 text-white hover:from-amber-400 hover:to-orange-500'
+        } ${className}`}
+      >
+        {getButtonContent()}
+      </button>
+
+      {message && (status === 'error' || status === 'success') && (
+        <div
+          className={`mt-2 text-xs break-words rounded-lg p-2 border ${
+            status === 'success'
+              ? 'text-emerald-400 bg-emerald-950/30 border-emerald-800/50'
+              : 'text-red-400 bg-red-950/30 border-red-800/50'
+          }`}
+        >
+          <strong>{status === 'success' ? '✅' : '❌'}</strong> {message}
+        </div>
+      )}
+    </div>
   );
 }

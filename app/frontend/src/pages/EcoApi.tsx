@@ -115,7 +115,7 @@ export default function EcoApi() {
                 <h3 className="text-sm font-semibold text-white mb-3">Exemple de requête</h3>
                 <pre className="text-xs text-cyan-300 font-mono overflow-x-auto whitespace-pre-wrap bg-black/30 rounded-lg p-4">
 {`curl -X ${selectedEndpoint.method} \\
-  "https://api.atlasphere.eco${selectedEndpoint.path}" \\
+  "https://api.atlaspherepi.eco${selectedEndpoint.path}" \\
   -H "Authorization: Bearer YOUR_API_KEY" \\
   -H "Content-Type: application/json" \\
   -d '${selectedEndpoint.example}'`}

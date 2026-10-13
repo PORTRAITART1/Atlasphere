@@ -4,10 +4,10 @@ import time
 from datetime import datetime, timedelta, timezone
 from typing import Any, Dict, Optional, Tuple
 
-from core.auth import create_access_token
-from core.config import settings
-from core.database import db_manager
-from models.auth import OIDCState, User
+from app.backend.core.auth import create_access_token
+from app.backend.core.config import settings
+from app.backend.core.database import db_manager
+from app.backend.models.auth import OIDCState, User
 from sqlalchemy import delete, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -52,7 +52,7 @@ class AuthService:
         try:
             expires_minutes = int(getattr(settings, "jwt_expire_minutes", 60))
         except (TypeError, ValueError):
-            logger.warning("Invalid JWT_EXPIRE_MINUTES value; fallback to 60 minutes")
+            logger.warning("Invalid JWT_EXPIRE_MINUTES value; using default 60 minutes")
             expires_minutes = 60
         expires_at = datetime.now(timezone.utc) + timedelta(minutes=expires_minutes)
 
@@ -83,7 +83,7 @@ class AuthService:
         await self.db.commit()
 
     async def get_and_delete_oidc_state(self, state: str) -> Optional[dict]:
-        """Get and delete OIDC state from database."""
+        """Get and delete OIDC state from app.backend.database."""
         # Clean up expired states first
         await self.db.execute(delete(OIDCState).where(OIDCState.expires_at < datetime.now(timezone.utc)))
 
@@ -110,7 +110,7 @@ async def initialize_admin_user():
         logger.info("Ignore initialize admin")
         return
 
-    from services.database import initialize_database
+    from app.backend.services.database import initialize_database
 
     # Ensure database is initialized first
     await initialize_database()

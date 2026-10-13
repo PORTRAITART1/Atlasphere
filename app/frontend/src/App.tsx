@@ -7,7 +7,7 @@ import FeedbackForm from '@/components/FeedbackForm';
 import EcoChatbot from '@/components/EcoChatbot';
 import { autoAuthenticate, isInPiBrowser } from '@/lib/pi-sdk';
 import { applyTheme } from '@/lib/theme';
-import AdminGuard from '@/components/AdminGuard';
+import { useTranslation } from 'react-i18next';
 
 // Lazy-loaded pages for performance
 const Index = lazy(() => import('./pages/Index'));
@@ -61,7 +61,6 @@ const EcoAdsPage = lazy(() => import('./pages/EcoAds'));
 const UserProfile = lazy(() => import('./pages/UserProfile'));
 const MarketingDownload = lazy(() => import('./pages/MarketingDownload'));
 const ValidationKey = lazy(() => import('./pages/ValidationKey'));
-const PaymentTest = lazy(() => import('./pages/PaymentTest'));
 
 const queryClient = new QueryClient();
 
@@ -91,28 +90,14 @@ const AppRoutes = () => (
       <Route path="/reputation" element={<Reputation />} />
       <Route path="/api-docs" element={<ApiDocs />} />
       <Route path="/security" element={<Security />} />
-      <Route
-        path="/admin"
-        element={
-          <AdminGuard>
-            <Admin />
-          </AdminGuard>
-        }
-      />
+      <Route path="/admin" element={<Admin />} />
       <Route path="/delegation" element={<Delegation />} />
       <Route path="/analytics" element={<Analytics />} />
       <Route path="/map" element={<ProjectMap />} />
       <Route path="/auth/callback" element={<AuthCallback />} />
       <Route path="/privacy" element={<Privacy />} />
       <Route path="/terms" element={<Terms />} />
-      <Route
-        path="/settings"
-        element={
-          <AdminGuard>
-            <Settings />
-          </AdminGuard>
-        }
-      />
+      <Route path="/settings" element={<Settings />} />
       <Route path="/eco-wallet" element={<EcoWallet />} />
       <Route path="/climate" element={<ClimateDashboard />} />
       <Route path="/eco-market" element={<EcoMarket />} />
@@ -143,13 +128,14 @@ const AppRoutes = () => (
       <Route path="/eco-ads" element={<EcoAdsPage />} />
       <Route path="/profile" element={<UserProfile />} />
       <Route path="/marketing-download" element={<MarketingDownload />} />
-      <Route path="/payment-test" element={<PaymentTest />} />
       <Route path="/validation-key.txt" element={<ValidationKey />} />
     </Routes>
   </Suspense>
 );
 
 const App = () => {
+  const { t } = useTranslation(); // Initialisation de la traduction
+
   useEffect(() => {
     // Apply saved theme on mount
     applyTheme();

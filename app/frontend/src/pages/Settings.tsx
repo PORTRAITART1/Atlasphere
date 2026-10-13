@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import PageTransition from '@/components/PageTransition';
@@ -7,10 +8,12 @@ import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
 import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
-import { t, useI18nRerender } from '@/lib/i18n';
+
+const NETWORK_CONFIG_STORAGE_KEY = 'atlaspherepi_network_config';
+const MAINNET_CHECKLIST_STORAGE_KEY = 'atlaspherepi_mainnet_checklist';
 
 interface NetworkConfig {
-  network: 'testnet' | 'mainnet';
+  network: 'mainnet';
   sandbox: boolean;
   piServerUrl: string;
   features: {
@@ -20,26 +23,12 @@ interface NetworkConfig {
   };
 }
 
-const CHECKLIST_ITEMS = [
-  { id: 'kyc', key: 'set.cl_kyc', critical: true },
-  { id: 'wallet', key: 'set.cl_wallet', critical: true },
-  { id: 'apikey', key: 'set.cl_apikey', critical: true },
-  { id: 'domain', key: 'set.cl_domain', critical: true },
-  { id: 'tests', key: 'set.cl_tests', critical: true },
-  { id: 'contracts', key: 'set.cl_contracts', critical: false },
-  { id: 'review', key: 'set.cl_review', critical: false },
-  { id: 'backup', key: 'set.cl_backup', critical: false },
-  { id: 'rollback', key: 'set.cl_rollback', critical: false },
-  { id: 'support', key: 'set.cl_support', critical: false },
-];
-
 export default function Settings() {
-  useI18nRerender();
-
+  const { t } = useTranslation();
   const [config, setConfig] = useState<NetworkConfig>({
-    network: 'testnet',
-    sandbox: true,
-    piServerUrl: 'https://api.testnet.minepi.com',
+    network: 'mainnet',
+    sandbox: false,
+    piServerUrl: 'https://api.minepi.com',
     features: {
       smartContracts: true,
       a2uPayments: true,
@@ -49,21 +38,28 @@ export default function Settings() {
   const [saved, setSaved] = useState(false);
 
   useEffect(() => {
-    const savedConfig = localStorage.getItem('atlasphere_network_config');
+    const savedConfig = localStorage.getItem(NETWORK_CONFIG_STORAGE_KEY);
     if (savedConfig) {
-      setConfig(JSON.parse(savedConfig));
+      try {
+        const parsedConfig = JSON.parse(savedConfig);
+        setConfig({
+          ...parsedConfig,
+          network: 'mainnet',
+          sandbox: false,
+          piServerUrl: 'https://api.minepi.com',
+        });
+      } catch {
+        localStorage.removeItem(NETWORK_CONFIG_STORAGE_KEY);
+      }
     }
   }, []);
 
-  const toggleNetwork = () => {
-    const newNetwork = config.network === 'testnet' ? 'mainnet' : 'testnet';
+  const enforceMainnet = () => {
     setConfig({
       ...config,
-      network: newNetwork,
-      sandbox: newNetwork === 'testnet',
-      piServerUrl: newNetwork === 'mainnet'
-        ? 'https://api.mainnet.minepi.com'
-        : 'https://api.testnet.minepi.com',
+      network: 'mainnet',
+      sandbox: false,
+      piServerUrl: 'https://api.minepi.com',
     });
   };
 
@@ -78,24 +74,37 @@ export default function Settings() {
   };
 
   const saveConfig = () => {
-    localStorage.setItem('atlasphere_network_config', JSON.stringify(config));
+    localStorage.setItem(NETWORK_CONFIG_STORAGE_KEY, JSON.stringify(config));
     setSaved(true);
     setTimeout(() => setSaved(false), 2000);
   };
 
+  const mainnetChecklist = [
+    { id: 'kyc', label: 'KYC complété pour le compte développeur', critical: true },
+    { id: 'wallet', label: 'Wallet Mainnet créé avec 2FA activé', critical: true },
+    { id: 'apikey', label: 'API Key Mainnet générée et testée', critical: true },
+    { id: 'domain', label: 'Domaine validé dans Developer Portal', critical: true },
+    { id: 'tests', label: 'Tous les paiements Mainnet sont validés', critical: true },
+    { id: 'contracts', label: 'Smart contracts validés par 10+ transactions', critical: false },
+    { id: 'review', label: 'Code review par au moins 1 développeur', critical: false },
+    { id: 'backup', label: 'Backup base de données configuré', critical: false },
+    { id: 'rollback', label: 'Plan de rollback défini', critical: false },
+    { id: 'support', label: 'Support client prêt (Discord/Telegram)', critical: false },
+  ];
+
   const [checklist, setChecklist] = useState<Record<string, boolean>>(() => {
-    const savedChecklist = localStorage.getItem('atlasphere_mainnet_checklist');
-    return savedChecklist ? JSON.parse(savedChecklist) : {};
+    const saved = localStorage.getItem(MAINNET_CHECKLIST_STORAGE_KEY);
+    return saved ? JSON.parse(saved) : {};
   });
 
   const toggleChecklist = (id: string) => {
     const updated = { ...checklist, [id]: !checklist[id] };
     setChecklist(updated);
-    localStorage.setItem('atlasphere_mainnet_checklist', JSON.stringify(updated));
+    localStorage.setItem(MAINNET_CHECKLIST_STORAGE_KEY, JSON.stringify(updated));
   };
 
   const checklistProgress = Object.values(checklist).filter(Boolean).length;
-  const criticalComplete = CHECKLIST_ITEMS
+  const criticalComplete = mainnetChecklist
     .filter((item) => item.critical)
     .every((item) => checklist[item.id]);
 
@@ -109,44 +118,43 @@ export default function Settings() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4 }}
           >
-            <h1 className="text-3xl font-bold text-white mb-2">{t('set.title')}</h1>
-            <p className="text-gray-400 mb-8">{t('set.subtitle')}</p>
+            <h1 className="text-3xl font-bold text-white mb-2">{t('settings.title', '⚙️ Configuration Réseau')}</h1>
+            <p className="text-gray-400 mb-8">{t('settings.description', 'Gérez la configuration Mainnet de Atlasphere')}</p>
           </motion.div>
 
           {/* Network Toggle */}
           <Card className="bg-slate-800/60 border-slate-700/50 mb-6">
             <CardHeader>
               <CardTitle className="text-white flex items-center gap-3">
-                {t('set.network')}
-                <Badge className={config.network === 'mainnet' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-amber-500/20 text-amber-400'}>
-                  {config.network === 'mainnet' ? '🟢 Mainnet' : '🟡 Testnet'}
+                🌐 Réseau Pi Network
+                <Badge className="bg-emerald-500/20 text-emerald-400">
+                  🟢 Mainnet
                 </Badge>
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex items-center justify-between p-4 bg-slate-700/30 rounded-lg">
                 <div>
-                  <p className="text-white font-medium">{t('set.mainnet_mode')}</p>
+                  <p className="text-white font-medium">Mode Mainnet</p>
                   <p className="text-sm text-gray-400">
-                    {config.network === 'mainnet'
-                      ? t('set.mainnet_warn')
-                      : t('set.sandbox_desc')}
+                    ⚠️ Transactions en π réels — Soyez prudent !
                   </p>
                 </div>
                 <Switch
-                  checked={config.network === 'mainnet'}
-                  onCheckedChange={toggleNetwork}
+                  checked={true}
+                  onCheckedChange={enforceMainnet}
+                  disabled
                 />
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 <div className="p-3 bg-slate-700/20 rounded-lg">
-                  <p className="text-xs text-gray-400">{t('set.api_server')}</p>
-                  <p className="text-sm text-white font-mono break-all">{config.piServerUrl}</p>
+                  <p className="text-xs text-gray-400">Serveur API Pi</p>
+                  <p className="text-sm text-white font-mono">{config.piServerUrl}</p>
                 </div>
                 <div className="p-3 bg-slate-700/20 rounded-lg">
-                  <p className="text-xs text-gray-400">{t('set.sandbox_mode')}</p>
-                  <p className="text-sm text-white">{config.sandbox ? t('set.on') : t('set.off')}</p>
+                  <p className="text-xs text-gray-400">Mode Sandbox</p>
+                  <p className="text-sm text-white">{config.sandbox ? 'Activé' : 'Désactivé'}</p>
                 </div>
               </div>
             </CardContent>
@@ -155,13 +163,13 @@ export default function Settings() {
           {/* Feature Flags */}
           <Card className="bg-slate-800/60 border-slate-700/50 mb-6">
             <CardHeader>
-              <CardTitle className="text-white">{t('set.flags')}</CardTitle>
+              <CardTitle className="text-white">🎛️ Feature Flags</CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
               {[
-                { key: 'smartContracts' as const, label: t('set.f_contracts'), desc: t('set.f_contracts_d') },
-                { key: 'a2uPayments' as const, label: t('set.f_a2u'), desc: t('set.f_a2u_d') },
-                { key: 'subscriptions' as const, label: t('set.f_subs'), desc: t('set.f_subs_d') },
+                { key: 'smartContracts' as const, label: 'Smart Contracts PiRC2', desc: 'Escrow, gouvernance on-chain' },
+                { key: 'a2uPayments' as const, label: 'Paiements A2U', desc: 'Récompenses et remboursements automatiques' },
+                { key: 'subscriptions' as const, label: 'Abonnements', desc: 'Paiements récurrents via PiRC2' },
               ].map((feature) => (
                 <div key={feature.key} className="flex items-center justify-between p-3 bg-slate-700/20 rounded-lg">
                   <div>
@@ -180,10 +188,10 @@ export default function Settings() {
           {/* Mainnet Checklist */}
           <Card className="bg-slate-800/60 border-slate-700/50 mb-6">
             <CardHeader>
-              <CardTitle className="text-white flex items-center justify-between gap-3">
-                <span>{t('set.checklist')}</span>
+              <CardTitle className="text-white flex items-center justify-between">
+                <span>✅ Checklist Go/No-Go Mainnet</span>
                 <Badge className={criticalComplete ? 'bg-emerald-500/20 text-emerald-400' : 'bg-red-500/20 text-red-400'}>
-                  {checklistProgress}/{CHECKLIST_ITEMS.length}
+                  {checklistProgress}/{mainnetChecklist.length}
                 </Badge>
               </CardTitle>
             </CardHeader>
@@ -192,12 +200,12 @@ export default function Settings() {
                 <div className="w-full h-2 bg-slate-700 rounded-full overflow-hidden">
                   <div
                     className="h-full bg-gradient-to-r from-indigo-500 to-emerald-500 rounded-full transition-all duration-500"
-                    style={{ width: `${(checklistProgress / CHECKLIST_ITEMS.length) * 100}%` }}
+                    style={{ width: `${(checklistProgress / mainnetChecklist.length) * 100}%` }}
                   />
                 </div>
               </div>
               <div className="space-y-2">
-                {CHECKLIST_ITEMS.map((item) => (
+                {mainnetChecklist.map((item) => (
                   <label
                     key={item.id}
                     className="flex items-center gap-3 p-2 rounded-lg hover:bg-slate-700/20 cursor-pointer transition-colors"
@@ -209,11 +217,11 @@ export default function Settings() {
                       className="w-4 h-4 rounded border-slate-600 text-indigo-500 focus:ring-indigo-500"
                     />
                     <span className={`text-sm ${checklist[item.id] ? 'text-gray-400 line-through' : 'text-white'}`}>
-                      {t(item.key)}
+                      {item.label}
                     </span>
                     {item.critical && (
                       <Badge variant="outline" className="text-xs border-red-500/30 text-red-400">
-                        {t('set.critical')}
+                        Critique
                       </Badge>
                     )}
                   </label>
@@ -225,22 +233,24 @@ export default function Settings() {
           {/* Environment Variables Reference */}
           <Card className="bg-slate-800/60 border-slate-700/50 mb-6">
             <CardHeader>
-              <CardTitle className="text-white">{t('set.env')}</CardTitle>
+              <CardTitle className="text-white">🔑 Variables d&apos;Environnement</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="bg-amber-900/30 border border-amber-500/50 rounded-lg p-3 mb-3">
-                <p className="text-amber-300 text-xs font-medium">{t('set.env_warn')}</p>
+                <p className="text-amber-300 text-xs font-medium">⚠️ Sécurité : Ne jamais exposer vos clés réelles dans le code frontend. Les valeurs ci-dessous sont des exemples de format. Stockez vos vraies clés uniquement côté serveur (variables d'environnement backend).</p>
               </div>
               <pre className="bg-slate-900 p-4 rounded-lg text-xs text-gray-300 overflow-x-auto">
-{`# Pi Network
-PI_API_KEY=${config.network === 'mainnet' ? 'mainnet_xxxxxxxx' : 'testnet_xxxxxxxx'}
+{`# Pi Network (⚠️ EXEMPLES DE FORMAT — remplacez par vos vraies clés côté SERVEUR uniquement)
+PI_API_KEY=mainnet_xxxxxxxx
 DEVELOPER_PUBLIC_KEY=GXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 DEVELOPER_SECRET_SEED=SXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 
+# Réseau
 NODE_ENV=${config.network === 'mainnet' ? 'production' : 'development'}
-NETWORK=${config.network === 'mainnet' ? 'Pi Network' : 'Pi Testnet'}
+NETWORK=Pi Network
 PI_SERVER_URL=${config.piServerUrl}
 
+# Feature Flags
 ENABLE_MAINNET=${config.network === 'mainnet'}
 ENABLE_SMART_CONTRACTS=${config.features.smartContracts}
 ENABLE_A2U_PAYMENTS=${config.features.a2uPayments}`}
@@ -254,7 +264,7 @@ ENABLE_A2U_PAYMENTS=${config.features.a2uPayments}`}
               onClick={saveConfig}
               className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white px-8"
             >
-              {saved ? t('set.saved') : t('set.save')}
+              {saved ? '✅ Sauvegardé !' : '💾 Sauvegarder la Configuration'}
             </Button>
           </div>
         </div>

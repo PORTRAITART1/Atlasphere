@@ -1,0 +1,23 @@
+2026-08-12 02:33:20,852 - main - INFO - === Logging system initialized ===
+2026-08-12 02:33:20,852 - main - INFO - Log file: logs/app_20260812_023320.log
+2026-08-12 02:33:20,852 - main - INFO - Log level: INFO
+2026-08-12 02:33:20,853 - main - INFO - Timestamp: 20260812_023320
+2026-08-12 02:33:20,934 - main - WARNING - Failed to import module 'routers.aihub': No module named 'fitz'
+2026-08-12 02:33:21,011 - main - INFO - Included router: routers.auth.router
+2026-08-12 02:33:21,072 - main - INFO - Included router: routers.comments.router
+2026-08-12 02:33:21,133 - main - INFO - Included router: routers.contributions.router
+2026-08-12 02:33:21,219 - main - INFO - Included router: routers.governance.router
+2026-08-12 02:33:21,221 - main - INFO - Included router: routers.health.router
+2026-08-12 02:33:21,286 - main - INFO - Included router: routers.notifications.router
+2026-08-12 02:33:21,299 - main - INFO - Included router: routers.pi_auth.router
+2026-08-12 02:33:21,321 - main - INFO - Included router: routers.pi_payments.router
+2026-08-12 02:33:21,386 - main - INFO - Included router: routers.pi_profiles.router
+2026-08-12 02:33:21,388 - main - INFO - Included router: routers.pi_validation.router
+2026-08-12 02:33:21,448 - main - INFO - Included router: routers.projects.router
+2026-08-12 02:33:21,705 - main - INFO - Included router: routers.quest_progress.router
+2026-08-12 02:33:21,731 - main - INFO - Included router: routers.quest_system.router
+2026-08-12 02:33:21,783 - main - INFO - Included router: routers.quests.router
+2026-08-12 02:33:21,810 - main - INFO - Included router: routers.settings.router
+2026-08-12 02:33:21,862 - main - INFO - Included router: routers.storage.router
+2026-08-12 02:33:21,874 - main - INFO - Included router: routers.user.router
+2026-08-12 02:33:21,925 - main - INFO - Included router: routers.votes.router

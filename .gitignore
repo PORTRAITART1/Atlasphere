@@ -1,7 +1,47 @@
-venv/
-*.log
+# Dependencies and environments
 node_modules/
+.venv/
+venv/
+env/
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Build outputs
+dist/
 build/
-__pycache__
-dist
-vite.config.ts.timestamp-*
+*.egg-info/
+
+# Secrets and credentials
+.env
+.env.*
+!.env.example
+*.key
+*.pem
+secrets/
+credentials.json
+validation-key.txt
+
+# Logs and databases
+logs/
+*.log
+*.db
+*.sqlite
+*.sqlite3
+
+# IDE and OS
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+
+# Temporary archives and uploads
+uploads/*.zip
+uploads/*.tar.gz
+marketing-pack-atlasphere.tar.gz
+
+# Project-specific generated content
+app/backend/.venv/
+app/frontend/node_modules/
+app/frontend/dist/

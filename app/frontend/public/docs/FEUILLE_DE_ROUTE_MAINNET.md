@@ -15,7 +15,7 @@
 ## 🔑 CRITÈRES D'ACCEPTATION MAINNET (Ce que Pi Network évalue)
 
 1. **Utilité réelle** — L'app résout un vrai problème pour les Pionniers
-2. **Adoption** — Nombre significatif d'utilisateurs actifs en testnet
+2. **Adoption** — Nombre significatif d'utilisateurs actifs sur le réseau Pi
 3. **Conformité SDK** — Intégration correcte de Pi.init(), authenticate(), payments
 4. **Qualité** — App stable, performante, sans bugs critiques
 5. **Sécurité** — Pas de failles, tokens validés côté serveur

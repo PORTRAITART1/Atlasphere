@@ -10,7 +10,7 @@ import logging
 from typing import Any
 
 from fastapi import APIRouter, HTTPException, status
-from schemas.aihub import (
+from app.backend.schemas.aihub import (
     AnalyzePdfRequest,
     AnalyzePdfResponse,
     GenAudioRequest,
@@ -23,7 +23,7 @@ from schemas.aihub import (
     TranscribeAudioRequest,
     TranscribeAudioResponse,
 )
-from services.aihub import (
+from app.backend.services.aihub import (
     AIHubService,
     InvalidAudioInputError,
     InvalidImageInputError,

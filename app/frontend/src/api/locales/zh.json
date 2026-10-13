@@ -1,0 +1,67 @@
+{
+  "api_doc": {
+    "title": "API 文档",
+    "intro": "欢迎使用 AtlaspherePI 官方 API 文档。",
+    "auth_section": "身份验证",
+    "endpoints_section": "端点"
+  },
+  "security": {
+    "title": "安全",
+    "2fa": "双因素身份验证",
+    "api_keys": "API 密钥",
+    "activity_log": "活动日志"
+  },
+  "reputation": {
+    "title": "声誉",
+    "score": "总分",
+    "trends": "趋势",
+    "factors": "影响因素"
+  },
+  "settings": {
+    "title": "设置",
+    "profile": "用户资料",
+    "lang_pref": "语言偏好",
+    "theme": "主题选项",
+    "pi_network": {
+      "title": "Pi 网络",
+      "sandbox_mode": "沙盒模式",
+      "sandbox_desc": "在没有真实 Pi 的情况下测试付款",
+      "mainnet_mode": "主网模式",
+      "mainnet_desc": "已启用真实 Pi 交易",
+      "pi_app_id": "Pi 应用 ID",
+      "pi_api_key": "Pi API 密钥"
+    },
+    "feature_flags": {
+      "title": "功能标志",
+      "enable_payments": "启用 Pi 支付",
+      "enable_kyc": "启用 KYC 验证",
+      "enable_marketplace": "启用市场",
+      "enable_notifications": "启用通知"
+    },
+    "mainnet_checklist": {
+      "title": "主网清单",
+      "kyc_verified": "KYC 已验证",
+      "wallet_connected": "钱包已连接",
+      "test_payment_done": "测试付款已完成",
+      "app_approved": "应用已获 Pi Core Team 批准"
+    },
+    "env_variables": {
+      "title": "环境变量",
+      "current_env": "当前环境",
+      "api_url": "API 地址",
+      "frontend_url": "前端地址",
+      "db_status": "数据库状态"
+    }
+  },
+  "common": {
+    "save": "保存更改",
+    "cancel": "取消",
+    "enabled": "已启用",
+    "disabled": "已禁用",
+    "status_ok": "正常",
+    "status_error": "错误",
+    "loading": "加载中...",
+    "connected": "已连接",
+    "disconnected": "已断开"
+  }
+}

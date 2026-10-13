@@ -1,0 +1,67 @@
+{
+  "api_doc": {
+    "title": "API Documentation",
+    "intro": "Welcome to the official AtlaspherePI API documentation.",
+    "auth_section": "Authentication",
+    "endpoints_section": "Endpoints"
+  },
+  "security": {
+    "title": "Security",
+    "2fa": "Two-Factor Authentication",
+    "api_keys": "API Keys",
+    "activity_log": "Activity Log"
+  },
+  "reputation": {
+    "title": "Reputation",
+    "score": "Overall Score",
+    "trends": "Trends",
+    "factors": "Influencing Factors"
+  },
+  "settings": {
+    "title": "Settings",
+    "profile": "User Profile",
+    "lang_pref": "Language Preference",
+    "theme": "Theme Options",
+    "pi_network": {
+      "title": "Pi Network",
+      "sandbox_mode": "Sandbox Mode",
+      "sandbox_desc": "Test payments without real Pi",
+      "mainnet_mode": "Mainnet Mode",
+      "mainnet_desc": "Real Pi transactions enabled",
+      "pi_app_id": "Pi App ID",
+      "pi_api_key": "Pi API Key"
+    },
+    "feature_flags": {
+      "title": "Feature Flags",
+      "enable_payments": "Enable Pi Payments",
+      "enable_kyc": "Enable KYC Verification",
+      "enable_marketplace": "Enable Marketplace",
+      "enable_notifications": "Enable Notifications"
+    },
+    "mainnet_checklist": {
+      "title": "Mainnet Checklist",
+      "kyc_verified": "KYC Verified",
+      "wallet_connected": "Wallet Connected",
+      "test_payment_done": "Test Payment Completed",
+      "app_approved": "App Approved by Pi Core Team"
+    },
+    "env_variables": {
+      "title": "Environment Variables",
+      "current_env": "Current Environment",
+      "api_url": "API URL",
+      "frontend_url": "Frontend URL",
+      "db_status": "Database Status"
+    }
+  },
+  "common": {
+    "save": "Save Changes",
+    "cancel": "Cancel",
+    "enabled": "Enabled",
+    "disabled": "Disabled",
+    "status_ok": "OK",
+    "status_error": "Error",
+    "loading": "Loading...",
+    "connected": "Connected",
+    "disconnected": "Disconnected"
+  }
+}

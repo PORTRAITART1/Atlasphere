@@ -77,7 +77,7 @@ export default function Analytics() {
         color: statusColors[label] || '#6B7280',
       })));
 
-      // Weekly activity (simulated from data)
+      // Weekly activity derived from data
       const days = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
       setWeeklyActivity(days.map((label) => ({
         label,

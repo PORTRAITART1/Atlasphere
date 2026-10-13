@@ -4,7 +4,7 @@ from typing import Optional, Dict, Any, List
 from sqlalchemy import select, func
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from models.quest_progress import Quest_progress
+from app.backend.models.quest_progress import Quest_progress
 
 logger = logging.getLogger(__name__)
 

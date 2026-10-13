@@ -1,0 +1,67 @@
+{
+  "api_doc": {
+    "title": "API 문서",
+    "intro": "AtlaspherePI 공식 API 문서에 오신 것을 환영합니다.",
+    "auth_section": "인증",
+    "endpoints_section": "엔드포인트"
+  },
+  "security": {
+    "title": "보안",
+    "2fa": "이중 인증",
+    "api_keys": "API 키",
+    "activity_log": "활동 로그"
+  },
+  "reputation": {
+    "title": "평판",
+    "score": "전체 점수",
+    "trends": "트렌드",
+    "factors": "영향 요인"
+  },
+  "settings": {
+    "title": "설정",
+    "profile": "사용자 프로필",
+    "lang_pref": "언어 기본 설정",
+    "theme": "테마 옵션",
+    "pi_network": {
+      "title": "Pi 네트워크",
+      "sandbox_mode": "샌드박스 모드",
+      "sandbox_desc": "실제 Pi 없이 결제 테스트",
+      "mainnet_mode": "메인넷 모드",
+      "mainnet_desc": "실제 Pi 거래 활성화됨",
+      "pi_app_id": "Pi 앱 ID",
+      "pi_api_key": "Pi API 키"
+    },
+    "feature_flags": {
+      "title": "기능 플래그",
+      "enable_payments": "Pi 결제 활성화",
+      "enable_kyc": "KYC 인증 활성화",
+      "enable_marketplace": "마켓플레이스 활성화",
+      "enable_notifications": "알림 활성화"
+    },
+    "mainnet_checklist": {
+      "title": "메인넷 체크리스트",
+      "kyc_verified": "KYC 인증 완료",
+      "wallet_connected": "지갑 연결됨",
+      "test_payment_done": "테스트 결제 완료",
+      "app_approved": "Pi Core Team 앱 승인"
+    },
+    "env_variables": {
+      "title": "환경 변수",
+      "current_env": "현재 환경",
+      "api_url": "API URL",
+      "frontend_url": "프론트엔드 URL",
+      "db_status": "데이터베이스 상태"
+    }
+  },
+  "common": {
+    "save": "변경사항 저장",
+    "cancel": "취소",
+    "enabled": "활성화됨",
+    "disabled": "비활성화됨",
+    "status_ok": "정상",
+    "status_error": "오류",
+    "loading": "로딩 중...",
+    "connected": "연결됨",
+    "disconnected": "연결 끊김"
+  }
+}

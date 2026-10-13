@@ -8,8 +8,8 @@ from fastapi import APIRouter, Body, Depends, HTTPException, Query
 from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from core.database import get_db
-from services.comments import CommentsService
+from app.backend.core.database import get_db
+from app.backend.services.comments import CommentsService
 
 # Set up logging
 logger = logging.getLogger(__name__)

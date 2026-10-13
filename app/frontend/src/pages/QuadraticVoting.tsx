@@ -54,7 +54,7 @@ export default function QuadraticVoting() {
         {/* Calculator */}
         {showCalc && (
           <div className="bg-slate-900/60 border border-purple-500/30 rounded-2xl p-6 mb-8">
-            <h3 className="text-lg font-bold text-white mb-4">Simulateur de Vote</h3>
+            <h3 className="text-lg font-bold text-white mb-4">Prévisualisation du vote</h3>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div>
                 <label className="text-sm text-gray-400 mb-2 block">Crédits à dépenser</label>

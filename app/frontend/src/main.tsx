@@ -2,6 +2,7 @@ import { createRoot } from 'react-dom/client';
 import App from './App.tsx';
 import './index.css';
 import { loadRuntimeConfig } from './lib/config.ts';
+import './lib/i18n'; // Importe la configuration i18n
 
 // Load runtime configuration before rendering the app
 async function initializeApp() {

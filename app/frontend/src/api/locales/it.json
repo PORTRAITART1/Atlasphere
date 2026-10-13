@@ -1,0 +1,67 @@
+{
+  "api_doc": {
+    "title": "Documentazione API",
+    "intro": "Benvenuto nella documentazione ufficiale dell'API AtlaspherePI.",
+    "auth_section": "Autenticazione",
+    "endpoints_section": "Endpoint"
+  },
+  "security": {
+    "title": "Sicurezza",
+    "2fa": "Autenticazione a due fattori",
+    "api_keys": "Chiavi API",
+    "activity_log": "Registro attività"
+  },
+  "reputation": {
+    "title": "Reputazione",
+    "score": "Punteggio globale",
+    "trends": "Tendenze",
+    "factors": "Fattori influenti"
+  },
+  "settings": {
+    "title": "Impostazioni",
+    "profile": "Profilo utente",
+    "lang_pref": "Preferenza lingua",
+    "theme": "Opzioni tema",
+    "pi_network": {
+      "title": "Rete Pi Network",
+      "sandbox_mode": "Modalità Sandbox",
+      "sandbox_desc": "Testa i pagamenti senza Pi reale",
+      "mainnet_mode": "Modalità Mainnet",
+      "mainnet_desc": "Transazioni Pi reali abilitate",
+      "pi_app_id": "ID app Pi",
+      "pi_api_key": "Chiave API Pi"
+    },
+    "feature_flags": {
+      "title": "Funzionalità",
+      "enable_payments": "Abilita pagamenti Pi",
+      "enable_kyc": "Abilita verifica KYC",
+      "enable_marketplace": "Abilita marketplace",
+      "enable_notifications": "Abilita notifiche"
+    },
+    "mainnet_checklist": {
+      "title": "Checklist Mainnet",
+      "kyc_verified": "KYC verificato",
+      "wallet_connected": "Portafoglio connesso",
+      "test_payment_done": "Pagamento test completato",
+      "app_approved": "App approvata dal Pi Core Team"
+    },
+    "env_variables": {
+      "title": "Variabili d'Ambiente",
+      "current_env": "Ambiente attuale",
+      "api_url": "URL API",
+      "frontend_url": "URL Frontend",
+      "db_status": "Stato database"
+    }
+  },
+  "common": {
+    "save": "Salva modifiche",
+    "cancel": "Annulla",
+    "enabled": "Abilitato",
+    "disabled": "Disabilitato",
+    "status_ok": "OK",
+    "status_error": "Errore",
+    "loading": "Caricamento...",
+    "connected": "Connesso",
+    "disconnected": "Disconnesso"
+  }
+}

@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from services.database import check_database_health
+from app.backend.services.database import check_database_health
 
 router = APIRouter(prefix="/database", tags=["database"])
 

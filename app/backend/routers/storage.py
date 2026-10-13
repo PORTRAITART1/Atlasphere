@@ -1,9 +1,9 @@
 import logging
 
-from dependencies.auth import get_admin_user, get_current_user
+from app.backend.dependencies.auth import get_admin_user, get_current_user
 from fastapi import APIRouter, Depends, HTTPException, status
-from schemas.auth import UserResponse
-from schemas.storage import (
+from app.backend.schemas.auth import UserResponse
+from app.backend.schemas.storage import (
     BucketListResponse,
     BucketRequest,
     BucketResponse,
@@ -17,7 +17,7 @@ from schemas.storage import (
     RenameRequest,
     RenameResponse,
 )
-from services.storage import StorageService
+from app.backend.services.storage import StorageService
 
 logger = logging.getLogger(__name__)
 

@@ -1,4 +1,4 @@
-const CACHE_NAME = 'atlasphere-v2';
+const CACHE_NAME = 'atlaspherepi-v2';
 const STATIC_ASSETS = [
   '/',
   '/manifest.json',
@@ -26,23 +26,23 @@ self.addEventListener('activate', (event) => {
   self.clients.claim();
 });
 
-// Fetch event - network first, fallback to cache, SPA navigation fallback
+// Fetch event - network first, use cache alternative, SPA navigation handling
 self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') return;
   
   const url = new URL(event.request.url);
   
-  // Skip SPA fallback for validation-key.txt (Pi Network domain verification)
+  // Skip SPA route handling for validation-key.txt (Pi Network domain verification)
   if (url.pathname === '/validation-key.txt') {
     return; // Let the browser handle this request normally (serve static file)
   }
   
-  // For navigation requests (HTML pages), always try network first then fallback to index.html
+  // For navigation requests (HTML pages), always try network first then route to index.html
   if (event.request.mode === 'navigate') {
     event.respondWith(
       fetch(event.request)
         .then((response) => {
-          // If we get a 404 for a navigation request, serve index.html instead (SPA fallback)
+          // If we get a 404 for a navigation request, serve index.html instead (SPA route handling)
           if (response.status === 404) {
             return caches.match('/') || fetch('/');
           }
@@ -78,7 +78,7 @@ self.addEventListener('fetch', (event) => {
         return response;
       })
       .catch(() => {
-        // Fallback to cache
+        // Use cache alternative
         return caches.match(event.request).then((cached) => {
           return cached || new Response('Offline', { status: 503 });
         });

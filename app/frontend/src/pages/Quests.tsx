@@ -1,14 +1,11 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { createClient } from '@metagptx/web-sdk';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import PageTransition from '@/components/PageTransition';
 import { getCurrentUser, subscribe } from '@/lib/pi-sdk';
+import { getAPIBaseURL } from '@/lib/config';
 import { t } from '@/lib/i18n';
-
-let _client: ReturnType<typeof createClient> | null = null;
-function getClient() { if (!_client) _client = createClient(); return _client; }
 
 interface Quest {
   id: number;
@@ -46,6 +43,7 @@ export default function Quests() {
   const [claiming, setClaiming] = useState<string | null>(null);
   const [user, setUser] = useState(getCurrentUser());
   const [filter, setFilter] = useState<string>('all');
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     return subscribe(() => setUser(getCurrentUser()));
@@ -57,25 +55,42 @@ export default function Quests() {
 
   const loadQuests = async () => {
     setLoading(true);
+    setError(null);
     try {
       const piUid = user?.uid || '';
-      const response = await getClient().apiCall.invoke({
-        url: '/api/v1/quests/available',
+      const url = `${getAPIBaseURL()}/api/v1/quests/available?pi_uid=${encodeURIComponent(piUid)}`;
+      console.log('[Quests] Loading:', url);
+
+      const response = await fetch(url, {
         method: 'GET',
-        data: { pi_uid: piUid },
+        headers: { 'Content-Type': 'application/json' },
       });
-      if (response?.data?.quests) {
-        setQuests(response.data.quests);
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
       }
-    } catch (error) {
-      console.error('Failed to load quests:', error);
-      // Fallback mock data for demo
+
+      const data = await response.json();
+      if (data?.quests) {
+        setQuests(data.quests);
+      } else {
+        // Fallback local data
+        setQuests([
+          { id: 1, quest_id: 'first_vote', title: 'Premier Vote', description: 'Votez pour la première fois', quest_type: 'one_time', requirement_type: 'vote_count', requirement_target: 1, reward_reputation: 50, reward_pi_amount: 0, reward_badge: 'voter_bronze', progress: 0, completed: false, claimed: false },
+          { id: 2, quest_id: 'daily_voter', title: 'Votant Quotidien', description: 'Votez au moins une fois aujourd\'hui', quest_type: 'daily', requirement_type: 'vote_count', requirement_target: 1, reward_reputation: 10, reward_pi_amount: 0, reward_badge: null, progress: 0, completed: false, claimed: false },
+          { id: 3, quest_id: 'funder_10', title: 'Contributeur Bronze', description: 'Contribuez 10 π aux projets', quest_type: 'milestone', requirement_type: 'fund_amount', requirement_target: 10, reward_reputation: 50, reward_pi_amount: 0, reward_badge: 'funder_bronze', progress: 3, completed: false, claimed: false },
+          { id: 4, quest_id: 'streak_7', title: 'Semaine Active', description: '7 jours consécutifs d\'activité', quest_type: 'weekly', requirement_type: 'streak_days', requirement_target: 7, reward_reputation: 100, reward_pi_amount: 0, reward_badge: 'streak_7', progress: 4, completed: false, claimed: false },
+          { id: 5, quest_id: 'voter_10', title: 'Votant Actif', description: 'Votez sur 10 propositions', quest_type: 'milestone', requirement_type: 'vote_count', requirement_target: 10, reward_reputation: 150, reward_pi_amount: 0, reward_badge: 'voter_silver', progress: 7, completed: false, claimed: false },
+        ]);
+      }
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'Failed to load quests';
+      console.error('[Quests] Load failed:', msg);
+      setError(msg);
+      // Fallback local data on error
       setQuests([
         { id: 1, quest_id: 'first_vote', title: 'Premier Vote', description: 'Votez pour la première fois', quest_type: 'one_time', requirement_type: 'vote_count', requirement_target: 1, reward_reputation: 50, reward_pi_amount: 0, reward_badge: 'voter_bronze', progress: 0, completed: false, claimed: false },
         { id: 2, quest_id: 'daily_voter', title: 'Votant Quotidien', description: 'Votez au moins une fois aujourd\'hui', quest_type: 'daily', requirement_type: 'vote_count', requirement_target: 1, reward_reputation: 10, reward_pi_amount: 0, reward_badge: null, progress: 0, completed: false, claimed: false },
-        { id: 3, quest_id: 'funder_10', title: 'Contributeur Bronze', description: 'Contribuez 10 π aux projets', quest_type: 'milestone', requirement_type: 'fund_amount', requirement_target: 10, reward_reputation: 50, reward_pi_amount: 0, reward_badge: 'funder_bronze', progress: 3, completed: false, claimed: false },
-        { id: 4, quest_id: 'streak_7', title: 'Semaine Active', description: '7 jours consécutifs d\'activité', quest_type: 'weekly', requirement_type: 'streak_days', requirement_target: 7, reward_reputation: 100, reward_pi_amount: 0, reward_badge: 'streak_7', progress: 4, completed: false, claimed: false },
-        { id: 5, quest_id: 'voter_10', title: 'Votant Actif', description: 'Votez sur 10 propositions', quest_type: 'milestone', requirement_type: 'vote_count', requirement_target: 10, reward_reputation: 150, reward_pi_amount: 0, reward_badge: 'voter_silver', progress: 7, completed: false, claimed: false },
       ]);
     } finally {
       setLoading(false);
@@ -86,17 +101,25 @@ export default function Quests() {
     if (!user) return;
     setClaiming(questId);
     try {
-      await getClient().apiCall.invoke({
-        url: '/api/v1/quests/claim',
+      const url = `${getAPIBaseURL()}/api/v1/quests/claim`;
+      const response = await fetch(url, {
         method: 'POST',
-        data: { quest_id: questId, pi_uid: user.uid },
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ quest_id: questId, pi_uid: user.uid }),
       });
-      // Update local state
+
+      if (!response.ok) {
+        const errText = await response.text().catch(() => '');
+        throw new Error(`HTTP ${response.status}: ${errText}`);
+      }
+
       setQuests(prev => prev.map(q =>
         q.quest_id === questId ? { ...q, claimed: true } : q
       ));
-    } catch (error) {
-      console.error('Failed to claim quest:', error);
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'Failed to claim quest';
+      console.error('[Quests] Claim failed:', msg);
+      setError(msg);
     } finally {
       setClaiming(null);
     }
@@ -121,7 +144,6 @@ export default function Quests() {
       <Navbar />
       <PageTransition>
         <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          {/* Header */}
           <motion.div
             className="text-center mb-8"
             initial={{ opacity: 0, y: -16 }}
@@ -136,7 +158,12 @@ export default function Quests() {
             </p>
           </motion.div>
 
-          {/* Filter tabs */}
+          {error && (
+            <div className="mb-4 text-xs text-red-400 bg-red-950/30 border border-red-800/50 rounded-lg p-2 max-w-2xl mx-auto">
+              <strong>Erreur :</strong> {error}
+            </div>
+          )}
+
           <motion.div
             className="flex flex-wrap gap-2 justify-center mb-8"
             initial={{ opacity: 0 }}
@@ -158,7 +185,6 @@ export default function Quests() {
             ))}
           </motion.div>
 
-          {/* Quests Grid */}
           {loading ? (
             <div className="text-center py-12">
               <div className="animate-spin text-4xl mb-4">⏳</div>
@@ -177,7 +203,6 @@ export default function Quests() {
                     transition={{ duration: 0.4, delay: i * 0.05 }}
                     whileHover={{ scale: 1.02 }}
                   >
-                    {/* Quest Type Badge */}
                     <div className="flex items-center justify-between mb-3">
                       <span className={`px-2.5 py-1 rounded-full text-xs border ${questTypeColors[quest.quest_type] || 'bg-slate-700 text-gray-300'}`}>
                         {questTypeIcons[quest.quest_type]} {getQuestTypeLabel(quest.quest_type)}
@@ -190,11 +215,9 @@ export default function Quests() {
                       )}
                     </div>
 
-                    {/* Title & Description */}
                     <h3 className="text-lg font-semibold text-white mb-1">{quest.title}</h3>
                     <p className="text-sm text-gray-400 mb-4">{quest.description}</p>
 
-                    {/* Progress Bar */}
                     <div className="mb-3">
                       <div className="flex justify-between text-xs text-gray-400 mb-1">
                         <span>{t('quests.progress')}</span>
@@ -210,7 +233,6 @@ export default function Quests() {
                       </div>
                     </div>
 
-                    {/* Rewards */}
                     <div className="flex items-center gap-2 mb-4 flex-wrap">
                       {quest.reward_reputation > 0 && (
                         <span className="text-xs bg-amber-500/10 text-amber-400 px-2 py-1 rounded-full">
@@ -229,7 +251,6 @@ export default function Quests() {
                       )}
                     </div>
 
-                    {/* Claim Button */}
                     {quest.completed && !quest.claimed && (
                       <button
                         onClick={() => handleClaim(quest.quest_id)}

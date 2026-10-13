@@ -1,0 +1,67 @@
+{
+  "api_doc": {
+    "title": "Documentación de la API",
+    "intro": "Bienvenido a la documentación oficial de la API de AtlaspherePI.",
+    "auth_section": "Autenticación",
+    "endpoints_section": "Puntos finales"
+  },
+  "security": {
+    "title": "Seguridad",
+    "2fa": "Autenticación de dos factores",
+    "api_keys": "Claves API",
+    "activity_log": "Registro de actividad"
+  },
+  "reputation": {
+    "title": "Reputación",
+    "score": "Puntuación global",
+    "trends": "Tendencias",
+    "factors": "Factores influyentes"
+  },
+  "settings": {
+    "title": "Configuración",
+    "profile": "Perfil de usuario",
+    "lang_pref": "Preferencia de idioma",
+    "theme": "Opciones de tema",
+    "pi_network": {
+      "title": "Red Pi Network",
+      "sandbox_mode": "Modo Sandbox",
+      "sandbox_desc": "Probar pagos sin Pi real",
+      "mainnet_mode": "Modo Mainnet",
+      "mainnet_desc": "Transacciones Pi reales habilitadas",
+      "pi_app_id": "ID de la aplicación Pi",
+      "pi_api_key": "Clave API de Pi"
+    },
+    "feature_flags": {
+      "title": "Funcionalidades",
+      "enable_payments": "Activar pagos Pi",
+      "enable_kyc": "Activar verificación KYC",
+      "enable_marketplace": "Activar marketplace",
+      "enable_notifications": "Activar notificaciones"
+    },
+    "mainnet_checklist": {
+      "title": "Lista Mainnet",
+      "kyc_verified": "KYC verificado",
+      "wallet_connected": "Billetera conectada",
+      "test_payment_done": "Pago de prueba completado",
+      "app_approved": "Aplicación aprobada por Pi Core Team"
+    },
+    "env_variables": {
+      "title": "Variables de Entorno",
+      "current_env": "Entorno actual",
+      "api_url": "URL de la API",
+      "frontend_url": "URL del Frontend",
+      "db_status": "Estado de la base de datos"
+    }
+  },
+  "common": {
+    "save": "Guardar cambios",
+    "cancel": "Cancelar",
+    "enabled": "Activado",
+    "disabled": "Desactivado",
+    "status_ok": "OK",
+    "status_error": "Error",
+    "loading": "Cargando...",
+    "connected": "Conectado",
+    "disconnected": "Desconectado"
+  }
+}
