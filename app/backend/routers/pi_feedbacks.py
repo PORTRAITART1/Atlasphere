@@ -25,10 +25,10 @@ from pydantic import BaseModel, Field
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from core.database import get_db
-from models.pi_feedbacks import Pi_feedbacks
-from models.pi_payments import Pi_payments
-from services.pi_platform import PiPlatformError, PiPlatformService
+from app.backend.core.database import get_db
+from app.backend.models.pi_feedbacks import Pi_feedbacks
+from app.backend.models.pi_payments import Pi_payments
+from app.backend.services.pi_platform import PiPlatformError, PiPlatformService
 
 logger = logging.getLogger(__name__)
 

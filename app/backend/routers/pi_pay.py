@@ -25,13 +25,13 @@ from pydantic import BaseModel, Field
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from core.database import get_db
-from dependencies.auth import get_current_user, get_optional_user
-from models.pi_profiles import Pi_profiles
-from schemas.auth import UserResponse
-from services import pi_platform
-from services.pi_payment_ledger import PiPaymentLedger
-from services.pi_platform import PiPlatformError, PiPlatformService
+from app.backend.core.database import get_db
+from app.backend.dependencies.auth import get_current_user, get_optional_user
+from app.backend.models.pi_profiles import Pi_profiles
+from app.backend.schemas.auth import UserResponse
+from app.backend.services import pi_platform
+from app.backend.services.pi_payment_ledger import PiPaymentLedger
+from app.backend.services.pi_platform import PiPlatformError, PiPlatformService
 
 logger = logging.getLogger(__name__)
 

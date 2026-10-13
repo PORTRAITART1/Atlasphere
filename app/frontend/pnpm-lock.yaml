@@ -15,8 +15,8 @@ importers:
         specifier: latest
         version: 0.0.16(rollup@4.60.1)(vite@5.4.21(@types/node@22.19.15)(terser@5.46.1))
       '@metagptx/web-sdk':
-        specifier: ^0.0.68
-        version: 0.0.68(@babel/parser@7.29.2)(@babel/traverse@7.29.0)(@babel/types@7.29.0)(eslint@9.39.4(jiti@1.21.7))(prettier@3.8.1)(vite@5.4.21(@types/node@22.19.15)(terser@5.46.1))
+        specifier: ^0.0.78
+        version: 0.0.78(@babel/parser@7.29.2)(@babel/traverse@7.29.0)(@babel/types@7.29.0)(eslint@9.39.4(jiti@1.21.7))(prettier@3.8.1)(vite@5.4.21(@types/node@22.19.15)(terser@5.46.1))
       '@playwright/mcp':
         specifier: ^0.0.36
         version: 0.0.36
@@ -715,8 +715,8 @@ packages:
     peerDependencies:
       vite: ^3.0.0 || ^4.0.0 || ^5.0.0
 
-  '@metagptx/web-sdk@0.0.68':
-    resolution: {integrity: sha512-q8COWml4iZuWA/UJ6Ebd/SBviapf5T5zIgSqnCIs783wZyWohJRP4Tpix96mfeT/XmVNvLJoxvOL5cFWSBkIVw==}
+  '@metagptx/web-sdk@0.0.78':
+    resolution: {integrity: sha512-3NMtJdxtmC+IX6zExbqxVkZ3QFwZe1SndVO4i9ZDYZ3XiIobnftMxm7z+h1x/kn10z7OBRbOEEdOYpQnMEmC/A==}
     peerDependencies:
       '@babel/parser': ^7.0.0
       '@babel/traverse': ^7.0.0
@@ -3873,7 +3873,7 @@ snapshots:
       - rollup
       - supports-color
 
-  '@metagptx/web-sdk@0.0.68(@babel/parser@7.29.2)(@babel/traverse@7.29.0)(@babel/types@7.29.0)(eslint@9.39.4(jiti@1.21.7))(prettier@3.8.1)(vite@5.4.21(@types/node@22.19.15)(terser@5.46.1))':
+  '@metagptx/web-sdk@0.0.78(@babel/parser@7.29.2)(@babel/traverse@7.29.0)(@babel/types@7.29.0)(eslint@9.39.4(jiti@1.21.7))(prettier@3.8.1)(vite@5.4.21(@types/node@22.19.15)(terser@5.46.1))':
     dependencies:
       '@types/qs': 6.15.0
       axios: 1.14.0

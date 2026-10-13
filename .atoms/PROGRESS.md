@@ -71,7 +71,14 @@ Predictions, EcoSensors, EcoNFT, QuadraticVoting, ClimateDashboard, CarbonCredit
 - [done] Accès depuis la navigation et le pied de page
 - [done] Validation backend, lint et build ; contrôle visuel automatisé indisponible (capture non générée)
 
+## Correctif démarrage backend (2026-10-13)
+- [done] Cause identifiée : `uvicorn main:app` lancé depuis `app/backend` ne pouvait pas résoudre `app.backend.*`
+- [done] Démarrage aligné sur `app.backend.main:app` avec `PYTHONPATH` compatible paquet et modèles générés
+- [done] Imports des routeurs Pi harmonisés et authentification optionnelle restaurée
+- [done] Syntaxe shell, `py_compile`, import FastAPI et routes OpenAPI `/health`, `/api/v1/pi-pay/config`, `/api/v1/pi-feedback/list` validés
+
 ## Progress Log
+- 2026-10-13 Alex : démarrage backend réparé — commande Uvicorn et chemins Python alignés, routeurs Pi de nouveau chargés, validations shell/Python/OpenAPI réussies.
 - 2026-10-13 Alex : mur de témoignages Pioneers livré sur `/feedback` — identité Pi vérifiée côté serveur, badge de paiement calculé depuis le registre, statistiques publiques, formulaire multilingue et accès navigation ; py_compile + lint + build OK.
 - 2026-08-30 Alex : paiement Pi U2A réel durci — vérification autoritaire Pi Platform, idempotence par verrou transactionnel, complétion conditionnée à une approbation locale cohérente, contrôle d'identité payeur/compte, registre en lecture seule authentifiée, page `/payment-test` ; py_compile + lint + build OK.
 - 2026-08-30 Alex : 10 visuels store régénérés sans texte IA, puis composition du vrai logo Atlasphere (colonne + π + globe + laurier) à côté du mot « Atlasphere » ; script reproductible `scripts/build_store_assets.py` ; sections INTRO 400×400 et PREVIEW 750×1500 affichées dans la page de téléchargement ; lint + build OK.
