@@ -4,7 +4,7 @@
     "payload": {
         "accessibility_tree": [
             {
-                "nodeId": "2",
+                "nodeId": "9",
                 "ignored": false,
                 "role": {
                     "type": "internalRole",
@@ -56,18 +56,18 @@
                         "name": "url",
                         "value": {
                             "type": "string",
-                            "value": "https://atlasphere.pub.atoms.world/validation-key.txt"
+                            "value": "https://atlasphere.pub.atoms.world/health"
                         }
                     }
                 ],
                 "childIds": [
-                    "3"
+                    "10"
                 ],
-                "backendDOMNodeId": 2,
-                "frameId": "13E2902AE124DE8867F7AAF93EA39700"
+                "backendDOMNodeId": 9,
+                "frameId": "CB0118FF3E163130EC0681C3EC19FF0D"
             },
             {
-                "nodeId": "3",
+                "nodeId": "10",
                 "ignored": true,
                 "ignoredReasons": [
                     {
@@ -86,14 +86,14 @@
                     "type": "internalRole",
                     "value": 0
                 },
-                "parentId": "2",
+                "parentId": "9",
                 "childIds": [
-                    "6"
+                    "14"
                 ],
-                "backendDOMNodeId": 3
+                "backendDOMNodeId": 10
             },
             {
-                "nodeId": "6",
+                "nodeId": "14",
                 "ignored": true,
                 "ignoredReasons": [
                     {
@@ -112,14 +112,15 @@
                     "type": "internalRole",
                     "value": 0
                 },
-                "parentId": "3",
+                "parentId": "10",
                 "childIds": [
-                    "7"
+                    "15",
+                    "16"
                 ],
-                "backendDOMNodeId": 6
+                "backendDOMNodeId": 14
             },
             {
-                "nodeId": "7",
+                "nodeId": "15",
                 "ignored": false,
                 "role": {
                     "type": "role",
@@ -144,14 +145,46 @@
                     ]
                 },
                 "properties": [],
-                "parentId": "6",
+                "parentId": "14",
                 "childIds": [
-                    "8"
+                    "20"
                 ],
-                "backendDOMNodeId": 7
+                "backendDOMNodeId": 15
             },
             {
-                "nodeId": "8",
+                "nodeId": "16",
+                "ignored": false,
+                "role": {
+                    "type": "role",
+                    "value": "generic"
+                },
+                "chromeRole": {
+                    "type": "internalRole",
+                    "value": 88
+                },
+                "name": {
+                    "type": "computedString",
+                    "value": "",
+                    "sources": [
+                        {
+                            "type": "relatedElement",
+                            "attribute": "aria-labelledby"
+                        },
+                        {
+                            "type": "attribute",
+                            "attribute": "aria-label"
+                        }
+                    ]
+                },
+                "properties": [],
+                "parentId": "14",
+                "childIds": [
+                    "17"
+                ],
+                "backendDOMNodeId": 16
+            },
+            {
+                "nodeId": "20",
                 "ignored": false,
                 "role": {
                     "type": "internalRole",
@@ -163,27 +196,62 @@
                 },
                 "name": {
                     "type": "computedString",
-                    "value": "107cc949f35cbbe6c66f3b459845578443d0cecdbb564f68235fec33fff5d5c5fc5c053e76805bc9b9269437d3a0e22d86145be144db9c4e44afc3b4804350a7\n",
+                    "value": "{\"status\": \"healthy\"}",
                     "sources": [
                         {
                             "type": "contents",
                             "value": {
                                 "type": "computedString",
-                                "value": "107cc949f35cbbe6c66f3b459845578443d0cecdbb564f68235fec33fff5d5c5fc5c053e76805bc9b9269437d3a0e22d86145be144db9c4e44afc3b4804350a7\n"
+                                "value": "{\"status\": \"healthy\"}"
                             }
                         }
                     ]
                 },
                 "properties": [],
-                "parentId": "7",
+                "parentId": "15",
                 "childIds": [
-                    "-1000000002",
-                    "-1000000003"
+                    "-1000000004"
                 ],
-                "backendDOMNodeId": 8
+                "backendDOMNodeId": 20
             },
             {
-                "nodeId": "-1000000002",
+                "nodeId": "17",
+                "ignored": false,
+                "role": {
+                    "type": "role",
+                    "value": "generic"
+                },
+                "chromeRole": {
+                    "type": "internalRole",
+                    "value": 211
+                },
+                "name": {
+                    "type": "computedString",
+                    "value": "",
+                    "sources": [
+                        {
+                            "type": "relatedElement",
+                            "attribute": "aria-labelledby"
+                        },
+                        {
+                            "type": "attribute",
+                            "attribute": "aria-label"
+                        },
+                        {
+                            "type": "attribute",
+                            "attribute": "title"
+                        }
+                    ]
+                },
+                "properties": [],
+                "parentId": "16",
+                "childIds": [
+                    "18"
+                ],
+                "backendDOMNodeId": 17
+            },
+            {
+                "nodeId": "-1000000004",
                 "ignored": false,
                 "role": {
                     "type": "internalRole",
@@ -194,11 +262,166 @@
                     "value": 101
                 },
                 "properties": [],
-                "parentId": "8",
+                "parentId": "20",
                 "childIds": []
             },
             {
-                "nodeId": "-1000000003",
+                "nodeId": "18",
+                "ignored": false,
+                "role": {
+                    "type": "internalRole",
+                    "value": "LabelText"
+                },
+                "chromeRole": {
+                    "type": "internalRole",
+                    "value": 104
+                },
+                "name": {
+                    "type": "computedString",
+                    "value": "",
+                    "sources": [
+                        {
+                            "type": "relatedElement",
+                            "attribute": "aria-labelledby"
+                        },
+                        {
+                            "type": "attribute",
+                            "attribute": "aria-label"
+                        },
+                        {
+                            "type": "attribute",
+                            "attribute": "title"
+                        }
+                    ]
+                },
+                "properties": [],
+                "parentId": "17",
+                "childIds": [
+                    "21",
+                    "19"
+                ],
+                "backendDOMNodeId": 18
+            },
+            {
+                "nodeId": "21",
+                "ignored": false,
+                "role": {
+                    "type": "internalRole",
+                    "value": "StaticText"
+                },
+                "chromeRole": {
+                    "type": "internalRole",
+                    "value": 158
+                },
+                "name": {
+                    "type": "computedString",
+                    "value": "Pretty-print",
+                    "sources": [
+                        {
+                            "type": "contents",
+                            "value": {
+                                "type": "computedString",
+                                "value": "Pretty-print"
+                            }
+                        }
+                    ]
+                },
+                "properties": [],
+                "parentId": "18",
+                "childIds": [
+                    "-1000000005"
+                ],
+                "backendDOMNodeId": 21
+            },
+            {
+                "nodeId": "19",
+                "ignored": false,
+                "role": {
+                    "type": "role",
+                    "value": "checkbox"
+                },
+                "chromeRole": {
+                    "type": "internalRole",
+                    "value": 14
+                },
+                "name": {
+                    "type": "computedString",
+                    "value": "Pretty-print",
+                    "sources": [
+                        {
+                            "type": "relatedElement",
+                            "attribute": "aria-labelledby"
+                        },
+                        {
+                            "type": "attribute",
+                            "value": {
+                                "type": "computedString",
+                                "value": "Pretty-print"
+                            },
+                            "attribute": "aria-label",
+                            "attributeValue": {
+                                "type": "string",
+                                "value": "Pretty-print"
+                            }
+                        },
+                        {
+                            "type": "relatedElement",
+                            "value": {
+                                "type": "computedString",
+                                "value": "Pretty-print"
+                            },
+                            "superseded": true,
+                            "nativeSource": "labelwrapped",
+                            "nativeSourceValue": {
+                                "type": "nodeList",
+                                "relatedNodes": [
+                                    {
+                                        "backendDOMNodeId": 18,
+                                        "text": "Pretty-print"
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "type": "contents",
+                            "superseded": true
+                        },
+                        {
+                            "type": "attribute",
+                            "attribute": "title",
+                            "superseded": true
+                        }
+                    ]
+                },
+                "properties": [
+                    {
+                        "name": "invalid",
+                        "value": {
+                            "type": "token",
+                            "value": "false"
+                        }
+                    },
+                    {
+                        "name": "focusable",
+                        "value": {
+                            "type": "booleanOrUndefined",
+                            "value": true
+                        }
+                    },
+                    {
+                        "name": "checked",
+                        "value": {
+                            "type": "tristate",
+                            "value": "false"
+                        }
+                    }
+                ],
+                "parentId": "18",
+                "childIds": [],
+                "backendDOMNodeId": 19
+            },
+            {
+                "nodeId": "-1000000005",
                 "ignored": false,
                 "role": {
                     "type": "internalRole",
@@ -209,7 +432,7 @@
                     "value": 101
                 },
                 "properties": [],
-                "parentId": "8",
+                "parentId": "21",
                 "childIds": []
             }
         ],
@@ -222,6 +445,6 @@
             "enable_llm_stream": false,
             "callback_url": ""
         },
-        "url": "https://atlasphere.pub.atoms.world/validation-key.txt"
+        "url": "https://atlasphere.pub.atoms.world/health"
     }
 }
