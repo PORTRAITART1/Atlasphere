@@ -5105,7 +5105,7 @@
         ],
         "headless": true,
         "proxy": null,
-        "is_empty_page": false,
+        "is_empty_page": true,
         "reporter": {
             "block": "Browser",
             "uuid": "9e3111d9-5eed-44a6-83dc-c4e1950ce9b6",

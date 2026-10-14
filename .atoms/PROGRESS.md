@@ -90,6 +90,7 @@ Predictions, EcoSensors, EcoNFT, QuadraticVoting, ClimateDashboard, CarbonCredit
 - [done] Vérification directe de `/privacy.html` et contrôle des 20 fichiers compilés réussis
 
 ## Progress Log
+- 2026-10-14 Alex : lien « 🏠 Accueil » retiré de la barre linguistique des 20 pages juridiques ; lint et build OK.
 - 2026-10-14 Alex : barre de navigation juridique harmonisée sur 20 pages avec accueil, dix langues et drapeaux ; rendu statique vérifié, lint et build OK.
 - 2026-10-13 Alex : wallet Atlasphere enregistré dans la configuration Pi ; pages juridiques basculées vers les fichiers HTML publics demandés.
 - 2026-10-13 Alex : clé publique `validation-key.txt` remplacée par la valeur demandée ; lint et build frontend validés.
