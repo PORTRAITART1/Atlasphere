@@ -40,7 +40,7 @@ Obtenir le support mondial des Pioneers Pi Network pour le lancement Mainnet.
 - Communautés Pi régionales
 
 ## Message clé
-À définir avec portraitart1.
+À définir avec portraitart.
 
 ## KPIs à suivre
 - Utilisateurs actifs quotidiens

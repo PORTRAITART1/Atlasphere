@@ -23,7 +23,7 @@
 
 ```bash
 # Cloner le dépôt
-git clone https://github.com/portraitart1/atlaspherepi.git
+git clone https://github.com/portraitart/atlasphere.git
 cd atlaspherepi
 
 # Installer les dépendances frontend

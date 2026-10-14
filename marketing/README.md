@@ -16,4 +16,4 @@ Préparer la promotion d’AtlaspherePi auprès des Pioneers Pi Network.
 5. Définir les communautés Pi à contacter.
 
 ## Message clé
-À définir avec portraitart1.
+À définir avec portraitart.
