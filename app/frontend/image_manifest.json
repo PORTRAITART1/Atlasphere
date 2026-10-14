@@ -1,5 +1,5 @@
 {
-  "status": "success",
+  "status": "partial_success",
   "results": [
     {
       "status": "success",
@@ -598,10 +598,66 @@
       "url": "https://mgx-backend-cdn.metadl.com/generate/images/317314/2026-10-13/yk65jnycalhq/E2-developer-secure-flow.png",
       "path": "https://mgx-backend-cdn.metadl.com/generate/images/317314/2026-10-13/yk65jnycalhq/E2-developer-secure-flow.png",
       "absolute_path": "https://mgx-backend-cdn.metadl.com/generate/images/317314/2026-10-13/yk65jnycalhq/E2-developer-secure-flow.png"
+    },
+    {
+      "status": "success",
+      "filename": "A1-pioneers-global-hero-logo.png",
+      "url": "https://mgx-backend-cdn.metadl.com/generate/images/317314/2026-10-13/yk7d3uiaaliq/A1-pioneers-global-hero-logo.png",
+      "path": "https://mgx-backend-cdn.metadl.com/generate/images/317314/2026-10-13/yk7d3uiaaliq/A1-pioneers-global-hero-logo.png",
+      "absolute_path": "https://mgx-backend-cdn.metadl.com/generate/images/317314/2026-10-13/yk7d3uiaaliq/A1-pioneers-global-hero-logo.png"
+    },
+    {
+      "status": "success",
+      "filename": "A2-pioneers-feature-grid-logo.png",
+      "url": "https://mgx-backend-cdn.metadl.com/generate/images/317314/2026-10-13/yk7d4fiaalia/A2-pioneers-feature-grid-logo.png",
+      "path": "https://mgx-backend-cdn.metadl.com/generate/images/317314/2026-10-13/yk7d4fiaalia/A2-pioneers-feature-grid-logo.png",
+      "absolute_path": "https://mgx-backend-cdn.metadl.com/generate/images/317314/2026-10-13/yk7d4fiaalia/A2-pioneers-feature-grid-logo.png"
+    },
+    {
+      "status": "success",
+      "filename": "A3-pioneers-pi-payment-logo.png",
+      "url": "https://mgx-backend-cdn.metadl.com/generate/images/317314/2026-10-13/yk7d5daaalhq/A3-pioneers-pi-payment-logo.png",
+      "path": "https://mgx-backend-cdn.metadl.com/generate/images/317314/2026-10-13/yk7d5daaalhq/A3-pioneers-pi-payment-logo.png",
+      "absolute_path": "https://mgx-backend-cdn.metadl.com/generate/images/317314/2026-10-13/yk7d5daaalhq/A3-pioneers-pi-payment-logo.png"
+    },
+    {
+      "status": "success",
+      "filename": "A4-pioneers-governance-logo.png",
+      "url": "https://mgx-backend-cdn.metadl.com/generate/images/317314/2026-10-13/yk7d5tqaalha/A4-pioneers-governance-logo.png",
+      "path": "https://mgx-backend-cdn.metadl.com/generate/images/317314/2026-10-13/yk7d5tqaalha/A4-pioneers-governance-logo.png",
+      "absolute_path": "https://mgx-backend-cdn.metadl.com/generate/images/317314/2026-10-13/yk7d5tqaalha/A4-pioneers-governance-logo.png"
+    },
+    {
+      "status": "success",
+      "filename": "A5-pioneers-rewards-impact-logo.png",
+      "url": "https://mgx-backend-cdn.metadl.com/generate/images/317314/2026-10-13/yk7d6eaaalgq/A5-pioneers-rewards-impact-logo.png",
+      "path": "https://mgx-backend-cdn.metadl.com/generate/images/317314/2026-10-13/yk7d6eaaalgq/A5-pioneers-rewards-impact-logo.png",
+      "absolute_path": "https://mgx-backend-cdn.metadl.com/generate/images/317314/2026-10-13/yk7d6eaaalgq/A5-pioneers-rewards-impact-logo.png"
+    },
+    {
+      "status": "success",
+      "filename": "B1-fireside-governance-globe-logo.png",
+      "url": "https://mgx-backend-cdn.metadl.com/generate/images/317314/2026-10-13/yk7d6uaaalga/B1-fireside-governance-globe-logo.png",
+      "path": "https://mgx-backend-cdn.metadl.com/generate/images/317314/2026-10-13/yk7d6uaaalga/B1-fireside-governance-globe-logo.png",
+      "absolute_path": "https://mgx-backend-cdn.metadl.com/generate/images/317314/2026-10-13/yk7d6uaaalga/B1-fireside-governance-globe-logo.png"
+    },
+    {
+      "status": "success",
+      "filename": "B2-fireside-beta-launch-logo.png",
+      "url": "https://mgx-backend-cdn.metadl.com/generate/images/317314/2026-10-13/yk7d7dyaaliq/B2-fireside-beta-launch-logo.png",
+      "path": "https://mgx-backend-cdn.metadl.com/generate/images/317314/2026-10-13/yk7d7dyaaliq/B2-fireside-beta-launch-logo.png",
+      "absolute_path": "https://mgx-backend-cdn.metadl.com/generate/images/317314/2026-10-13/yk7d7dyaaliq/B2-fireside-beta-launch-logo.png"
+    },
+    {
+      "status": "success",
+      "filename": "B3-fireside-pioneer-journey-logo.png",
+      "url": "https://mgx-backend-cdn.metadl.com/generate/images/317314/2026-10-13/yk7d7uaaalia/B3-fireside-pioneer-journey-logo.png",
+      "path": "https://mgx-backend-cdn.metadl.com/generate/images/317314/2026-10-13/yk7d7uaaalia/B3-fireside-pioneer-journey-logo.png",
+      "absolute_path": "https://mgx-backend-cdn.metadl.com/generate/images/317314/2026-10-13/yk7d7uaaalia/B3-fireside-pioneer-journey-logo.png"
     }
   ],
-  "success_count": 82,
-  "failed_count": 0,
+  "success_count": 90,
+  "failed_count": 9,
   "running_count": 0,
-  "message": "Generated 82/82 images total"
+  "message": "Generated 90/99 images total"
 }
