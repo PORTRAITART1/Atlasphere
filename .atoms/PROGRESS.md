@@ -83,7 +83,14 @@ Predictions, EcoSensors, EcoNFT, QuadraticVoting, ClimateDashboard, CarbonCredit
 - [done] Liens juridiques remplacés par `/terms.html` et `/privacy.html`
 - [done] `py_compile`, lint et build validés
 
+## Barre multilingue des pages juridiques (2026-10-14)
+- [done] Barre supérieure ajoutée aux 20 pages Privacy et Terms
+- [done] Accueil et 10 langues affichés avec drapeaux, langue active signalée
+- [done] Navigation mobile horizontale, lint et build validés
+- [done] Vérification directe de `/privacy.html` et contrôle des 20 fichiers compilés réussis
+
 ## Progress Log
+- 2026-10-14 Alex : barre de navigation juridique harmonisée sur 20 pages avec accueil, dix langues et drapeaux ; rendu statique vérifié, lint et build OK.
 - 2026-10-13 Alex : wallet Atlasphere enregistré dans la configuration Pi ; pages juridiques basculées vers les fichiers HTML publics demandés.
 - 2026-10-13 Alex : clé publique `validation-key.txt` remplacée par la valeur demandée ; lint et build frontend validés.
 - 2026-10-13 Alex : démarrage backend réparé — commande Uvicorn et chemins Python alignés, routeurs Pi de nouveau chargés, validations shell/Python/OpenAPI réussies.

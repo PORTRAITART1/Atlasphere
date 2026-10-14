@@ -61,10 +61,17 @@ p { color: #cbd5e1; margin-bottom: 16px; font-size: 16px; } ul { padding-left: 2
 
 
 
+
+.legal-language-bar { position: sticky; top: 64px; z-index: 40; display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 4px 8px; padding: 10px 16px; background: rgba(15,23,42,.96); border-bottom: 1px solid rgba(255,255,255,.08); text-align: center; direction: ltr; }
+.legal-language-bar a { color: #c4b5fd; text-decoration: none; padding: 4px 7px; border-radius: 6px; font-size: 12px; white-space: nowrap; transition: color .2s ease, background .2s ease; }
+.legal-language-bar a:hover, .legal-language-bar a[aria-current="page"] { color: #fbbf24; background: rgba(123,63,228,.2); }
+.legal-language-bar .home-link { color: #f8fafc; font-weight: 600; }
+.container > .lang-selector { display: none; }
+@media (max-width: 640px) { .legal-language-bar { top: 64px; justify-content: flex-start; flex-wrap: nowrap; overflow-x: auto; } }
 </style>
 </head>
 <body><nav class="navbar"><div class="navbar-accent"></div><div class="navbar-container"><div class="navbar-inner"><a href="/" class="navbar-logo"><img src="/icons/icon-192.png" alt="Atlasphere"><span class="navbar-logo-text">Atlasphere</span></a><a href="/" class="navbar-back">← ホームへ戻る</a></div></div></nav>
-<main class="container"><div class="lang-selector" style="text-align:center;margin:12px 0;font-size:12px;line-height:1.6;"><a href="/privacy.html">🇬🇧 English</a> | <a href="/privacy.ar.html">🇸🇦 العربية</a> | <a href="/privacy.zh.html">🇨🇳 中文</a> | <a href="/privacy.ru.html">🇷🇺 Русский</a> | <a href="/privacy.es.html">🇪🇸 Español</a> | <a href="/privacy.de.html">🇩🇪 Deutsch</a> | <a href="/privacy.pt.html">🇧🇷 Português</a> | <a href="/privacy.ja.html" style="font-weight:bold;color:#fbbf24;">🇯🇵 日本語</a> | <a href="/privacy.it.html">🇮🇹 Italiano</a> | <a href="/privacy.fr.html">🇫🇷 Français</a></div>
+<div class="legal-language-bar" aria-label="Choix de la langue"><a class="home-link" href="/">🏠 Accueil</a><span aria-hidden="true">|</span><a href="/privacy.html">🇬🇧 English</a><span aria-hidden="true">|</span><a href="/privacy.ar.html">🇸🇦 العربية</a><span aria-hidden="true">|</span><a href="/privacy.zh.html">🇨🇳 中文</a><span aria-hidden="true">|</span><a href="/privacy.ru.html">🇷🇺 Русский</a><span aria-hidden="true">|</span><a href="/privacy.es.html">🇪🇸 Español</a><span aria-hidden="true">|</span><a href="/privacy.de.html">🇩🇪 Deutsch</a><span aria-hidden="true">|</span><a href="/privacy.pt.html">🇧🇷 Português</a><span aria-hidden="true">|</span><a href="/privacy.ja.html" aria-current="page">🇯🇵 日本語</a><span aria-hidden="true">|</span><a href="/privacy.it.html">🇮🇹 Italiano</a><span aria-hidden="true">|</span><a href="/privacy.fr.html">🇫🇷 Français</a></div><main class="container"><div class="lang-selector" style="text-align:center;margin:12px 0;font-size:12px;line-height:1.6;"><a href="/privacy.html">🇬🇧 English</a> | <a href="/privacy.ar.html">🇸🇦 العربية</a> | <a href="/privacy.zh.html">🇨🇳 中文</a> | <a href="/privacy.ru.html">🇷🇺 Русский</a> | <a href="/privacy.es.html">🇪🇸 Español</a> | <a href="/privacy.de.html">🇩🇪 Deutsch</a> | <a href="/privacy.pt.html">🇧🇷 Português</a> | <a href="/privacy.ja.html" style="font-weight:bold;color:#fbbf24;">🇯🇵 日本語</a> | <a href="/privacy.it.html">🇮🇹 Italiano</a> | <a href="/privacy.fr.html">🇫🇷 Français</a></div>
     <h1>プライバシーポリシー</h1>
     <p class="updated">最終更新日: 2026年6月20日</p>
     <h2>はじめに</h2>
