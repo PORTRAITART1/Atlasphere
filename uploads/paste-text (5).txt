@@ -1,0 +1,157 @@
+Tu es un expert en marketing digital, growth hacking et stratégie de lancement pour l'écosystème Pi Network. Tu vas produire une FEUILLE DE ROUTE MARKETING COMPLÈTE, organisée en MICRO-TÂCHES SÉQUENTIELLES, pour propulser l'application Atlasphere auprès des Pionniers Pi du monde entier.
+
+═══════════════════════════════════════════════════
+CONTEXTE
+═══════════════════════════════════════════════════
+
+- Application : Atlasphere
+- Pseudo Pi officiel : portraitart (PAS portraitart1 — erreur à corriger partout)
+- Type : Gouvernance décentralisée + financement participatif sur Pi Network
+- Statut : Checklist validée, 10 tests de paiement en attente
+- Objectif : Obtenir le support mondial des Pionniers pour le lancement Mainnet
+- Domaine : https://atlasphere.pub.atoms.world
+- Slogan : "Govern. Fund. Build."
+
+═══════════════════════════════════════════════════
+MISSION
+═══════════════════════════════════════════════════
+
+Produis une feuille de route marketing complète, structurée en MICRO-TÂCHES, qui va :
+
+1. Inciter les Pionniers Pi à SUPPORTER Atlasphere
+2. Les pousser à FAIRE DES DONS et TRANSACTIONS en mode test
+3. Faire accepter Atlasphere par le Core Team Pi Network
+4. Propulser Atlasphere vers le Mainnet et au-delà
+
+═══════════════════════════════════════════════════
+LIVRABLES ATTENDUS
+═══════════════════════════════════════════════════
+
+📋 1. FEUILLE DE ROUTE MARKETING (micro-tâches)
+
+Organise en 5 phases :
+- Phase 1 : Fondations (branding, pseudo portraitart corrigé, assets)
+- Phase 2 : Pré-lancement (teasing, communauté, influenceurs)
+- Phase 3 : Lancement (campagne mondiale, AMA, presse)
+- Phase 4 : Croissance (parrainage, partenariats, rétention)
+- Phase 5 : Mainnet (passage officiel, célébration, scaling)
+
+Chaque phase doit contenir des MICRO-TÂCHES numérotées, avec :
+- Titre de la micro-tâche
+- Description (2-3 lignes)
+- Durée estimée
+- Livrable attendu
+
+───────────────────────────────────────────────
+
+🎨 2. IMAGES MARKETING (groupes par destination)
+
+Produis des descriptions détaillées pour des visuels HD, organisés par DESTINATION avec une LETTRE pour chaque groupe :
+
+🅰️ PIONNIERS (grand public)
+   - 5 visuels : hero, feature grid, paiement Pi, gouvernance, récompenses
+   - Format : carré 1080x1080 (réseaux sociaux) + 1200x630 (bannières)
+   - Message : "Ton vote, tes Pi, ton avenir"
+
+🅱️ FIRESIDE (communauté Pi officielle)
+   - 3 visuels : hero governance globe + Beta Launch CTA
+   - Format : 1920x1080 (bannière)
+   - Message : "Rejoins la Beta des Pionniers"
+
+🅲️ CORPTIME / CORPFM (professionnels / investisseurs)
+   - 3 visuels : feature grid, roadmap, KPIs
+   - Format : 1200x1500 (LinkedIn)
+   - Message : "La gouvernance décentralisée qui finance le futur"
+
+🅳️ RÉSEAUX SOCIAUX (Twitter, Telegram, Discord)
+   - 4 visuels : main hero, community counter, urgency Mainnet, quote
+   - Format : 1080x1080 + 1600x900
+   - Message : "Sois le pionnier de la nouvelle ère"
+
+🅴️ CHAT PI (communauté développeurs)
+   - 2 visuels : Beta Launch CTA, dev features
+   - Format : 1080x1080
+   - Message : "Code. Vote. Build."
+
+───────────────────────────────────────────────
+
+🎬 3. VIDÉO ANIMÉE (5 à 10 secondes, en anglais)
+
+Produis un script détaillé pour une vidéo animée ultra-courte en anglais :
+
+- Durée : 5 à 10 secondes
+- Format : vertical 1080x1920 (mobile) + horizontal 1920x1080 (bannière)
+- Contenu OBLIGATOIRE :
+  - Logo Atlasphere (apparition)
+  - Nom "ATLASPHERE" (animation)
+  - Slogan "Govern. Fund. Build."
+  - Valeurs mises en avant : Pi Network, Crypto, Finance, Economy, Blockchain, AI, Ecology, World Future
+  - Rythme rapide, moderne, inspirant
+  - Musique épique + sound design
+  - Sous-titres en anglais
+
+Style visuel :
+- Palette : violet profond + or
+- Éléments : globe, réseau blockchain, pièces Pi, hologrammes
+- Ton : inspirant, futuriste, "nouvelle ère"
+
+Storyboard à produire (seconde par seconde) :
+- 0-2s : Logo Atlasphere émerge du globe
+- 2-4s : Réseau Pi se déploie, pièces Pi tournent
+- 4-6s : "ATLASPHERE" apparaît + "Govern. Fund. Build."
+- 6-8s : Pionniers du monde entier connectés
+- 8-10s : Message final + CTA
+
+───────────────────────────────────────────────
+
+📝 4. TEXTES DES PUBLICATIONS (réseaux sociaux)
+
+Rédige 10 publications pour les réseaux sociaux :
+- 5 en anglais
+- 5 en français
+- Adaptées à Twitter, Telegram, Discord
+- Avec hashtags : #PiNetwork #Atlasphere #Pioneers #Web3 #Mainnet
+- CTA clair : "Rejoins la Beta" / "Teste maintenant" / "Fais un don test"
+
+───────────────────────────────────────────────
+
+📊 5. KPIs À SUIVRE
+
+Liste les indicateurs clés :
+- Utilisateurs actifs quotidiens
+- Paiements Pi par jour
+- Rétention J7 et J30
+- NPS (Net Promoter Score)
+- Nombre de dons test
+- Taux de conversion Pionnier → utilisateur actif
+
+═══════════════════════════════════════════════════
+CONTRAINTES IMPORTANTES
+═══════════════════════════════════════════════════
+
+✅ Le pseudo Pi est "portraitart" (PAS "portraitart1" — corriger partout)
+✅ Le ton doit être inspirant, moderne, mondial
+✅ Les visuels doivent inclure le logo Atlasphere
+✅ La vidéo doit être en anglais, 5-10 secondes max
+✅ Les micro-tâches doivent être SÉQUENTIELLES et ACTIONNABLES
+✅ Chaque micro-tâche doit avoir un LIVRABLE CONCRET
+✅ Le tout doit inciter à SUPPORTER, DONNER, TRANSACTIONNER
+✅ Objectif final : Mainnet + communauté mondiale
+
+═══════════════════════════════════════════════════
+FORMAT DE SORTIE
+═══════════════════════════════════════════════════
+
+Structure ta réponse en 5 sections claires :
+
+1. 📋 FEUILLE DE ROUTE (5 phases, micro-tâches numérotées)
+2. 🎨 IMAGES (5 groupes A/B/C/D/E avec descriptions détaillées)
+3. 🎬 VIDÉO ANIMÉE (storyboard seconde par seconde)
+4. 📝 TEXTES PUBLICATIONS (10 posts)
+5. 📊 KPIs
+
+Chaque section doit être complète, actionnable et prête à l'emploi.
+
+═══════════════════════════════════════════════════
+
+Génère maintenant la feuille de route complète, micro-tâche par micro-tâche, avec tous les livrables demandés.

@@ -89,7 +89,15 @@ Predictions, EcoSensors, EcoNFT, QuadraticVoting, ClimateDashboard, CarbonCredit
 - [done] Navigation mobile horizontale, lint et build validés
 - [done] Vérification directe de `/privacy.html` et contrôle des 20 fichiers compilés réussis
 
+## Feuille de route marketing mondiale (2026-10-14)
+- [done] Roadmap en 5 phases avec micro-tâches, durées et livrables
+- [done] Briefs de 17 visuels répartis entre Pionniers, Fireside, professionnels, réseaux sociaux et Chat Pi
+- [done] Storyboard anglais de 10 secondes pour formats vertical et horizontal
+- [done] 10 publications bilingues et cadre complet de KPIs
+- [done] Pseudo officiel uniformisé dans le livrable : `portraitart`
+
 ## Progress Log
+- 2026-10-14 Alex : feuille de route marketing Atlasphere complète livrée avec campagnes, briefs créatifs, storyboard, publications et KPIs.
 - 2026-10-14 Alex : lien « 🏠 Accueil » retiré de la barre linguistique des 20 pages juridiques ; lint et build OK.
 - 2026-10-14 Alex : barre de navigation juridique harmonisée sur 20 pages avec accueil, dix langues et drapeaux ; rendu statique vérifié, lint et build OK.
 - 2026-10-13 Alex : wallet Atlasphere enregistré dans la configuration Pi ; pages juridiques basculées vers les fichiers HTML publics demandés.
