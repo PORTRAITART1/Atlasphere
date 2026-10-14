@@ -78,6 +78,7 @@ Predictions, EcoSensors, EcoNFT, QuadraticVoting, ClimateDashboard, CarbonCredit
 - [done] Syntaxe shell, `py_compile`, import FastAPI et routes OpenAPI `/health`, `/api/v1/pi-pay/config`, `/api/v1/pi-feedback/list` validés
 
 ## Progress Log
+- 2026-10-13 Alex : clé publique `validation-key.txt` remplacée par la valeur demandée ; lint et build frontend validés.
 - 2026-10-13 Alex : démarrage backend réparé — commande Uvicorn et chemins Python alignés, routeurs Pi de nouveau chargés, validations shell/Python/OpenAPI réussies.
 - 2026-10-13 Alex : mur de témoignages Pioneers livré sur `/feedback` — identité Pi vérifiée côté serveur, badge de paiement calculé depuis le registre, statistiques publiques, formulaire multilingue et accès navigation ; py_compile + lint + build OK.
 - 2026-08-30 Alex : paiement Pi U2A réel durci — vérification autoritaire Pi Platform, idempotence par verrou transactionnel, complétion conditionnée à une approbation locale cohérente, contrôle d'identité payeur/compte, registre en lecture seule authentifiée, page `/payment-test` ; py_compile + lint + build OK.
