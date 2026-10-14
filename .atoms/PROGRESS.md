@@ -77,7 +77,14 @@ Predictions, EcoSensors, EcoNFT, QuadraticVoting, ClimateDashboard, CarbonCredit
 - [done] Imports des routeurs Pi harmonisés et authentification optionnelle restaurée
 - [done] Syntaxe shell, `py_compile`, import FastAPI et routes OpenAPI `/health`, `/api/v1/pi-pay/config`, `/api/v1/pi-feedback/list` validés
 
+## Configuration wallet et pages juridiques (2026-10-13)
+- [done] Adresse wallet Atlasphere configurée côté backend : `GA2JQ5C2QXIY3DRWCOYIAHYBEJFXLYURIG3XQD7G4HUZY4EPFPGA443G`
+- [done] Anciennes routes SPA `/terms` et `/privacy` supprimées
+- [done] Liens juridiques remplacés par `/terms.html` et `/privacy.html`
+- [done] `py_compile`, lint et build validés
+
 ## Progress Log
+- 2026-10-13 Alex : wallet Atlasphere enregistré dans la configuration Pi ; pages juridiques basculées vers les fichiers HTML publics demandés.
 - 2026-10-13 Alex : clé publique `validation-key.txt` remplacée par la valeur demandée ; lint et build frontend validés.
 - 2026-10-13 Alex : démarrage backend réparé — commande Uvicorn et chemins Python alignés, routeurs Pi de nouveau chargés, validations shell/Python/OpenAPI réussies.
 - 2026-10-13 Alex : mur de témoignages Pioneers livré sur `/feedback` — identité Pi vérifiée côté serveur, badge de paiement calculé depuis le registre, statistiques publiques, formulaire multilingue et accès navigation ; py_compile + lint + build OK.

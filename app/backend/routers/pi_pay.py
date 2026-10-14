@@ -75,6 +75,7 @@ class PaymentResult(BaseModel):
 
 class ConfigResponse(BaseModel):
     server_ready: bool
+    wallet_address: str
     allowed_purposes: Dict[str, float]
     min_amount: float
     test_amounts: List[float]
@@ -264,6 +265,7 @@ async def get_payment_config():
     ready = pi_platform.is_configured()
     return ConfigResponse(
         server_ready=ready,
+        wallet_address=pi_platform.ATLASPHERE_WALLET_ADDRESS,
         allowed_purposes=pi_platform.ALLOWED_PURPOSES,
         min_amount=pi_platform.MIN_AMOUNT,
         test_amounts=[0.1, 0.5, 1.0],

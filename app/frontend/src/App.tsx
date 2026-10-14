@@ -25,8 +25,6 @@ const Delegation = lazy(() => import('./pages/Delegation'));
 const Analytics = lazy(() => import('./pages/Analytics'));
 const ProjectMap = lazy(() => import('./pages/ProjectMap'));
 const AuthCallback = lazy(() => import('./pages/AuthCallback'));
-const Privacy = lazy(() => import('./pages/Privacy'));
-const Terms = lazy(() => import('./pages/Terms'));
 const Subscriptions = lazy(() => import('./pages/Subscriptions'));
 const Settings = lazy(() => import('./pages/Settings'));
 const EcoWallet = lazy(() => import('./pages/EcoWallet'));
@@ -95,8 +93,6 @@ const AppRoutes = () => (
       <Route path="/analytics" element={<Analytics />} />
       <Route path="/map" element={<ProjectMap />} />
       <Route path="/auth/callback" element={<AuthCallback />} />
-      <Route path="/privacy" element={<Privacy />} />
-      <Route path="/terms" element={<Terms />} />
       <Route path="/settings" element={<Settings />} />
       <Route path="/eco-wallet" element={<EcoWallet />} />
       <Route path="/climate" element={<ClimateDashboard />} />
