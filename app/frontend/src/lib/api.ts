@@ -10,9 +10,11 @@ async function fetchAPI<T>(endpoint: string, options?: RequestInit): Promise<T> 
   const url = API_BASE_URL + endpoint;
   console.log('[API]', options?.method || 'GET', url);
 
+  const jwt = localStorage.getItem('atlasphere_jwt') || '';
   const response = await fetch(url, {
     headers: {
       'Content-Type': 'application/json',
+      ...(jwt ? { 'Authorization': `Bearer ${jwt}` } : {}),
       ...options?.headers,
     },
     ...options,
