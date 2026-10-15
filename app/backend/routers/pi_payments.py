@@ -20,7 +20,7 @@ logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/api/pi-payments", tags=["pi-payments"])
 
-PI_API_BASE = "https://api.minepi.com"
+PI_API_BASE = "https://api.testnet.minepi.com"
 
 
 class ApprovePaymentRequest(BaseModel):
