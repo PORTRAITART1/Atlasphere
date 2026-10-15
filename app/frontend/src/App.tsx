@@ -14,6 +14,7 @@ const Proposals = lazy(() => import('./pages/Proposals'));
 const ProposalDetail = lazy(() => import('./pages/ProposalDetail'));
 const CreateProposal = lazy(() => import('./pages/CreateProposal'));
 const Funding = lazy(() => import('./pages/Funding'));
+const PaymentTest = lazy(() => import('./pages/PaymentTest'));
 const Dashboard = lazy(() => import('./pages/Dashboard'));
 const Quests = lazy(() => import('./pages/Quests'));
 const Escrow = lazy(() => import('./pages/Escrow'));
@@ -81,6 +82,7 @@ const AppRoutes = () => (
       <Route path="/proposal/:id" element={<ProposalDetail />} />
       <Route path="/create" element={<CreateProposal />} />
       <Route path="/funding" element={<Funding />} />
+      <Route path="/payment-test" element={<PaymentTest />} />
       <Route path="/dashboard" element={<Dashboard />} />
       <Route path="/quests" element={<Quests />} />
       <Route path="/subscriptions" element={<Subscriptions />} />
