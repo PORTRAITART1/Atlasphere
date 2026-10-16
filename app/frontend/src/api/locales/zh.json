@@ -1,7 +1,7 @@
 {
   "api_doc": {
     "title": "API 文档",
-    "intro": "欢迎使用 AtlaspherePI 官方 API 文档。",
+    "intro": "欢迎使用 Atlasphere 官方 API 文档。",
     "auth_section": "身份验证",
     "endpoints_section": "端点"
   },

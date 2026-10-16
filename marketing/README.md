@@ -1,7 +1,7 @@
-# AtlaspherePi — Marketing
+# Atlasphere — Marketing
 
 ## Objectif
-Préparer la promotion d’AtlaspherePi auprès des Pioneers Pi Network.
+Préparer la promotion d’Atlasphere auprès des Pioneers Pi Network.
 
 ## Structure
 - `assets/` — logos, bannières et icônes

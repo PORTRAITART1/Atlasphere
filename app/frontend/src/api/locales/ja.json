@@ -1,7 +1,7 @@
 {
   "api_doc": {
     "title": "APIドキュメント",
-    "intro": "AtlaspherePI公式APIドキュメントへようこそ。",
+    "intro": "Atlasphere公式APIドキュメントへようこそ。",
     "auth_section": "認証",
     "endpoints_section": "エンドポイント"
   },

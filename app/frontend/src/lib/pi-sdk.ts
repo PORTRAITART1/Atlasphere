@@ -411,7 +411,7 @@ export async function authenticate(): Promise<PiUser> {
       };
     }
 
-    localStorage.setItem('atlaspherepi_user', JSON.stringify(currentUser));
+    localStorage.setItem('atlasphere_user', JSON.stringify(currentUser));
     notifyListeners();
     return currentUser;
   } catch (error) {
@@ -543,7 +543,7 @@ export async function submitGovernanceVote(projectId: number, voteType: 'for' | 
         votescast: currentUser.votescast + 1,
         reputation: currentUser.reputation + 5,
       };
-      localStorage.setItem('atlaspherepi_user', JSON.stringify(currentUser));
+      localStorage.setItem('atlasphere_user', JSON.stringify(currentUser));
       notifyListeners();
 
       await checkQuestProgress('vote');
@@ -626,7 +626,7 @@ export async function checkQuestProgress(actionType: 'vote' | 'fund' | 'login' |
 
 export function logout() {
   currentUser = null;
-  localStorage.removeItem('atlaspherepi_user');
+  localStorage.removeItem('atlasphere_user');
   localStorage.removeItem('atlasphere_pi_token');
   localStorage.removeItem('atlasphere_jwt');
   notifyListeners();
@@ -649,7 +649,7 @@ export async function castVote(): Promise<boolean> {
       votescast: currentUser.votescast + 1,
       reputation: currentUser.reputation + 5
     };
-    localStorage.setItem('atlaspherepi_user', JSON.stringify(currentUser));
+    localStorage.setItem('atlasphere_user', JSON.stringify(currentUser));
     notifyListeners();
     return true;
   }
@@ -659,7 +659,7 @@ export async function castVote(): Promise<boolean> {
 // Restore user from localStorage on load
 export function restoreSession(): void {
   try {
-    const saved = localStorage.getItem('atlaspherepi_user');
+    const saved = localStorage.getItem('atlasphere_user');
     if (saved) {
       currentUser = JSON.parse(saved);
       notifyListeners();
@@ -712,7 +712,7 @@ export async function autoAuthenticate(): Promise<PiUser | null> {
       };
     }
 
-    localStorage.setItem('atlaspherepi_user', JSON.stringify(currentUser));
+    localStorage.setItem('atlasphere_user', JSON.stringify(currentUser));
     notifyListeners();
     console.log('[Atlasphere] Auto-authenticated Pioneer:', currentUser.username);
     return currentUser;

@@ -23,8 +23,8 @@
 
 ```bash
 # Cloner le dépôt
-git clone https://github.com/portraitart1/atlaspherepi.git
-cd atlaspherepi
+git clone https://github.com/portraitart1/atlasphere.git
+cd atlasphere
 
 # Installer les dépendances frontend
 cd app/frontend
@@ -51,7 +51,7 @@ python main.py
 ## 🏗️ Architecture
 
 ```
-atlaspherepi/
+atlasphere/
 ├── app/
 │   ├── frontend/          # React + TypeScript + Vite
 │   │   ├── src/

@@ -150,7 +150,7 @@ Qui teste avec moi ? 👇
 
 ```
 ═══════════════════════════════════════
-🌟 APPEL AUX PIONNIERS — ATLASPHEREPI BETA 🌟
+🌟 APPEL AUX PIONNIERS — ATLASPHERE BETA 🌟
 ═══════════════════════════════════════
 
 Pionniers du monde entier,
@@ -196,7 +196,7 @@ Atlasphere — Govern. Fund. Build. The Pioneer Way.
 
 | # | Titre | Texte sur l'image (EN) | Layout |
 |---|-------|----------------------|--------|
-| 1 | Hero Governance Globe | "ATLASPHEREPI — Govern. Fund. Build." | Globe interconnecté centre, texte haut, fond space indigo |
+| 1 | Hero Governance Globe | "ATLASPHERE — Govern. Fund. Build." | Globe interconnecté centre, texte haut, fond space indigo |
 | 2 | Community Voting | "Your Voice. Your Pi. Your Future." | Groupe de pionniers votant, hologrammes, fond purple |
 | 3 | Crowdfunding Pi | "Fund Projects with Pi" | Coins Pi → vault, milestones verts, fond indigo |
 | 4 | EcoChain AI | "EcoChain AI — Climate Intelligence" | Terre + data streams + AI, fond vert→indigo |
@@ -215,10 +215,10 @@ Atlasphere — Govern. Fund. Build. The Pioneer Way.
 
 ### Bannière Animée 1 : "Governance Flow"
 - **Animation** : Slide-in de gauche à droite
-- **Frame 1** : Fond indigo vide → texte "ATLASPHEREPI" slide-in depuis la gauche
+- **Frame 1** : Fond indigo vide → texte "ATLASPHERE" slide-in depuis la gauche
 - **Frame 2** : Globe apparaît au centre avec rotation lente
 - **Frame 3** : CTA "Join the Pioneer Beta →" pulse en or en bas
-- **Texte final** : "ATLASPHEREPI — Govern. Fund. Build. | Join the Pioneer Beta →"
+- **Texte final** : "ATLASPHERE — Govern. Fund. Build. | Join the Pioneer Beta →"
 - **Taille** : 728x90 (leaderboard)
 
 ### Bannière Animée 2 : "Pi Payment Pulse"
@@ -249,7 +249,7 @@ Atlasphere — Govern. Fund. Build. The Pioneer Way.
 
 ### Bannière Statique 1 : "Main Hero"
 - **Layout** : Logo gauche, titre centre, CTA droite
-- **Titre** : "ATLASPHEREPI"
+- **Titre** : "ATLASPHERE"
 - **Sous-titre** : "Decentralized Governance for Pi Pioneers"
 - **CTA** : "Try Beta Now →"
 - **Éléments** : Globe, nœuds connectés, gradient indigo→purple

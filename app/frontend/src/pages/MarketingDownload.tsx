@@ -33,7 +33,7 @@ const MARKETING_ASSETS: AssetItem[] = [
 ];
 
 const DOCS_ASSETS: AssetItem[] = [
-  { name: 'MARKETING_PACK_ATLASPHEREPI.md', url: '/docs/MARKETING_PACK_ATLASPHEREPI.md', folder: 'docs' },
+  { name: 'MARKETING_PACK_ATLASPHERE.md', url: '/docs/MARKETING_PACK_ATLASPHERE.md', folder: 'docs' },
   { name: 'FEUILLE_DE_ROUTE_MAINNET.md', url: '/docs/FEUILLE_DE_ROUTE_MAINNET.md', folder: 'docs' },
   { name: 'MARKETING_ASSETS_URLS.md', url: '/docs/MARKETING_ASSETS_URLS.md', folder: 'docs' },
 ];
@@ -84,7 +84,7 @@ export default function MarketingDownload() {
     try {
       setCurrentFile('Création du ZIP...');
       const content = await zip.generateAsync({ type: 'blob' });
-      saveAs(content, 'marketing-pack-atlaspherepi.zip');
+      saveAs(content, 'marketing-pack-atlasphere.zip');
       setDone(true);
     } catch (err) {
       setError('Erreur lors de la création du ZIP. Veuillez réessayer.');

@@ -44,7 +44,7 @@ export default function Footer() {
             <div className="space-y-2.5">
               <a href="https://minepi.com" target="_blank" rel="noopener noreferrer" className="block text-gray-400 hover:text-indigo-400 text-sm transition-colors">{t('footer.pi_network')}</a>
               <Link
-  to={`/api-docs?lng=${localStorage.getItem('atlaspherepi_locale') || 'en'}`}
+  to={`/api-docs?lng=${localStorage.getItem('atlasphere_locale') || 'en'}`}
   className="block text-gray-400 hover:text-indigo-400 text-sm transition-colors"
 >
   {t('footer.api_docs')}

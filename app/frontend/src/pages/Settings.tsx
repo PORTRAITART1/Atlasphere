@@ -9,8 +9,8 @@ import { Switch } from '@/components/ui/switch';
 import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
 
-const NETWORK_CONFIG_STORAGE_KEY = 'atlaspherepi_network_config';
-const MAINNET_CHECKLIST_STORAGE_KEY = 'atlaspherepi_mainnet_checklist';
+const NETWORK_CONFIG_STORAGE_KEY = 'atlasphere_network_config';
+const MAINNET_CHECKLIST_STORAGE_KEY = 'atlasphere_mainnet_checklist';
 
 interface NetworkConfig {
   network: 'mainnet';

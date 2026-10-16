@@ -1,7 +1,7 @@
 {
   "api_doc": {
     "title": "Documentação da API",
-    "intro": "Bem-vindo à documentação oficial da API AtlaspherePI.",
+    "intro": "Bem-vindo à documentação oficial da API Atlasphere.",
     "auth_section": "Autenticação",
     "endpoints_section": "Endpoints"
   },

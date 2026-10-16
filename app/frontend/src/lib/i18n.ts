@@ -5729,7 +5729,7 @@ export function isRTL(): boolean {
 export function setLocale(locale: Locale): void {
   if (locales.includes(locale)) {
     currentLocale = locale;
-    localStorage.setItem('atlaspherepi_locale', locale);
+    localStorage.setItem('atlasphere_locale', locale);
     document.documentElement.dir = locale === 'ar' ? 'rtl' : 'ltr';
     document.documentElement.lang = locale;
     notifyI18nListeners();
@@ -5747,7 +5747,7 @@ function detectLocale(): Locale {
     return urlLocale as Locale;
   }
 
-  const saved = localStorage.getItem('atlaspherepi_locale') as Locale | null;
+  const saved = localStorage.getItem('atlasphere_locale') as Locale | null;
   if (saved && locales.includes(saved)) return saved;
 
   return 'en';

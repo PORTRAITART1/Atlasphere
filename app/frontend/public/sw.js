@@ -1,4 +1,4 @@
-const CACHE_NAME = 'atlaspherepi-v2';
+const CACHE_NAME = 'atlasphere-v2';
 const STATIC_ASSETS = [
   '/',
   '/manifest.json',

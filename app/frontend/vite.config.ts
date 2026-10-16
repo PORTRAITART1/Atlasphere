@@ -71,7 +71,7 @@ export default defineConfig(({ command }) => {
       }),
       react(),
       Sitemap({
-        hostname: process.env.VITE_SITE_URL || 'https://atlaspherepi.com',
+        hostname: process.env.VITE_SITE_URL || 'https://atlasphere.com',
         lastmod: getSitemapLastmod(),
         readable: true,
         generateRobotsTxt: true,

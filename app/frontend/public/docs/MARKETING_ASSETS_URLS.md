@@ -38,7 +38,7 @@
 ## 📦 Archive Téléchargeable
 
 Le pack complet est disponible en téléchargement :
-- **Fichier** : `marketing-pack-atlaspherepi.tar.gz` (36 Mo)
+- **Fichier** : `marketing-pack-atlasphere.tar.gz` (36 Mo)
 - **Contenu** :
   - `marketing-pack/images/` — 10 images marketing avec logo (PNG)
   - `marketing-pack/banners/` — 8 bannières avec logo (PNG)
@@ -46,7 +46,7 @@ Le pack complet est disponible en téléchargement :
 
 ### Pour décompresser :
 ```bash
-tar -xzf marketing-pack-atlaspherepi.tar.gz
+tar -xzf marketing-pack-atlasphere.tar.gz
 ```
 
 ---
