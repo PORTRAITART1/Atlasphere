@@ -97,6 +97,7 @@ Predictions, EcoSensors, EcoNFT, QuadraticVoting, ClimateDashboard, CarbonCredit
 - [done] Pseudo officiel uniformisé dans le livrable : `portraitart`
 
 ## Progress Log
+- 2026-10-16 Alex : endpoint projets public réparé pour le déploiement Lambda aplati via un paquet de compatibilité `app.backend` ; imports Lambda/workspace, syntaxe Python, route `/api/v1/entities/projects/all` et contrat `{items,total,skip,limit}` validés.
 - 2026-10-14 Alex : campagne finale de 17 visuels recomposée avec logo officiel intégré au layout, titres, sous-titres et CTA adaptés ; contrôle visuel et archive validés.
 - 2026-10-14 Alex : 17 visuels marketing corrigés avec le logo officiel fourni par l’utilisateur, archive vérifiée et prête au téléchargement.
 - 2026-10-14 Alex : feuille de route marketing Atlasphere complète livrée avec campagnes, briefs créatifs, storyboard, publications et KPIs.
