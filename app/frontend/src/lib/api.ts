@@ -1,22 +1,10 @@
 // Atlasphere API Service - Version locale (fetch direct)
 // Remplace les appels SDK MetagptX par des appels fetch() natifs
 
-// GUARD: reject unresolved Atoms placeholders like $$backend_domain$$ or $$BACKEND_DOMAIN$$
-// Also reject URLs without a protocol. Fall back to the production URL if needed.
-function resolveApiBaseUrl(): string {
-  const raw = import.meta.env.VITE_API_BASE_URL as string | undefined;
-  if (!raw) return 'https://atlasphere.pub.atoms.world';
-  if (/\$\$[a-z_]+\$\$/i.test(raw)) {
-    console.warn('[api] Ignoring unresolved placeholder in VITE_API_BASE_URL:', raw, '-> falling back to https://atlasphere.pub.atoms.world');
-    return 'https://atlasphere.pub.atoms.world';
-  }
-  if (!/^https?:\/\//i.test(raw)) {
-    console.warn('[api] VITE_API_BASE_URL missing protocol:', raw, '-> falling back to https://atlasphere.pub.atoms.world');
-    return 'https://atlasphere.pub.atoms.world';
-  }
-  return raw;
-}
-const API_BASE_URL = resolveApiBaseUrl();
+// The frontend and backend are deployed behind the same gateway. Relative URLs keep
+// requests on the current App Viewer or published origin and avoid cross-origin
+// failures when the preview host differs from the public domain.
+const API_BASE_URL = '';
 
 // ============================================
 // Helper fetchAPI - Remplace getClient()
@@ -151,8 +139,22 @@ export async function fetchAllProjects(params?: {
   if (params?.skip !== undefined) searchParams.set('skip', String(params.skip));
   if (params?.limit !== undefined) searchParams.set('limit', String(params.limit));
 
-  const url = '/api/v1/entities/projects/all' + (searchParams.toString() ? '?' + searchParams.toString() : '');
-  return await fetchAPI<ProjectListResponse>(url);
+  const endpoint = '/api/v1/entities/projects/all' + (searchParams.toString() ? '?' + searchParams.toString() : '');
+
+  try {
+    const localResult = await fetchAPI<ProjectListResponse>(endpoint);
+    if (localResult.items.length > 0) return localResult;
+  } catch (error) {
+    console.warn('[api] Current-origin projects endpoint unavailable, using public endpoint.', error);
+  }
+
+  const response = await fetch('https://atlasphere.pub.atoms.world' + endpoint, {
+    headers: { 'Content-Type': 'application/json' },
+  });
+  if (!response.ok) {
+    throw new Error('Projects API error: ' + response.status + ' ' + response.statusText);
+  }
+  return response.json() as Promise<ProjectListResponse>;
 }
 
 export async function fetchMyProjects(params?: {
