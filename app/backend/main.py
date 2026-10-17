@@ -72,6 +72,23 @@ async def lifespan(app: FastAPI):
     await initialize_mock_data()
     # Seed disabled - keep existing projects in DB
     logger.info("Seed skipped - using existing projects from database")
+    
+    # --- AUTO-FIX: fill missing created_at/updated_at on projects ---
+    try:
+        from sqlalchemy import text
+        from app.backend.core.database import db
+        async with db.engine.begin() as conn:
+            r1 = await conn.execute(text(
+                "UPDATE projects SET created_at = NOW() WHERE created_at IS NULL"
+            ))
+            r2 = await conn.execute(text(
+                "UPDATE projects SET updated_at = NOW() WHERE updated_at IS NULL"
+            ))
+            logger.info(f"[auto-fix] created_at: {r1.rowcount} rows, updated_at: {r2.rowcount} rows")
+    except Exception as e:
+        logger.warning(f"[auto-fix] failed: {e}")
+    # ---------------------------------------------------------------
+    
     await initialize_admin_user()
     # MODULE_STARTUP_END
 

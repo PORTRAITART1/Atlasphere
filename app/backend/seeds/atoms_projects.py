@@ -19,6 +19,8 @@ atoms_projects = [
         "team": '["portraitart (lead)", "3 volunteer developers", "2 climate researchers"]',
         "region": "Global",
         "deadline": "2026-12-31",
+        "created_at": "2026-10-17T02:56:09.716222+00:00",
+        "updated_at": "2026-10-17T02:56:09.716222+00:00",
         "milestones": '[]'
     },
     {
@@ -36,6 +38,8 @@ atoms_projects = [
         "team": '["portraitart (lead)", "5 educators", "3 translators"]',
         "region": "Global",
         "deadline": "2026-11-30",
+        "created_at": "2026-10-17T02:56:09.716222+00:00",
+        "updated_at": "2026-10-17T02:56:09.716222+00:00",
         "milestones": '[]'
     },
     {
@@ -53,6 +57,8 @@ atoms_projects = [
         "team": '["portraitart (lead)", "3 doctors", "2 developers"]',
         "region": "Africa, Asia, South America",
         "deadline": "2027-03-31",
+        "created_at": "2026-10-17T02:56:09.716222+00:00",
+        "updated_at": "2026-10-17T02:56:09.716222+00:00",
         "milestones": '[]'
     },
     {
@@ -70,6 +76,8 @@ atoms_projects = [
         "team": '["portraitart (lead)", "2 logistics experts", "1 photographer"]',
         "region": "Global",
         "deadline": "2027-06-30",
+        "created_at": "2026-10-17T02:56:09.716222+00:00",
+        "updated_at": "2026-10-17T02:56:09.716222+00:00",
         "milestones": '[]'
     },
     {
@@ -87,6 +95,8 @@ atoms_projects = [
         "team": '["portraitart (lead)", "4 core developers", "1 security auditor"]',
         "region": "Global",
         "deadline": "2027-01-31",
+        "created_at": "2026-10-17T02:56:09.716222+00:00",
+        "updated_at": "2026-10-17T02:56:09.716222+00:00",
         "milestones": '[]'
     }
 ]
