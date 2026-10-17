@@ -18,6 +18,7 @@ export default function Index() {
   useI18nRerender();
 
   const [featured, setFeatured] = useState<Project[]>([]);
+  const [debugMsg, setDebugMsg] = useState('init');
   const [stats, setStats] = useState({
     totalProjects: 0,
     totalFunded: 0,
@@ -31,6 +32,7 @@ export default function Index() {
 
   const loadData = async () => {
     try {
+      setDebugMsg('Chargement API...');
       const [projectsRes, votesRes] = await Promise.all([
         fetchAllProjects({ limit: 100 }),
         fetchAllVotes({ limit: 1 }),
@@ -38,10 +40,14 @@ export default function Index() {
 
       if (projectsRes?.items) {
         const projects = projectsRes.items;
+        setDebugMsg(`API OK: ${projects.length} projets trouvés.`);
         const featuredProjects = projects
           .filter((p) => p.status === 'voting' || p.status === 'funding')
           .slice(0, 3);
         setFeatured(featuredProjects);
+        if (featuredProjects.length === 0) {
+          setDebugMsg(`API OK: ${projects.length} projets, mais 0 ne correspond au filtre (voting/funding).`);
+        }
 
         const funded = projects.filter((p) => p.status === 'funded' || p.status === 'completed').length;
         const totalRaised = projects.reduce((sum, p) => sum + (p.raised || 0), 0);
@@ -53,13 +59,17 @@ export default function Index() {
           totalVotes: votesRes?.total || 0,
         });
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error('Failed to load homepage data:', err);
+      setDebugMsg(`ERREUR API: ${err?.message || String(err)}`);
     }
   };
 
   return (
     <div className="min-h-screen bg-slate-950 flex flex-col">
+      <div className="bg-red-600 text-white text-center py-2 text-sm font-bold z-[100] relative">
+        DEBUG: {debugMsg}
+      </div>
       <Navbar />
 
       <PageTransition>
