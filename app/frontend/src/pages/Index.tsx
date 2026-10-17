@@ -27,6 +27,12 @@ export default function Index() {
   });
 
   useEffect(() => {
+    // Debug : forcer le titre de l'onglet
+    document.title = `DEBUG-${featured.length}-PROJETS`;
+    console.log('Titre mis à jour:', document.title);
+  }, [featured]);
+
+  useEffect(() => {
     loadData();
   }, []);
 
@@ -260,6 +266,19 @@ export default function Index() {
       </PageTransition>
 
       <Footer />
+      
+      {/* BLOC DE DEBUG ULTIME */}
+      <div className="bg-red-600 text-white p-4 z-[100] relative">
+        <h2 className="text-xl font-bold mb-2">DEBUG AFFICHAGE:</h2>
+        <p>Nombre de projets dans l'état : {featured.length}</p>
+        <ul>
+          {featured.map((p, i) => (
+            <li key={i} className="text-sm">
+              - {p.title} (Statut: {p.status})
+            </li>
+          ))}
+        </ul>
+      </div>
     </div>
   );
 }
