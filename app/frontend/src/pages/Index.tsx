@@ -40,13 +40,11 @@ export default function Index() {
 
       if (projectsRes?.items) {
         const projects = projectsRes.items;
+        const featuredProjects = projects.slice(0, 3); // Sans filtre pour le debug
+        
+        setFeatured(featuredProjects); // On met à jour l'état d'abord
+        
         setDebugMsg(`API OK: ${projects.length} projets. Featured: ${featuredProjects.length}. 1er: ${projects[0]?.title || 'VIDE'}`);
-        // DEBUG: on prend les 3 premiers sans filtrer
-        const featuredProjects = projects.slice(0, 3);
-        setFeatured(featuredProjects);
-        if (featuredProjects.length === 0) {
-          setDebugMsg(`API OK: ${projects.length} projets, mais 0 ne correspond au filtre (voting/funding).`);
-        }
 
         const funded = projects.filter((p) => p.status === 'funded' || p.status === 'completed').length;
         const totalRaised = projects.reduce((sum, p) => sum + (p.raised || 0), 0);
@@ -57,6 +55,8 @@ export default function Index() {
           totalPiInvested: totalRaised,
           totalVotes: votesRes?.total || 0,
         });
+      } else {
+        setDebugMsg('API OK mais 0 projet reçu.');
       }
     } catch (err: any) {
       console.error('Failed to load homepage data:', err);
