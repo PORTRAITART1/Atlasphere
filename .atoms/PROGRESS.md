@@ -97,6 +97,7 @@ Predictions, EcoSensors, EcoNFT, QuadraticVoting, ClimateDashboard, CarbonCredit
 - [done] Pseudo officiel uniformisé dans le livrable : `portraitart`
 
 ## Progress Log
+- 2026-10-17 Alex : table `projects` remplacée atomiquement en base de développement par les 5 projets Atlasphere fournis (IDs 1–5), avec `created_at`/`updated_at` UTC renseignés et catégorie `technology` conservée ; source de redéploiement alignée et chargeur d’horodatage sécurisé. L’endpoint public reste sur l’ancien déploiement jusqu’à publication.
 - 2026-10-17 Alex : source historique des 10 projets restaurée dans `mock_data/projects.json` (Pi Academy, PiHealth, GreenPi, PiCommerce SDK, PiMesh, PiKids, PiRemit, PiCredit, PiVault, PiGrid) ; JSON, unicité et syntaxe backend validés, remplacement exact prévu au prochain déploiement.
 - 2026-10-17 Alex : affichage des projets fiabilisé dans l’App Viewer — appels API sur l’origine courante avec fallback vers l’endpoint public Atlasphere (5 projets confirmés) ; lint et build validés.
 - 2026-10-17 Alex : projets restaurés sur l’accueil avec priorité aux statuts `voting`/`funding` et fallback sur les trois premiers projets ; tous les bandeaux et états de debug retirés, lint et build validés.

@@ -166,6 +166,15 @@ async def _load_table_from_file(data_file: Path):
             logger.warning("No valid records found in %s after preparing data", data_file.name)
             return
 
+        # Reflected Core inserts do not apply ORM-side timestamp defaults. Ensure
+        # replacement data remains sortable after every deployment or restart.
+        now = datetime.now().astimezone()
+        for record in records:
+            if "created_at" in table.c and record.get("created_at") is None:
+                record["created_at"] = now
+            if "updated_at" in table.c and record.get("updated_at") is None:
+                record["updated_at"] = now
+
         try:
             await conn.execute(table.insert(), records)
             logger.info("Inserted %d mock records into %s", len(records), table_name)
