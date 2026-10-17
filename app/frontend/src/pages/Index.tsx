@@ -40,10 +40,9 @@ export default function Index() {
 
       if (projectsRes?.items) {
         const projects = projectsRes.items;
-        setDebugMsg(`API OK: ${projects.length} projets trouvés.`);
-        const featuredProjects = projects
-          .filter((p) => p.status === 'voting' || p.status === 'funding')
-          .slice(0, 3);
+        setDebugMsg(`API OK: ${projects.length} projets. Featured: ${featuredProjects.length}. 1er: ${projects[0]?.title || 'VIDE'}`);
+        // DEBUG: on prend les 3 premiers sans filtrer
+        const featuredProjects = projects.slice(0, 3);
         setFeatured(featuredProjects);
         if (featuredProjects.length === 0) {
           setDebugMsg(`API OK: ${projects.length} projets, mais 0 ne correspond au filtre (voting/funding).`);
@@ -69,6 +68,10 @@ export default function Index() {
     <div className="min-h-screen bg-slate-950 flex flex-col">
       <div className="bg-red-600 text-white text-center py-2 text-sm font-bold z-[100] relative">
         DEBUG: {debugMsg}
+      </div>
+      {/* BLOC DE DEBUG VISUEL */}
+      <div className="bg-green-600 text-white p-4 text-lg font-bold z-[100] relative">
+        PREMIER PROJET: {featured.length > 0 ? featured[0].title : 'AUCUN PROJET DANS L\'ETAT'}
       </div>
       <Navbar />
 
