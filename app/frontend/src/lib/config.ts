@@ -59,18 +59,21 @@ export function getConfig() {
   }
 
   // Then try Vite environment variables (for local development)
-  // GUARD: reject unresolved Atoms placeholders like $$BACKEND_DOMAIN$$
+  // GUARD: reject unresolved Atoms placeholders like $$BACKEND_DOMAIN$$ or $$backend_domain$$
+  // Case-insensitive, and also reject URLs missing a protocol (scheme)
   const rawViteUrl = import.meta.env.VITE_API_BASE_URL;
-  if (rawViteUrl && !/\$\$[A-Z_]+\$\$/.test(rawViteUrl)) {
+  const hasPlaceholder = !!rawViteUrl && /\$\$[a-z_]+\$\$/i.test(rawViteUrl);
+  const hasProtocol = !!rawViteUrl && /^https?:\/\//i.test(rawViteUrl);
+  if (rawViteUrl && !hasPlaceholder && hasProtocol) {
     const viteConfig = {
       API_BASE_URL: rawViteUrl,
     };
     console.log('Using Vite environment config');
     return viteConfig;
   }
-  if (rawViteUrl && /\$\$[A-Z_]+\$\$/.test(rawViteUrl)) {
+  if (rawViteUrl) {
     console.warn(
-      '[config] Ignoring unresolved placeholder in VITE_API_BASE_URL:',
+      '[config] Ignoring invalid VITE_API_BASE_URL (placeholder or missing protocol):',
       rawViteUrl,
       '-> falling back to defaultConfig'
     );
