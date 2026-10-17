@@ -7,13 +7,16 @@ from pathlib import Path
 from typing import Any, Iterable
 
 from app.backend.core.database import db_manager
-from sqlalchemy import Date, DateTime, MetaData, Table, func, select
+from sqlalchemy import Date, DateTime, MetaData, Table, func, select, delete
 from sqlalchemy.exc import NoSuchTableError, SQLAlchemyError
 
 logger = logging.getLogger(__name__)
 
 MOCK_DATA_DIR = Path(__file__).resolve().parent.parent / "mock_data"
 MAX_CONCURRENT_LOADS = 5
+
+# Tables to REPLACE (delete existing rows before inserting)
+REPLACE_TABLES = {"projects"}
 
 
 async def initialize_mock_data():
@@ -134,10 +137,23 @@ async def _load_table_from_file(data_file: Path):
             logger.error("Failed to reflect table %s: %s", table_name, exc)
             return
 
-        row_count = await conn.scalar(select(func.count()).select_from(table))
-        if row_count and row_count > 0:
-            logger.info("Table %s already has %d rows; skipping mock insert", table_name, row_count)
-            return
+        # Check if this table should be REPLACED (deleted + reinserted)
+        should_replace = table_name in REPLACE_TABLES
+
+        if should_replace:
+            # Delete existing rows
+            try:
+                result = await conn.execute(delete(table))
+                logger.info("Deleted %d existing rows from %s (replace mode)", result.rowcount, table_name)
+            except SQLAlchemyError as exc:
+                logger.error("Failed to delete rows from %s: %s", table_name, exc)
+                return
+        else:
+            # Check if table is empty
+            row_count = await conn.scalar(select(func.count()).select_from(table))
+            if row_count and row_count > 0:
+                logger.info("Table %s already has %d rows; skipping mock insert", table_name, row_count)
+                return
 
         try:
             raw_records = json.loads(data_file.read_text(encoding="utf-8"))
