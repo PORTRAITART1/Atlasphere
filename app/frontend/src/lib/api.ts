@@ -1,3 +1,5 @@
+import { t } from '@/lib/i18n';
+
 // Atlasphere API Service - Version locale (fetch direct)
 // Remplace les appels SDK MetagptX par des appels fetch() natifs
 
@@ -344,15 +346,9 @@ export async function markAllNotificationsRead(ids: number[]): Promise<void> {
 // ============ HELPERS (inchangés) ============
 
 export function getStatusLabel(status: string | null): string {
-  const map: Record<string, string> = {
-    voting: '🗳️ En Vote',
-    approved: '✅ Approuvé',
-    funding: '💰 En Financement',
-    funded: '🎉 Financé',
-    completed: '🏆 Terminé',
-    rejected: '❌ Rejeté',
-  };
-  return map[status || ''] || status || 'Inconnu';
+  const key = status ? `status.${status}` : '';
+  const translated = key ? t(key) : '';
+  return translated && translated !== key ? translated : status || t('common.unknown');
 }
 
 export function getStatusColor(status: string | null): string {
@@ -368,14 +364,9 @@ export function getStatusColor(status: string | null): string {
 }
 
 export function getCategoryLabel(category: string): string {
-  const map: Record<string, string> = {
-    education: '📚 Éducation',
-    commerce: '🛍️ Commerce',
-    technology: '💻 Technologie',
-    social: '🤝 Social',
-    environment: '🌍 Environnement',
-  };
-  return map[category] || category;
+  const key = `cat.${category === 'technology' ? 'tech' : category}`;
+  const translated = t(key);
+  return translated !== key ? translated : category;
 }
 
 export function parseMilestones(milestones: string | null): { title: string; description: string; completed: boolean }[] {

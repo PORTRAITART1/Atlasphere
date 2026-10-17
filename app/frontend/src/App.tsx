@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import FeedbackForm from '@/components/FeedbackForm';
 import EcoChatbot from '@/components/EcoChatbot';
+import { t } from '@/lib/i18n';
 import { autoAuthenticate, isInPiBrowser } from '@/lib/pi-sdk';
 import { applyTheme } from '@/lib/theme';
 
@@ -68,7 +69,7 @@ function PageLoader() {
     <div className="min-h-screen bg-gradient-to-br from-slate-950 via-indigo-950 to-slate-900 flex items-center justify-center">
       <div className="flex flex-col items-center gap-3">
         <div className="animate-spin w-8 h-8 border-4 border-indigo-500 border-t-transparent rounded-full" />
-        <p className="text-sm text-gray-400">Loading...</p>
+        <p className="text-sm text-gray-400">{t('common.loading')}</p>
       </div>
     </div>
   );

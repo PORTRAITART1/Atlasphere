@@ -1,5 +1,8 @@
 // Atlasphere Internationalization (i18n) - 10 languages: EN, AR, ZH, RU, ES, DE, PT, JA, IT, FR
 import { useState, useEffect } from 'react';
+import { pages } from './locales/pages';
+import { content } from './locales/content';
+import { ru as russianMessages } from './locales/ru';
 
 export type Locale = 'en' | 'ar' | 'zh' | 'ru' | 'es' | 'de' | 'pt' | 'ja' | 'it' | 'fr';
 
@@ -5704,6 +5707,14 @@ const messages: Record<Locale, Translations> = {
 
 
 };
+
+// Merge the maintained modular dictionaries into the runtime catalog. The main
+// file remains the baseline; modular dictionaries override stale entries and
+// add secondary-page and project-content keys.
+Object.assign(messages.ru, russianMessages);
+for (const locale of locales) {
+  Object.assign(messages[locale], pages[locale] ?? {}, content[locale] ?? {});
+}
 
 // State management
 let currentLocale: Locale = 'en';

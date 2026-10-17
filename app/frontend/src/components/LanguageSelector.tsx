@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { getLocale, setLocale, subscribeI18n, locales, localeNames, localeFlags, type Locale } from '@/lib/i18n';
+import { getLocale, setLocale, subscribeI18n, locales, localeNames, localeFlags, t, type Locale } from '@/lib/i18n';
 
 export default function LanguageSelector() {
   const [currentLang, setCurrentLang] = useState<Locale>(getLocale());
@@ -50,7 +50,7 @@ export default function LanguageSelector() {
         onClick={handleToggle}
         onTouchEnd={handleToggle}
         className="flex items-center gap-1 px-2 py-1.5 rounded-lg bg-slate-800/50 border border-slate-700/50 text-sm text-gray-300 hover:text-white hover:border-indigo-500/30 transition-all active:scale-95"
-        aria-label="Select language"
+        aria-label={t('settings.language')}
         aria-expanded={isOpen}
         type="button"
       >
