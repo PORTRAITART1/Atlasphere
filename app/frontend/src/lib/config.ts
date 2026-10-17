@@ -59,12 +59,21 @@ export function getConfig() {
   }
 
   // Then try Vite environment variables (for local development)
-  if (import.meta.env.VITE_API_BASE_URL) {
+  // GUARD: reject unresolved Atoms placeholders like $$BACKEND_DOMAIN$$
+  const rawViteUrl = import.meta.env.VITE_API_BASE_URL;
+  if (rawViteUrl && !/\$\$[A-Z_]+\$\$/.test(rawViteUrl)) {
     const viteConfig = {
-      API_BASE_URL: import.meta.env.VITE_API_BASE_URL,
+      API_BASE_URL: rawViteUrl,
     };
     console.log('Using Vite environment config');
     return viteConfig;
+  }
+  if (rawViteUrl && /\$\$[A-Z_]+\$\$/.test(rawViteUrl)) {
+    console.warn(
+      '[config] Ignoring unresolved placeholder in VITE_API_BASE_URL:',
+      rawViteUrl,
+      '-> falling back to defaultConfig'
+    );
   }
 
   // Finally fall back to default
