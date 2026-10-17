@@ -18,7 +18,6 @@ export default function Index() {
   useI18nRerender();
 
   const [featured, setFeatured] = useState<Project[]>([]);
-  const [debugMsg, setDebugMsg] = useState('init');
   const [stats, setStats] = useState({
     totalProjects: 0,
     totalFunded: 0,
@@ -27,18 +26,11 @@ export default function Index() {
   });
 
   useEffect(() => {
-    // Debug : forcer le titre de l'onglet
-    document.title = `DEBUG-${featured.length}-PROJETS`;
-    console.log('Titre mis à jour:', document.title);
-  }, [featured]);
-
-  useEffect(() => {
     loadData();
   }, []);
 
   const loadData = async () => {
     try {
-      setDebugMsg('Chargement API...');
       const [projectsRes, votesRes] = await Promise.all([
         fetchAllProjects({ limit: 100 }),
         fetchAllVotes({ limit: 1 }),
@@ -46,14 +38,13 @@ export default function Index() {
 
       if (projectsRes?.items) {
         const projects = projectsRes.items;
-        const featuredProjects = projects.slice(0, 3); // Sans filtre pour le debug
-        
-        setFeatured(featuredProjects); // On met à jour l'état d'abord
-        
-        setDebugMsg(`API OK: ${projects.length} projets. Featured: ${featuredProjects.length}. 1er: ${projects[0]?.title || 'VIDE'}`);
+        const activeProjects = projects.filter(
+          (project) => project.status === 'voting' || project.status === 'funding',
+        );
+        setFeatured((activeProjects.length > 0 ? activeProjects : projects).slice(0, 3));
 
-        const funded = projects.filter((p) => p.status === 'funded' || p.status === 'completed').length;
-        const totalRaised = projects.reduce((sum, p) => sum + (p.raised || 0), 0);
+        const funded = projects.filter((project) => project.status === 'funded' || project.status === 'completed').length;
+        const totalRaised = projects.reduce((sum, project) => sum + (project.raised || 0), 0);
 
         setStats({
           totalProjects: projectsRes.total,
@@ -61,24 +52,14 @@ export default function Index() {
           totalPiInvested: totalRaised,
           totalVotes: votesRes?.total || 0,
         });
-      } else {
-        setDebugMsg('API OK mais 0 projet reçu.');
       }
-    } catch (err: any) {
-      console.error('Failed to load homepage data:', err);
-      setDebugMsg(`ERREUR API: ${err?.message || String(err)}`);
+    } catch (error) {
+      console.error('Failed to load homepage data:', error);
     }
   };
 
   return (
     <div className="min-h-screen bg-slate-950 flex flex-col">
-      <div className="bg-red-600 text-white text-center py-2 text-sm font-bold z-[100] relative">
-        DEBUG: {debugMsg}
-      </div>
-      {/* BLOC DE DEBUG VISUEL */}
-      <div className="bg-green-600 text-white p-4 text-lg font-bold z-[100] relative">
-        PREMIER PROJET: {featured.length > 0 ? featured[0].title : 'AUCUN PROJET DANS L\'ETAT'}
-      </div>
       <Navbar />
 
       <PageTransition>
@@ -266,19 +247,6 @@ export default function Index() {
       </PageTransition>
 
       <Footer />
-      
-      {/* BLOC DE DEBUG ULTIME */}
-      <div className="bg-red-600 text-white p-4 z-[100] relative">
-        <h2 className="text-xl font-bold mb-2">DEBUG AFFICHAGE:</h2>
-        <p>Nombre de projets dans l'état : {featured.length}</p>
-        <ul>
-          {featured.map((p, i) => (
-            <li key={i} className="text-sm">
-              - {p.title} (Statut: {p.status})
-            </li>
-          ))}
-        </ul>
-      </div>
     </div>
   );
 }

@@ -97,6 +97,7 @@ Predictions, EcoSensors, EcoNFT, QuadraticVoting, ClimateDashboard, CarbonCredit
 - [done] Pseudo officiel uniformisé dans le livrable : `portraitart`
 
 ## Progress Log
+- 2026-10-17 Alex : projets restaurés sur l’accueil avec priorité aux statuts `voting`/`funding` et fallback sur les trois premiers projets ; tous les bandeaux et états de debug retirés, lint et build validés.
 - 2026-10-14 Alex : 17 visuels marketing corrigés avec le logo officiel fourni par l’utilisateur, archive vérifiée et prête au téléchargement.
 - 2026-10-14 Alex : feuille de route marketing Atlasphere complète livrée avec campagnes, briefs créatifs, storyboard, publications et KPIs.
 - 2026-10-14 Alex : lien « 🏠 Accueil » retiré de la barre linguistique des 20 pages juridiques ; lint et build OK.
