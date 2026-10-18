@@ -290,25 +290,13 @@ async def approve_payment(
     ledger = PiPaymentLedger(db)
 
     try:
-        # Keep the wallet handshake minimal. Pi Network only needs its own
-        # server-side approval here; payer identity, amount, purpose, project,
-        # transaction and idempotent business effects are all authoritatively
-        # validated again by /complete before anything is credited.
-        info = await _load_authoritative_payment(service, data.payment_id)
-        flags = info["flags"]
-
-        if flags["cancelled"]:
-            raise HTTPException(status_code=409, detail="This Pi payment was cancelled.")
-
-        if not flags["developer_approved"]:
-            await service.approve_payment(data.payment_id)
+        # FASTEST POSSIBLE HANDSHAKE: call Pi Network approval directly.
+        # All security checks (identity, amount, project, ledger) happen in /complete.
+        await service.approve_payment(data.payment_id)
 
         return PaymentResult(
             status="approved",
             payment_id=data.payment_id,
-            amount=info["amount"],
-            purpose=info["purpose"],
-            project_id=info["project_id"],
             message="Payment approved by the Atlasphere server.",
         )
 
