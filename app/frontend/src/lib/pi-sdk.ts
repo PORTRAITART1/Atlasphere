@@ -258,10 +258,14 @@ async function onIncompletePaymentFound(payment: APIPayment) {
     if (!payment.status.developer_approved) {
       console.log('[Atlasphere] Approving incomplete payment:', payment.identifier);
 
-      const approveResponse = await fetch(`${getAPIBaseURL()}/api/pi-payments/approve`, {
+      const piAccessToken = localStorage.getItem('atlasphere_pi_token') || '';
+      const approveResponse = await fetch(`${getAPIBaseURL()}/api/v1/pi-pay/approve`, {
         method: 'POST',
         headers: authHeaders(),
-        body: JSON.stringify({ payment_id: payment.identifier }),
+        body: JSON.stringify({
+          payment_id: payment.identifier,
+          pi_access_token: piAccessToken,
+        }),
       });
 
       if (!approveResponse.ok) {
@@ -275,15 +279,14 @@ async function onIncompletePaymentFound(payment: APIPayment) {
     if (payment.transaction?.verified && !payment.status.developer_completed) {
       console.log('[Atlasphere] Completing incomplete payment:', payment.identifier);
 
-      const completeResponse = await fetch(`${getAPIBaseURL()}/api/pi-payments/complete`, {
+      const piAccessToken = localStorage.getItem('atlasphere_pi_token') || '';
+      const completeResponse = await fetch(`${getAPIBaseURL()}/api/v1/pi-pay/complete`, {
         method: 'POST',
         headers: authHeaders(),
         body: JSON.stringify({
           payment_id: payment.identifier,
           txid: payment.transaction.txid,
-          project_id: 0,
-          amount: payment.amount,
-          pi_uid: payment.user_uid,
+          pi_access_token: piAccessToken,
         }),
       });
 
@@ -469,17 +472,36 @@ export async function createPiPayment(
       throw new Error('Pi payment requires Pi Browser and Pi SDK');
     }
 
-    await window.Pi.authenticate(['payments', 'username'], onIncompletePaymentFound);
+    const auth = await window.Pi.authenticate(
+      ['payments', 'username'],
+      onIncompletePaymentFound
+    );
+    localStorage.setItem('atlasphere_pi_token', auth.accessToken);
+
+    const purpose = metadata.purpose
+      || (metadata.type === 'contribution' ? 'project_funding' : metadata.type)
+      || 'donation';
+    const projectId = metadata.project_id || metadata.projectId;
+    const normalizedMetadata: Record<string, string> = {
+      ...metadata,
+      purpose,
+    };
+    delete normalizedMetadata.type;
+    delete normalizedMetadata.projectId;
+    if (projectId) normalizedMetadata.project_id = projectId;
 
     await window.Pi.createPayment(
-      { amount, memo, metadata },
+      { amount, memo, metadata: normalizedMetadata },
       {
         onReadyForServerApproval: async (paymentId: string) => {
           try {
-            const response = await fetch(`${getAPIBaseURL()}/api/pi-payments/approve`, {
+            const response = await fetch(`${getAPIBaseURL()}/api/v1/pi-pay/approve`, {
               method: 'POST',
               headers: authHeaders(),
-              body: JSON.stringify({ payment_id: paymentId })
+              body: JSON.stringify({
+                payment_id: paymentId,
+                pi_access_token: auth.accessToken,
+              })
             });
 
             if (!response.ok) {
@@ -498,15 +520,13 @@ export async function createPiPayment(
 
         onReadyForServerCompletion: async (paymentId: string, txid: string) => {
           try {
-            const response = await fetch(`${getAPIBaseURL()}/api/pi-payments/complete`, {
+            const response = await fetch(`${getAPIBaseURL()}/api/v1/pi-pay/complete`, {
               method: 'POST',
               headers: authHeaders(),
               body: JSON.stringify({
                 payment_id: paymentId,
                 txid,
-                project_id: parseInt(metadata.projectId || '0', 10),
-                amount,
-                pi_uid: currentUser?.uid || '',
+                pi_access_token: auth.accessToken,
               })
             });
 
@@ -680,7 +700,7 @@ export async function contributePI(amount: number): Promise<boolean> {
   return createPiPayment(
     amount,
     'Atlasphere contribution',
-    { type: 'donation' }
+    { purpose: 'donation' }
   );
 }
 

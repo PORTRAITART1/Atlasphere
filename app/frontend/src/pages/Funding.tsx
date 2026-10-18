@@ -195,6 +195,7 @@ export default function Funding() {
                             <PiPaymentButton
                               amount={100}
                               projectId={p.id}
+                              purpose="project_funding"
                               memo={`${t('funding.memo')} ${p.title}`}
                               onSuccess={() => loadFundingProjects()}
                               className="px-4 py-2 rounded-lg bg-gradient-to-r from-amber-600 to-amber-500 text-white text-sm font-medium hover:from-amber-500 hover:to-amber-400 transition-all"

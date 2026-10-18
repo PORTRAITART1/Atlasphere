@@ -133,7 +133,7 @@ export default function ProposalDetail() {
       const success = await createPiPayment(
         amount,
         `Contribution à ${project.title}`,
-        { project_id: String(project.id), type: 'contribution' }
+        { project_id: String(project.id), purpose: 'project_funding' }
       );
 
       if (success) {
@@ -485,6 +485,7 @@ export default function ProposalDetail() {
                       <PiPaymentButton
                         amount={parseFloat(contributionAmount) || 10}
                         projectId={project.id}
+                        purpose="project_funding"
                         memo={`${t('detail.memo')} ${project.title}`}
                         onSuccess={() => loadProject(project.id)}
                         className="w-full px-4 py-2 rounded-lg bg-gradient-to-r from-purple-600 to-indigo-600 text-white text-sm font-medium hover:from-purple-500 hover:to-indigo-500 transition-all"

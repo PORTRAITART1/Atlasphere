@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import { createPiPayment, getCurrentUser } from '@/lib/pi-sdk';
-import { getAPIBaseURL } from '@/lib/config';
 import { t } from '@/lib/i18n';
 
 interface PiPaymentButtonProps {
   amount: number;
-  projectId: number;
+  projectId?: number;
+  purpose: string;
   memo?: string;
   onSuccess?: () => void;
   onError?: (error: string) => void;
@@ -61,6 +61,7 @@ function cleanErrorMessage(raw: string): { isSuccess: boolean; rawMessage: strin
 export default function PiPaymentButton({
   amount,
   projectId,
+  purpose,
   memo = 'Atlasphere contribution',
   onSuccess,
   onError,
@@ -85,85 +86,16 @@ export default function PiPaymentButton({
     setStatus('approving');
 
     try {
-      const success = await createPiPayment(
-        amount,
-        memo,
-        { projectId: String(projectId), type: 'contribution' },
-        // onReadyForServerApproval
-        async (paymentId: string) => {
-          setStatus('approving');
-          try {
-            const url = `${getAPIBaseURL()}/api/pi-payments/approve`;
-            console.log('[Payment] Approving:', url, 'paymentId:', paymentId);
+      const success = await createPiPayment(amount, memo, {
+        purpose,
+        ...(projectId ? { project_id: String(projectId) } : {}),
+      });
 
-            const response = await fetch(url, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ payment_id: paymentId }),
-            });
-
-            if (!response.ok) {
-              const errText = await response.text().catch(() => '');
-              throw new Error(errText || `HTTP ${response.status}`);
-            }
-            console.log('[Payment] Approved OK');
-          } catch (err) {
-            const msg = err instanceof Error ? err.message : '';
-            console.error('[Payment] Server approval failed:', msg);
-            const cleaned = cleanErrorMessage(msg);
-            if (!cleaned.isSuccess) {
-              setMessage(t('common.error'));
-            }
-            throw err;
-          }
-        },
-        // onReadyForServerCompletion
-        async (paymentId: string, txid: string) => {
-          setStatus('completing');
-          try {
-            const url = `${getAPIBaseURL()}/api/pi-payments/complete`;
-            console.log('[Payment] Completing:', url, 'paymentId:', paymentId, 'txid:', txid);
-
-            const response = await fetch(url, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                payment_id: paymentId,
-                txid,
-                project_id: projectId,
-                amount,
-                pi_uid: user.uid,
-              }),
-            });
-
-            if (!response.ok) {
-              const errText = await response.text().catch(() => '');
-              throw new Error(errText || `HTTP ${response.status}`);
-            }
-            console.log('[Payment] Completed OK');
-            setStatus('done');
-            setMessage(t('common.success'));
-            onSuccess?.();
-          } catch (err) {
-            const msg = err instanceof Error ? err.message : '';
-            console.error('[Payment] Server completion failed:', msg);
-
-            const cleaned = cleanErrorMessage(msg);
-            if (cleaned.isSuccess) {
-              // Cas spécial : paiement déjà complété = SUCCÈS
-              setStatus('success');
-              setMessage(t('common.success'));
-              onSuccess?.();
-            } else {
-              setStatus('error');
-              setMessage(t('common.error'));
-              onError?.(t('common.error'));
-            }
-          }
-        }
-      );
-
-      if (!success) {
+      if (success) {
+        setStatus('done');
+        setMessage(t('common.success'));
+        onSuccess?.();
+      } else {
         setStatus('error');
         setMessage(t('common.error'));
         onError?.(t('common.error'));
