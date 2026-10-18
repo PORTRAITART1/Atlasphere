@@ -524,20 +524,25 @@ export async function submitGovernanceVote(projectId: number, voteType: 'for' | 
 
   try {
     const atlasphereJwt = localStorage.getItem('atlasphere_jwt') || '';
-    const response = await client.apiCall.invoke({
-      url: '/api/v1/governance/vote',
+    const apiBase = getAPIBaseURL();
+    const response = await fetch(`${apiBase}/api/v1/governance/vote`, {
       method: 'POST',
-      data: {
+      headers: {
+        'Content-Type': 'application/json',
+        ...(atlasphereJwt ? { Authorization: `Bearer ${atlasphereJwt}` } : {}),
+      },
+      body: JSON.stringify({
         project_id: projectId,
         vote_type: voteType,
-      },
-      options: atlasphereJwt
-        ? { headers: { Authorization: `Bearer ${atlasphereJwt}` } }
-        : undefined,
+      }),
     });
 
-    const envelope = response as { data?: Record<string, unknown> };
-    const data = (envelope.data ?? response) as Record<string, unknown>;
+    if (!response.ok) {
+      const errText = await response.text();
+      throw new Error(`HTTP ${response.status}: ${errText}`);
+    }
+
+    const data = await response.json();
     if (data) {
       currentUser = {
         ...currentUser,
