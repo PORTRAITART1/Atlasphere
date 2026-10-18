@@ -245,31 +245,6 @@ export function setCurrentUser(user: PiUser | null): void {
   notifyListeners();
 }
 
-async function postPiPaymentEndpoint<T>(
-  path: '/approve' | '/complete' | '/cancel',
-  data: Record<string, string>
-): Promise<T> {
-  const response = await fetch(`/api/v1/pi-pay${path}`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(data),
-  });
-
-  const body = await response.text();
-  if (!response.ok) {
-    let detail = body;
-    try {
-      const parsed = JSON.parse(body) as { detail?: string; message?: string };
-      detail = parsed.detail || parsed.message || body;
-    } catch {
-      // Keep the raw response when the gateway does not return JSON.
-    }
-    throw new Error(detail || `Erreur serveur (${response.status})`);
-  }
-
-  return (body ? JSON.parse(body) : {}) as T;
-}
-
 // Handle incomplete payments found during authentication
 async function onIncompletePaymentFound(payment: APIPayment) {
   console.log('[Atlasphere] Incomplete payment found:', payment.identifier, payment.status);
@@ -284,9 +259,13 @@ async function onIncompletePaymentFound(payment: APIPayment) {
       console.log('[Atlasphere] Approving incomplete payment:', payment.identifier);
 
       const piAccessToken = localStorage.getItem('atlasphere_pi_token') || '';
-      const approveResponse = await postPiPaymentEndpoint<Record<string, unknown>>('/approve', {
-        payment_id: payment.identifier,
-        pi_access_token: piAccessToken,
+      const approveResponse = await client.apiCall.invoke({
+        url: '/api/v1/pi-pay/approve',
+        method: 'POST',
+        data: {
+          payment_id: payment.identifier,
+          pi_access_token: piAccessToken,
+        },
       });
 
       if (!approveResponse) {
@@ -298,10 +277,14 @@ async function onIncompletePaymentFound(payment: APIPayment) {
       console.log('[Atlasphere] Completing incomplete payment:', payment.identifier);
 
       const piAccessToken = localStorage.getItem('atlasphere_pi_token') || '';
-      const completeResponse = await postPiPaymentEndpoint<Record<string, unknown>>('/complete', {
-        payment_id: payment.identifier,
-        txid: payment.transaction.txid,
-        pi_access_token: piAccessToken,
+      const completeResponse = await client.apiCall.invoke({
+        url: '/api/v1/pi-pay/complete',
+        method: 'POST',
+        data: {
+          payment_id: payment.identifier,
+          txid: payment.transaction.txid,
+          pi_access_token: piAccessToken,
+        },
       });
 
       if (!completeResponse) {
@@ -513,9 +496,13 @@ export async function createPiPayment(
       {
         onReadyForServerApproval: async (paymentId: string) => {
           try {
-            await postPiPaymentEndpoint('/approve', {
-              payment_id: paymentId,
-              pi_access_token: auth.accessToken,
+            await client.apiCall.invoke({
+              url: '/api/v1/pi-pay/approve',
+              method: 'POST',
+              data: {
+                payment_id: paymentId,
+                pi_access_token: auth.accessToken,
+              },
             });
 
             console.log('[Atlasphere] Payment approved by server:', paymentId);
@@ -531,10 +518,14 @@ export async function createPiPayment(
 
         onReadyForServerCompletion: async (paymentId: string, txid: string) => {
           try {
-            await postPiPaymentEndpoint('/complete', {
-              payment_id: paymentId,
-              txid,
-              pi_access_token: auth.accessToken,
+            await client.apiCall.invoke({
+              url: '/api/v1/pi-pay/complete',
+              method: 'POST',
+              data: {
+                payment_id: paymentId,
+                txid,
+                pi_access_token: auth.accessToken,
+              },
             });
 
             console.log('[Atlasphere] Payment completed:', paymentId, txid);
@@ -550,9 +541,13 @@ export async function createPiPayment(
 
         onCancel: (paymentId: string) => {
           console.log('[Atlasphere] Payment cancelled:', paymentId);
-          void postPiPaymentEndpoint('/cancel', {
-            payment_id: paymentId,
-            reason: 'Cancelled by the Pioneer in Pi Wallet',
+          void client.apiCall.invoke({
+            url: '/api/v1/pi-pay/cancel',
+            method: 'POST',
+            data: {
+              payment_id: paymentId,
+              reason: 'Cancelled by the Pioneer in Pi Wallet',
+            },
           }).catch((error) => {
             console.warn('[Atlasphere] Could not record payment cancellation:', error);
           });
