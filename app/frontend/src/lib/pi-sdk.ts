@@ -190,13 +190,14 @@ export async function ensureAtlasphereJwt(): Promise<string> {
       .then(async (response) => {
         if (!response.ok) {
           localStorage.removeItem('atlasphere_jwt');
-          throw new Error(`Pi token exchange failed (${response.status})`);
+          return piAccessToken;
         }
         const data = await response.json() as { atlasphere_jwt?: string };
         if (!data.atlasphere_jwt) throw new Error('Atlasphere token missing');
         localStorage.setItem('atlasphere_jwt', data.atlasphere_jwt);
         return data.atlasphere_jwt;
       })
+      .catch(() => piAccessToken)
       .finally(() => {
         _atlasphereExchangePromise = null;
       });

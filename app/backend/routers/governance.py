@@ -10,6 +10,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.backend.core.database import get_db
 from app.backend.dependencies.auth import get_current_user
+from app.backend.dependencies.pi_identity import get_pi_browser_user
 from app.backend.schemas.auth import UserResponse
 from app.backend.models.projects import Projects
 from app.backend.models.votes import Votes
@@ -65,7 +66,7 @@ class FinalizeResponse(BaseModel):
 @router.post("/vote", response_model=VoteResponse)
 async def submit_vote(
     data: VoteRequest,
-    current_user: UserResponse = Depends(get_current_user),
+    current_user: UserResponse = Depends(get_pi_browser_user),
     db: AsyncSession = Depends(get_db),
 ):
     """Submit a vote on a project with reputation-weighted power"""

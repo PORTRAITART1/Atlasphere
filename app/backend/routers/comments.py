@@ -12,7 +12,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.backend.core.database import get_db
 from app.backend.models.pi_profiles import Pi_profiles
 from app.backend.services.comments import CommentsService
-from app.backend.dependencies.auth import get_current_user
+from app.backend.dependencies.pi_identity import get_pi_browser_user
 from app.backend.schemas.auth import UserResponse
 
 # Set up logging
@@ -193,7 +193,7 @@ async def get_comments(
 @router.post("", response_model=CommentsResponse, status_code=201)
 async def create_comments(
     data: CommentsCreateData,
-    current_user: UserResponse = Depends(get_current_user),
+    current_user: UserResponse = Depends(get_pi_browser_user),
     db: AsyncSession = Depends(get_db),
 ):
     """Create a comment owned by the authenticated user."""
@@ -225,7 +225,7 @@ async def create_comments(
 @router.post("/batch", response_model=List[CommentsResponse], status_code=201)
 async def create_commentss_batch(
     request: CommentsBatchCreateRequest,
-    current_user: UserResponse = Depends(get_current_user),
+    current_user: UserResponse = Depends(get_pi_browser_user),
     db: AsyncSession = Depends(get_db),
 ):
     """Create multiple comments owned by the authenticated user."""
@@ -256,7 +256,7 @@ async def create_commentss_batch(
 @router.put("/batch", response_model=List[CommentsResponse])
 async def update_commentss_batch(
     request: CommentsBatchUpdateRequest,
-    current_user: UserResponse = Depends(get_current_user),
+    current_user: UserResponse = Depends(get_pi_browser_user),
     db: AsyncSession = Depends(get_db),
 ):
     """Update multiple comments owned by the authenticated user."""
@@ -291,7 +291,7 @@ async def update_commentss_batch(
 @router.post("/{id}/like", response_model=CommentsResponse)
 async def like_comment(
     id: int,
-    current_user: UserResponse = Depends(get_current_user),
+    current_user: UserResponse = Depends(get_pi_browser_user),
     db: AsyncSession = Depends(get_db),
 ):
     """Atomically increment a comment's public like counter."""
@@ -306,7 +306,7 @@ async def like_comment(
 async def update_comments(
     id: int,
     data: CommentsUpdateData,
-    current_user: UserResponse = Depends(get_current_user),
+    current_user: UserResponse = Depends(get_pi_browser_user),
     db: AsyncSession = Depends(get_db),
 ):
     """Update a comment owned by the authenticated user."""
@@ -341,7 +341,7 @@ async def update_comments(
 @router.delete("/batch")
 async def delete_commentss_batch(
     request: CommentsBatchDeleteRequest,
-    current_user: UserResponse = Depends(get_current_user),
+    current_user: UserResponse = Depends(get_pi_browser_user),
     db: AsyncSession = Depends(get_db),
 ):
     """Delete multiple comments owned by the authenticated user."""
@@ -375,7 +375,7 @@ async def delete_commentss_batch(
 @router.delete("/{id}")
 async def delete_comments(
     id: int,
-    current_user: UserResponse = Depends(get_current_user),
+    current_user: UserResponse = Depends(get_pi_browser_user),
     db: AsyncSession = Depends(get_db),
 ):
     """Delete a comment owned by the authenticated user."""
