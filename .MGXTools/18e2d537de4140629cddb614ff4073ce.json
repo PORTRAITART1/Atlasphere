@@ -4,7 +4,7 @@
     "payload": {
         "accessibility_tree": [
             {
-                "nodeId": "2",
+                "nodeId": "15",
                 "ignored": false,
                 "role": {
                     "type": "internalRole",
@@ -56,18 +56,18 @@
                         "name": "url",
                         "value": {
                             "type": "string",
-                            "value": "https://atlasphere.pub.atoms.world/api/v1/pi-auth/exchange"
+                            "value": "https://atlasphere.pub.atoms.world/api/v1/pi-pay/config"
                         }
                     }
                 ],
                 "childIds": [
-                    "3"
+                    "16"
                 ],
-                "backendDOMNodeId": 2,
-                "frameId": "992A15031469C9AC829AFDE4EADBFBBB"
+                "backendDOMNodeId": 15,
+                "frameId": "5599D3102799BB24FDFCC4AE9607B5C0"
             },
             {
-                "nodeId": "3",
+                "nodeId": "16",
                 "ignored": true,
                 "ignoredReasons": [
                     {
@@ -86,14 +86,14 @@
                     "type": "internalRole",
                     "value": 0
                 },
-                "parentId": "2",
+                "parentId": "15",
                 "childIds": [
-                    "7"
+                    "20"
                 ],
-                "backendDOMNodeId": 3
+                "backendDOMNodeId": 16
             },
             {
-                "nodeId": "7",
+                "nodeId": "20",
                 "ignored": true,
                 "ignoredReasons": [
                     {
@@ -112,15 +112,15 @@
                     "type": "internalRole",
                     "value": 0
                 },
-                "parentId": "3",
+                "parentId": "16",
                 "childIds": [
-                    "8",
-                    "9"
+                    "21",
+                    "22"
                 ],
-                "backendDOMNodeId": 7
+                "backendDOMNodeId": 20
             },
             {
-                "nodeId": "8",
+                "nodeId": "21",
                 "ignored": false,
                 "role": {
                     "type": "role",
@@ -145,14 +145,14 @@
                     ]
                 },
                 "properties": [],
-                "parentId": "7",
+                "parentId": "20",
                 "childIds": [
-                    "13"
+                    "26"
                 ],
-                "backendDOMNodeId": 8
+                "backendDOMNodeId": 21
             },
             {
-                "nodeId": "9",
+                "nodeId": "22",
                 "ignored": false,
                 "role": {
                     "type": "role",
@@ -177,14 +177,14 @@
                     ]
                 },
                 "properties": [],
-                "parentId": "7",
+                "parentId": "20",
                 "childIds": [
-                    "10"
+                    "23"
                 ],
-                "backendDOMNodeId": 9
+                "backendDOMNodeId": 22
             },
             {
-                "nodeId": "13",
+                "nodeId": "26",
                 "ignored": false,
                 "role": {
                     "type": "internalRole",
@@ -196,26 +196,29 @@
                 },
                 "name": {
                     "type": "computedString",
-                    "value": "{\"detail\":\"Method Not Allowed\"}",
+                    "value": "{\"server_ready\":true,\"wallet_address\":\"GA2JQ5C2QXIY3DRWCOYIAHYBEJFXLYURIG3XQD7G4HUZY4EPFPGA443G\",\"allowed_purposes\":{\"payment_test\":2.0,\"project_funding\":10000.0,\"subscription\":500.0,\"premium\":500.0,\"donation\":10000.0},\"min_amount\":0.01,\"test_amounts\":[0.1,0.5,1.0],\"required_testers\":5,\"message\":\"Pi Platform server key detected. Real payments are enabled.\"}",
                     "sources": [
                         {
                             "type": "contents",
                             "value": {
                                 "type": "computedString",
-                                "value": "{\"detail\":\"Method Not Allowed\"}"
+                                "value": "{\"server_ready\":true,\"wallet_address\":\"GA2JQ5C2QXIY3DRWCOYIAHYBEJFXLYURIG3XQD7G4HUZY4EPFPGA443G\",\"allowed_purposes\":{\"payment_test\":2.0,\"project_funding\":10000.0,\"subscription\":500.0,\"premium\":500.0,\"donation\":10000.0},\"min_amount\":0.01,\"test_amounts\":[0.1,0.5,1.0],\"required_testers\":5,\"message\":\"Pi Platform server key detected. Real payments are enabled.\"}"
                             }
                         }
                     ]
                 },
                 "properties": [],
-                "parentId": "8",
+                "parentId": "21",
                 "childIds": [
-                    "-1000000002"
+                    "-1000000004",
+                    "-1000000005",
+                    "-1000000006",
+                    "-1000000007"
                 ],
-                "backendDOMNodeId": 13
+                "backendDOMNodeId": 26
             },
             {
-                "nodeId": "10",
+                "nodeId": "23",
                 "ignored": false,
                 "role": {
                     "type": "role",
@@ -244,14 +247,14 @@
                     ]
                 },
                 "properties": [],
-                "parentId": "9",
+                "parentId": "22",
                 "childIds": [
-                    "11"
+                    "24"
                 ],
-                "backendDOMNodeId": 10
+                "backendDOMNodeId": 23
             },
             {
-                "nodeId": "-1000000002",
+                "nodeId": "-1000000004",
                 "ignored": false,
                 "role": {
                     "type": "internalRole",
@@ -262,11 +265,56 @@
                     "value": 101
                 },
                 "properties": [],
-                "parentId": "13",
+                "parentId": "26",
                 "childIds": []
             },
             {
-                "nodeId": "11",
+                "nodeId": "-1000000005",
+                "ignored": false,
+                "role": {
+                    "type": "internalRole",
+                    "value": "InlineTextBox"
+                },
+                "chromeRole": {
+                    "type": "internalRole",
+                    "value": 101
+                },
+                "properties": [],
+                "parentId": "26",
+                "childIds": []
+            },
+            {
+                "nodeId": "-1000000006",
+                "ignored": false,
+                "role": {
+                    "type": "internalRole",
+                    "value": "InlineTextBox"
+                },
+                "chromeRole": {
+                    "type": "internalRole",
+                    "value": 101
+                },
+                "properties": [],
+                "parentId": "26",
+                "childIds": []
+            },
+            {
+                "nodeId": "-1000000007",
+                "ignored": false,
+                "role": {
+                    "type": "internalRole",
+                    "value": "InlineTextBox"
+                },
+                "chromeRole": {
+                    "type": "internalRole",
+                    "value": 101
+                },
+                "properties": [],
+                "parentId": "26",
+                "childIds": []
+            },
+            {
+                "nodeId": "24",
                 "ignored": false,
                 "role": {
                     "type": "internalRole",
@@ -295,15 +343,15 @@
                     ]
                 },
                 "properties": [],
-                "parentId": "10",
+                "parentId": "23",
                 "childIds": [
-                    "14",
-                    "12"
+                    "27",
+                    "25"
                 ],
-                "backendDOMNodeId": 11
+                "backendDOMNodeId": 24
             },
             {
-                "nodeId": "14",
+                "nodeId": "27",
                 "ignored": false,
                 "role": {
                     "type": "internalRole",
@@ -327,14 +375,14 @@
                     ]
                 },
                 "properties": [],
-                "parentId": "11",
+                "parentId": "24",
                 "childIds": [
-                    "-1000000003"
+                    "-1000000008"
                 ],
-                "backendDOMNodeId": 14
+                "backendDOMNodeId": 27
             },
             {
-                "nodeId": "12",
+                "nodeId": "25",
                 "ignored": false,
                 "role": {
                     "type": "role",
@@ -376,7 +424,7 @@
                                 "type": "nodeList",
                                 "relatedNodes": [
                                     {
-                                        "backendDOMNodeId": 11,
+                                        "backendDOMNodeId": 24,
                                         "text": "Pretty-print"
                                     }
                                 ]
@@ -416,12 +464,12 @@
                         }
                     }
                 ],
-                "parentId": "11",
+                "parentId": "24",
                 "childIds": [],
-                "backendDOMNodeId": 12
+                "backendDOMNodeId": 25
             },
             {
-                "nodeId": "-1000000003",
+                "nodeId": "-1000000008",
                 "ignored": false,
                 "role": {
                     "type": "internalRole",
@@ -432,7 +480,7 @@
                     "value": 101
                 },
                 "properties": [],
-                "parentId": "14",
+                "parentId": "27",
                 "childIds": []
             }
         ],
@@ -445,6 +493,6 @@
             "enable_llm_stream": false,
             "callback_url": ""
         },
-        "url": "https://atlasphere.pub.atoms.world/api/v1/pi-auth/exchange"
+        "url": "https://atlasphere.pub.atoms.world/api/v1/pi-pay/config"
     }
 }

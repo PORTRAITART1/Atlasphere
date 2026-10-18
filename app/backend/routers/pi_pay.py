@@ -17,6 +17,7 @@ Security rules enforced here:
   * ``PI_API_KEY`` stays on the server; it is never returned to the frontend.
 """
 
+import asyncio
 import logging
 from typing import Any, Dict, List, Optional
 
@@ -170,6 +171,7 @@ async def _resolve_caller_identity(
     current_user: Optional[UserResponse],
     payer_uid: str,
     access_token: str,
+    verified_pi_user: Optional[Dict[str, Any]] = None,
 ) -> Dict[str, str]:
     """Authenticate the payer of a Pi payment.
 
@@ -188,9 +190,9 @@ async def _resolve_caller_identity(
     if not payer_uid:
         raise HTTPException(status_code=400, detail="The Pi payment has no payer identity.")
 
-    token_uid = ""
-    token_username = ""
-    if access_token:
+    token_uid = str((verified_pi_user or {}).get("uid") or "")
+    token_username = str((verified_pi_user or {}).get("username") or "")
+    if access_token and not verified_pi_user:
         try:
             me = await service.verify_access_token(access_token)
             token_uid = str(me.get("uid") or "")
@@ -289,19 +291,48 @@ async def approve_payment(
     ledger = PiPaymentLedger(db)
 
     try:
-        info = await _load_authoritative_payment(service, data.payment_id)
+        payment_task = _load_authoritative_payment(service, data.payment_id)
+        if data.pi_access_token:
+            info, verified_pi_user = await asyncio.gather(
+                payment_task,
+                service.verify_access_token(data.pi_access_token),
+            )
+        else:
+            info = await payment_task
+            verified_pi_user = None
         flags = info["flags"]
 
         if flags["cancelled"]:
             await ledger.record_cancellation(data.payment_id, "Cancelled on the Pi Network side")
             raise HTTPException(status_code=409, detail="This Pi payment was cancelled.")
 
-        identity = await _resolve_caller_identity(
-            db, service, current_user, info["pi_uid"], data.pi_access_token
-        )
+        if verified_pi_user:
+            verified_uid = str(verified_pi_user.get("uid") or "")
+            if not verified_uid or verified_uid != info["pi_uid"]:
+                raise HTTPException(
+                    status_code=403,
+                    detail="This Pi payment belongs to a different Pi Network account.",
+                )
+        elif current_user is None:
+            raise HTTPException(
+                status_code=403,
+                detail="Sign in with Pi Network before submitting a Pi payment.",
+            )
 
+        # The wallet is timing-sensitive: approve on Pi Network immediately
+        # after authoritative payment/token validation, before local profile or
+        # ledger writes that are not required by the wallet handshake.
         if not flags["developer_approved"]:
             await service.approve_payment(data.payment_id)
+
+        identity = await _resolve_caller_identity(
+            db,
+            service,
+            current_user,
+            info["pi_uid"],
+            data.pi_access_token,
+            verified_pi_user,
+        )
 
         row = await ledger.record_approval(
             payment_id=data.payment_id,
