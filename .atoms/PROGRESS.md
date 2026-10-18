@@ -97,6 +97,7 @@ Predictions, EcoSensors, EcoNFT, QuadraticVoting, ClimateDashboard, CarbonCredit
 - [done] Pseudo officiel uniformisé dans le livrable : `portraitart`
 
 ## Progress Log
+- 2026-10-17 Alex : budgets des 5 projets ramenés dans la plage demandée de 500 à 15 000 Pi — projets 1 à 5 : 12 000, 4 500, 15 000, 6 000 et 9 500 Pi ; source JSON et base active synchronisées, JSON validé.
 - 2026-10-17 Alex : titres et descriptions des 5 projets localisés dynamiquement dans les 10 langues sur l’accueil, la liste et le détail ; discussion repassée en API même origine, lecture publique et interactions authentifiées rétablies, mutations sécurisées par propriété ; py_compile, lint, build et rendu principal validés.
 - 2026-10-17 Alex : audit i18n général terminé et livré dans `I18N_AUDIT.md` — 10 langues et 49 routes analysées ; dictionnaires modulaires/russe/contenu reconnectés, statuts et catégories rendus multilingues, défauts par page priorisés ; lint, build et rendu principal validés.
 - 2026-10-17 Alex : audit i18n général démarré — inventaire des routes, pages, composants, dictionnaires et contenus backend en cours ; validation séparée à venir.
