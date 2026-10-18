@@ -10,6 +10,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.backend.core.database import get_db
 from app.backend.services.comments import CommentsService
+from app.backend.dependencies.auth import get_current_user
+from app.backend.schemas.auth import UserResponse
 
 # Set up logging
 logger = logging.getLogger(__name__)
@@ -18,24 +20,17 @@ router = APIRouter(prefix="/api/v1/entities/comments", tags=["comments"])
 
 
 # ---------- Pydantic Schemas ----------
-class CommentsData(BaseModel):
-    """Entity data schema (for create/update)"""
+class CommentsCreateData(BaseModel):
+    """Client-controlled fields accepted when creating a comment."""
     project_id: int
     content: str
-    pi_uid: str
     pi_username: str
-    parent_id: int = None
-    likes: int = None
+    parent_id: Optional[int] = None
 
 
 class CommentsUpdateData(BaseModel):
-    """Update entity data (partial updates allowed)"""
-    project_id: Optional[int] = None
+    """Owner-controlled comment fields (partial updates allowed)."""
     content: Optional[str] = None
-    pi_uid: Optional[str] = None
-    pi_username: Optional[str] = None
-    parent_id: Optional[int] = None
-    likes: Optional[int] = None
 
 
 class CommentsResponse(BaseModel):
@@ -64,7 +59,7 @@ class CommentsListResponse(BaseModel):
 
 class CommentsBatchCreateRequest(BaseModel):
     """Batch create request"""
-    items: List[CommentsData]
+    items: List[CommentsCreateData]
 
 
 class CommentsBatchUpdateItem(BaseModel):
@@ -184,15 +179,19 @@ async def get_comments(
 
 @router.post("", response_model=CommentsResponse, status_code=201)
 async def create_comments(
-    data: CommentsData,
+    data: CommentsCreateData,
+    current_user: UserResponse = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
-    """Create a new comments"""
-    logger.debug(f"Creating new comments with data: {data}")
-    
+    """Create a comment owned by the authenticated user."""
+    logger.debug("Creating a comment for project %s", data.project_id)
+
     service = CommentsService(db)
     try:
-        result = await service.create(data.model_dump())
+        payload = data.model_dump()
+        payload["pi_uid"] = str(current_user.id)
+        payload["likes"] = 0
+        result = await service.create(payload)
         if not result:
             raise HTTPException(status_code=400, detail="Failed to create comments")
         
@@ -209,17 +208,21 @@ async def create_comments(
 @router.post("/batch", response_model=List[CommentsResponse], status_code=201)
 async def create_commentss_batch(
     request: CommentsBatchCreateRequest,
+    current_user: UserResponse = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
-    """Create multiple commentss in a single request"""
+    """Create multiple comments owned by the authenticated user."""
     logger.debug(f"Batch creating {len(request.items)} commentss")
-    
+
     service = CommentsService(db)
     results = []
-    
+
     try:
         for item_data in request.items:
-            result = await service.create(item_data.model_dump())
+            payload = item_data.model_dump()
+            payload["pi_uid"] = str(current_user.id)
+            payload["likes"] = 0
+            result = await service.create(payload)
             if result:
                 results.append(result)
         
@@ -234,17 +237,22 @@ async def create_commentss_batch(
 @router.put("/batch", response_model=List[CommentsResponse])
 async def update_commentss_batch(
     request: CommentsBatchUpdateRequest,
+    current_user: UserResponse = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
-    """Update multiple commentss in a single request"""
+    """Update multiple comments owned by the authenticated user."""
     logger.debug(f"Batch updating {len(request.items)} commentss")
-    
+
     service = CommentsService(db)
     results = []
-    
+
     try:
         for item in request.items:
-            # Only include non-None values for partial updates
+            comment = await service.get_by_id(item.id)
+            if not comment:
+                raise HTTPException(status_code=404, detail="Comment not found")
+            if comment.pi_uid != str(current_user.id):
+                raise HTTPException(status_code=403, detail="You can only update your own comments")
             update_dict = {k: v for k, v in item.updates.model_dump().items() if v is not None}
             result = await service.update(item.id, update_dict)
             if result:
@@ -252,24 +260,45 @@ async def update_commentss_batch(
         
         logger.info(f"Batch updated {len(results)} commentss successfully")
         return results
+    except HTTPException:
+        raise
     except Exception as e:
         await db.rollback()
         logger.error(f"Error in batch update: {str(e)}", exc_info=True)
         raise HTTPException(status_code=500, detail=f"Batch update failed: {str(e)}")
 
 
+@router.post("/{id}/like", response_model=CommentsResponse)
+async def like_comment(
+    id: int,
+    current_user: UserResponse = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """Atomically increment a comment's public like counter."""
+    service = CommentsService(db)
+    result = await service.increment_likes(id)
+    if not result:
+        raise HTTPException(status_code=404, detail="Comment not found")
+    return result
+
+
 @router.put("/{id}", response_model=CommentsResponse)
 async def update_comments(
     id: int,
     data: CommentsUpdateData,
+    current_user: UserResponse = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
-    """Update an existing comments"""
+    """Update a comment owned by the authenticated user."""
     logger.debug(f"Updating comments {id} with data: {data}")
 
     service = CommentsService(db)
     try:
-        # Only include non-None values for partial updates
+        comment = await service.get_by_id(id)
+        if not comment:
+            raise HTTPException(status_code=404, detail="Comment not found")
+        if comment.pi_uid != str(current_user.id):
+            raise HTTPException(status_code=403, detail="You can only update your own comments")
         update_dict = {k: v for k, v in data.model_dump().items() if v is not None}
         result = await service.update(id, update_dict)
         if not result:
@@ -291,22 +320,30 @@ async def update_comments(
 @router.delete("/batch")
 async def delete_commentss_batch(
     request: CommentsBatchDeleteRequest,
+    current_user: UserResponse = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
-    """Delete multiple commentss by their IDs"""
+    """Delete multiple comments owned by the authenticated user."""
     logger.debug(f"Batch deleting {len(request.ids)} commentss")
-    
+
     service = CommentsService(db)
     deleted_count = 0
-    
+
     try:
         for item_id in request.ids:
+            comment = await service.get_by_id(item_id)
+            if not comment:
+                raise HTTPException(status_code=404, detail="Comment not found")
+            if comment.pi_uid != str(current_user.id):
+                raise HTTPException(status_code=403, detail="You can only delete your own comments")
             success = await service.delete(item_id)
             if success:
                 deleted_count += 1
         
         logger.info(f"Batch deleted {deleted_count} commentss successfully")
         return {"message": f"Successfully deleted {deleted_count} commentss", "deleted_count": deleted_count}
+    except HTTPException:
+        raise
     except Exception as e:
         await db.rollback()
         logger.error(f"Error in batch delete: {str(e)}", exc_info=True)
@@ -316,13 +353,19 @@ async def delete_commentss_batch(
 @router.delete("/{id}")
 async def delete_comments(
     id: int,
+    current_user: UserResponse = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
-    """Delete a single comments by ID"""
-    logger.debug(f"Deleting comments with id: {id}")
-    
+    """Delete a comment owned by the authenticated user."""
+    logger.debug("Deleting comment %s", id)
+
     service = CommentsService(db)
     try:
+        comment = await service.get_by_id(id)
+        if not comment:
+            raise HTTPException(status_code=404, detail="Comment not found")
+        if comment.pi_uid != str(current_user.id):
+            raise HTTPException(status_code=403, detail="You can only delete your own comments")
         success = await service.delete(id)
         if not success:
             logger.warning(f"Comments with id {id} not found for deletion")

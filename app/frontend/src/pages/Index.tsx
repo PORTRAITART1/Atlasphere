@@ -5,6 +5,7 @@ import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import PageTransition from '@/components/PageTransition';
 import { t, useI18nRerender } from '@/lib/i18n';
+import { localizeProject } from '@/lib/project-localization';
 import {
   fetchAllProjects,
   fetchAllVotes,
@@ -253,13 +254,16 @@ export default function Index() {
 
 function FeaturedProjectCard({ project, index }: { project: Project; index: number }) {
   useI18nRerender();
+  const localizedProject = localizeProject(project);
 
   const votePercentage =
-    (project.voter_count || 0) > 0
-      ? ((project.votes_for || 0) / (project.voter_count || 1)) * 100
+    (localizedProject.voter_count || 0) > 0
+      ? ((localizedProject.votes_for || 0) / (localizedProject.voter_count || 1)) * 100
       : 0;
   const fundingPercentage =
-    project.budget > 0 ? ((project.raised || 0) / project.budget) * 100 : 0;
+    localizedProject.budget > 0 ? ((localizedProject.raised || 0) / localizedProject.budget) * 100 : 0;
+
+  project = localizedProject;
 
   return (
     <motion.div

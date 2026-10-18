@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { pages } from './locales/pages';
 import { content } from './locales/content';
 import { ru as russianMessages } from './locales/ru';
+import { commentsMessages } from './locales/comments';
 
 export type Locale = 'en' | 'ar' | 'zh' | 'ru' | 'es' | 'de' | 'pt' | 'ja' | 'it' | 'fr';
 
@@ -5713,7 +5714,7 @@ const messages: Record<Locale, Translations> = {
 // add secondary-page and project-content keys.
 Object.assign(messages.ru, russianMessages);
 for (const locale of locales) {
-  Object.assign(messages[locale], pages[locale] ?? {}, content[locale] ?? {});
+  Object.assign(messages[locale], pages[locale] ?? {}, content[locale] ?? {}, commentsMessages[locale]);
 }
 
 // State management

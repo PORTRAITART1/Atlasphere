@@ -5,6 +5,7 @@ import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import PageTransition from '@/components/PageTransition';
 import { t, subscribeI18n } from '@/lib/i18n';
+import { localizeProjects } from '@/lib/project-localization';
 import {
   fetchAllProjects,
   type Project,
@@ -27,7 +28,7 @@ export default function Proposals() {
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
   const [total, setTotal] = useState(0);
-  const [, setLangTick] = useState(0);
+  const [langTick, setLangTick] = useState(0);
 
   useEffect(() => {
     return subscribeI18n(() => setLangTick((n) => n + 1));
@@ -61,8 +62,10 @@ export default function Proposals() {
     }
   };
 
+  const localizedProjects = useMemo(() => localizeProjects(projects), [projects, langTick]);
+
   const filtered = useMemo(() => {
-    return projects.filter((p) => {
+    return localizedProjects.filter((p) => {
       const matchSearch =
         p.title.toLowerCase().includes(search.toLowerCase()) ||
         p.description.toLowerCase().includes(search.toLowerCase());
@@ -70,7 +73,7 @@ export default function Proposals() {
       const matchCategory = categoryFilter === 'all' || p.category === categoryFilter;
       return matchSearch && matchStatus && matchCategory;
     });
-  }, [projects, search, statusFilter, categoryFilter]);
+  }, [localizedProjects, search, statusFilter, categoryFilter]);
 
   const statuses: { value: StatusFilter; label: string }[] = [
     { value: 'all', label: t('proposals.filter.all') },

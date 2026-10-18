@@ -97,6 +97,7 @@ Predictions, EcoSensors, EcoNFT, QuadraticVoting, ClimateDashboard, CarbonCredit
 - [done] Pseudo officiel uniformisé dans le livrable : `portraitart`
 
 ## Progress Log
+- 2026-10-17 Alex : titres et descriptions des 5 projets localisés dynamiquement dans les 10 langues sur l’accueil, la liste et le détail ; discussion repassée en API même origine, lecture publique et interactions authentifiées rétablies, mutations sécurisées par propriété ; py_compile, lint, build et rendu principal validés.
 - 2026-10-17 Alex : audit i18n général terminé et livré dans `I18N_AUDIT.md` — 10 langues et 49 routes analysées ; dictionnaires modulaires/russe/contenu reconnectés, statuts et catégories rendus multilingues, défauts par page priorisés ; lint, build et rendu principal validés.
 - 2026-10-17 Alex : audit i18n général démarré — inventaire des routes, pages, composants, dictionnaires et contenus backend en cours ; validation séparée à venir.
 - 2026-10-17 Alex : table `projects` remplacée atomiquement en base de développement par les 5 projets Atlasphere fournis (IDs 1–5), avec `created_at`/`updated_at` UTC renseignés et catégorie `technology` conservée ; source de redéploiement alignée et chargeur d’horodatage sécurisé. L’endpoint public reste sur l’ancien déploiement jusqu’à publication.

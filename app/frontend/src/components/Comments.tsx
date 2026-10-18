@@ -1,7 +1,6 @@
-import { useState, useEffect } from 'react';
-import { useTranslation } from 'react-i18next';
-import { getAPIBaseURL } from '@/lib/config';
+import { useEffect, useState } from 'react';
 import { getCurrentUser } from '@/lib/pi-sdk';
+import { getLocale, t, useI18nRerender } from '@/lib/i18n';
 
 interface Comment {
   id: number;
@@ -10,136 +9,142 @@ interface Comment {
   pi_uid: string;
   pi_username: string;
   parent_id: number | null;
-  likes: number;
-  created_at: string;
+  likes: number | null;
+  created_at: string | null;
+}
+
+interface CommentsListResponse {
+  items: Comment[];
+  total: number;
+  skip: number;
+  limit: number;
 }
 
 interface CommentsProps {
   projectId: number;
 }
 
+function authHeaders(): HeadersInit {
+  const jwt = localStorage.getItem('atlasphere_jwt');
+  return {
+    'Content-Type': 'application/json',
+    ...(jwt ? { Authorization: `Bearer ${jwt}` } : {}),
+  };
+}
+
+async function readError(response: Response): Promise<string> {
+  try {
+    const body = await response.json() as { detail?: string };
+    return body.detail || `${response.status} ${response.statusText}`;
+  } catch {
+    return `${response.status} ${response.statusText}`;
+  }
+}
+
 export default function Comments({ projectId }: CommentsProps) {
-  const { t } = useTranslation();
+  useI18nRerender();
   const [comments, setComments] = useState<Comment[]>([]);
   const [newComment, setNewComment] = useState('');
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
   const user = getCurrentUser();
-
-  useEffect(() => {
-    loadComments();
-  }, [projectId]);
 
   const loadComments = async () => {
     setLoading(true);
     setError(null);
     try {
-      const query = encodeURIComponent(JSON.stringify({ project_id: projectId }));
-      const url = `${getAPIBaseURL()}/api/v1/entities/comments?query=${query}`;
-      console.log('[Comments] Loading:', url);
-
-      const response = await fetch(url);
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}`);
-      }
-      const data = await response.json();
+      const params = new URLSearchParams({
+        query: JSON.stringify({ project_id: projectId }),
+        sort: '-created_at',
+        limit: '100',
+      });
+      const response = await fetch(`/api/v1/entities/comments/all?${params.toString()}`);
+      if (!response.ok) throw new Error(await readError(response));
+      const data = await response.json() as CommentsListResponse;
       setComments(data.items || []);
-    } catch (err) {
-      const msg = err instanceof Error ? err.message : 'Failed to load comments';
-      console.error('[Comments] Load failed:', msg);
-      setError(msg);
+    } catch (loadError) {
+      console.error('[Comments] Load failed:', loadError);
+      setError(t('comments.load_error'));
       setComments([]);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!newComment.trim() || !user) return;
+  useEffect(() => {
+    void loadComments();
+  }, [projectId]);
+
+  const handleSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
+    const content = newComment.trim();
+    if (!content || !user) return;
 
     setSubmitting(true);
     setError(null);
     try {
-      const url = `${getAPIBaseURL()}/api/v1/entities/comments`;
-      console.log('[Comments] Submitting:', url);
-
-      const response = await fetch(url, {
+      const response = await fetch('/api/v1/entities/comments', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: authHeaders(),
         body: JSON.stringify({
           project_id: projectId,
-          content: newComment.trim(),
+          content,
           pi_uid: user.uid,
           pi_username: user.username,
-          user_id: user.uid,
+          likes: 0,
         }),
       });
-
-      if (!response.ok) {
-        const errText = await response.text().catch(() => '');
-        throw new Error(`HTTP ${response.status}: ${errText}`);
-      }
-
+      if (!response.ok) throw new Error(await readError(response));
       setNewComment('');
       await loadComments();
-    } catch (err) {
-      const msg = err instanceof Error ? err.message : 'Failed to post comment';
-      console.error('[Comments] Submit failed:', msg);
-      setError(msg);
+    } catch (submitError) {
+      console.error('[Comments] Submit failed:', submitError);
+      setError(t('comments.post_error'));
     } finally {
       setSubmitting(false);
     }
   };
 
-  const handleLike = async (commentId: number, currentLikes: number) => {
+  const handleLike = async (commentId: number) => {
+    if (!user) return;
     try {
-      const url = `${getAPIBaseURL()}/api/v1/entities/comments/${commentId}`;
-      const response = await fetch(url, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ likes: currentLikes + 1 }),
+      const response = await fetch(`/api/v1/entities/comments/${commentId}/like`, {
+        method: 'POST',
+        headers: authHeaders(),
       });
-
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}`);
-      }
-
+      if (!response.ok) throw new Error(await readError(response));
       await loadComments();
-    } catch (err) {
-      console.error('[Comments] Like failed:', err);
+    } catch (likeError) {
+      console.error('[Comments] Like failed:', likeError);
+      setError(t('comments.like_error'));
     }
   };
 
   const handleDelete = async (commentId: number) => {
-    if (!confirm('Delete this comment?')) return;
+    if (!window.confirm(t('comments.delete_confirm'))) return;
     try {
-      const url = `${getAPIBaseURL()}/api/v1/entities/comments/${commentId}`;
-      const response = await fetch(url, {
+      const response = await fetch(`/api/v1/entities/comments/${commentId}`, {
         method: 'DELETE',
+        headers: authHeaders(),
       });
-
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}`);
-      }
-
+      if (!response.ok) throw new Error(await readError(response));
       await loadComments();
-    } catch (err) {
-      console.error('[Comments] Delete failed:', err);
+    } catch (deleteError) {
+      console.error('[Comments] Delete failed:', deleteError);
+      setError(t('comments.delete_error'));
     }
   };
 
   return (
-    <div className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-5">
-      <h3 className="text-lg font-semibold text-white mb-4">
-        💬 {t('comments.title', 'Discussion')} ({comments.length})
+    <section className="mt-6 bg-slate-800/50 border border-slate-700/50 rounded-xl p-5" aria-labelledby="discussion-title">
+      <h3 id="discussion-title" className="text-lg font-semibold text-white mb-4">
+        💬 {t('comments.title')} ({comments.length})
       </h3>
 
       {error && (
-        <div className="mb-3 text-xs text-red-400 bg-red-950/30 border border-red-800/50 rounded-lg p-2">
-          <strong>Erreur :</strong> {error}
+        <div className="mb-3 text-sm text-red-300 bg-red-950/30 border border-red-800/50 rounded-lg p-3" role="alert">
+          {error}
         </div>
       )}
 
@@ -147,9 +152,10 @@ export default function Comments({ projectId }: CommentsProps) {
         <form onSubmit={handleSubmit} className="mb-4">
           <textarea
             value={newComment}
-            onChange={(e) => setNewComment(e.target.value)}
-            placeholder={t('comments.placeholder', 'Share your thoughts...')}
+            onChange={(event) => setNewComment(event.target.value)}
+            placeholder={t('comments.placeholder')}
             rows={3}
+            maxLength={2000}
             className="w-full px-3 py-2 rounded-lg bg-slate-900 border border-slate-700 text-white text-sm focus:outline-none focus:border-indigo-500 resize-none"
           />
           <button
@@ -157,25 +163,23 @@ export default function Comments({ projectId }: CommentsProps) {
             disabled={submitting || !newComment.trim()}
             className="mt-2 px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 text-white text-sm font-medium transition-colors"
           >
-            {submitting ? '⏳...' : t('comments.post', 'Post Comment')}
+            {submitting ? t('comments.posting') : t('comments.post')}
           </button>
         </form>
       ) : (
         <div className="text-center text-gray-400 text-sm py-2 mb-4">
-          {t('comments.login_required', 'Connectez-vous pour participer à la discussion')}
+          {t('comments.login_to_comment')}
         </div>
       )}
 
       {loading ? (
-        <div className="text-center text-gray-400 text-sm py-4">⏳...</div>
+        <div className="text-center text-gray-400 text-sm py-4">{t('common.loading')}</div>
       ) : comments.length === 0 ? (
-        <div className="text-center text-gray-500 text-sm py-4">
-          {t('comments.no_comments', 'Aucun commentaire pour le moment')}
-        </div>
+        <div className="text-center text-gray-500 text-sm py-4">{t('comments.no_comments')}</div>
       ) : (
         <div className="space-y-3">
           {comments.map((comment) => (
-            <div key={comment.id} className="bg-slate-900/50 rounded-lg p-3 border border-slate-700/30">
+            <article key={comment.id} className="bg-slate-900/50 rounded-lg p-3 border border-slate-700/30">
               <div className="flex items-start justify-between mb-2">
                 <div className="flex items-center gap-2">
                   <div className="w-7 h-7 rounded-full bg-indigo-600/40 flex items-center justify-center text-xs text-indigo-300 font-semibold">
@@ -183,33 +187,25 @@ export default function Comments({ projectId }: CommentsProps) {
                   </div>
                   <div>
                     <div className="text-sm font-medium text-white">@{comment.pi_username}</div>
-                    <div className="text-xs text-gray-500">
-                      {new Date(comment.created_at).toLocaleString()}
-                    </div>
+                    <time className="text-xs text-gray-500">
+                      {comment.created_at ? new Date(comment.created_at).toLocaleString(getLocale()) : ''}
+                    </time>
                   </div>
                 </div>
                 {user?.uid === comment.pi_uid && (
-                  <button
-                    onClick={() => handleDelete(comment.id)}
-                    className="text-xs text-red-400 hover:text-red-300 transition-colors"
-                  >
+                  <button onClick={() => handleDelete(comment.id)} className="text-xs text-red-400 hover:text-red-300" aria-label={t('comments.delete')}>
                     🗑️
                   </button>
                 )}
               </div>
               <p className="text-sm text-gray-300 whitespace-pre-wrap">{comment.content}</p>
-              <div className="mt-2 flex items-center gap-3">
-                <button
-                  onClick={() => handleLike(comment.id, comment.likes)}
-                  className="text-xs text-gray-400 hover:text-indigo-400 transition-colors"
-                >
-                  👍 {comment.likes}
-                </button>
-              </div>
-            </div>
+              <button onClick={() => handleLike(comment.id)} disabled={!user} className="mt-2 text-xs text-gray-400 hover:text-indigo-400 disabled:opacity-50">
+                👍 {comment.likes || 0}
+              </button>
+            </article>
           ))}
         </div>
       )}
-    </div>
+    </section>
   );
 }

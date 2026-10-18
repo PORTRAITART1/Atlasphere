@@ -21,6 +21,7 @@ import {
 } from '@/lib/api';
 import { getCurrentUser, subscribe, submitGovernanceVote, createPiPayment, shareProposal } from '@/lib/pi-sdk';
 import { t, subscribeI18n } from '@/lib/i18n';
+import { localizeProject } from '@/lib/project-localization';
 
 export default function ProposalDetail() {
   const { id } = useParams<{ id: string }>();
@@ -35,7 +36,10 @@ export default function ProposalDetail() {
   const [, setLang] = useState(0);
 
   useEffect(() => {
-    return subscribeI18n(() => setLang((n) => n + 1));
+    return subscribeI18n(() => {
+      setLang((n) => n + 1);
+      setProject((current) => (current ? localizeProject(current) : current));
+    });
   }, []);
 
   useEffect(() => {

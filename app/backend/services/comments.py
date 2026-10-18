@@ -1,7 +1,7 @@
 import logging
 from typing import Optional, Dict, Any, List
 
-from sqlalchemy import select, func
+from sqlalchemy import select, func, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.backend.models.comments import Comments
@@ -83,6 +83,25 @@ class CommentsService:
             }
         except Exception as e:
             logger.error(f"Error fetching comments list: {str(e)}")
+            raise
+
+    async def increment_likes(self, obj_id: int) -> Optional[Comments]:
+        """Increment likes atomically and return the refreshed comment."""
+        try:
+            result = await self.db.execute(
+                update(Comments)
+                .where(Comments.id == obj_id)
+                .values(likes=func.coalesce(Comments.likes, 0) + 1)
+                .returning(Comments.id)
+            )
+            if result.scalar_one_or_none() is None:
+                await self.db.rollback()
+                return None
+            await self.db.commit()
+            return await self.get_by_id(obj_id)
+        except Exception:
+            await self.db.rollback()
+            logger.exception("Error incrementing likes for comment %s", obj_id)
             raise
 
     async def update(self, obj_id: int, update_data: Dict[str, Any]) -> Optional[Comments]:

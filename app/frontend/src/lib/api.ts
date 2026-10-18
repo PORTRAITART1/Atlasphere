@@ -1,4 +1,5 @@
 import { t } from '@/lib/i18n';
+import { localizeProject, localizeProjects } from '@/lib/project-localization';
 
 // Atlasphere API Service - Version locale (fetch direct)
 // Remplace les appels SDK MetagptX par des appels fetch() natifs
@@ -145,7 +146,9 @@ export async function fetchAllProjects(params?: {
 
   try {
     const localResult = await fetchAPI<ProjectListResponse>(endpoint);
-    if (localResult.items.length > 0) return localResult;
+    if (localResult.items.length > 0) {
+      return { ...localResult, items: localizeProjects(localResult.items) };
+    }
   } catch (error) {
     console.warn('[api] Current-origin projects endpoint unavailable, using public endpoint.', error);
   }
@@ -156,7 +159,8 @@ export async function fetchAllProjects(params?: {
   if (!response.ok) {
     throw new Error('Projects API error: ' + response.status + ' ' + response.statusText);
   }
-  return response.json() as Promise<ProjectListResponse>;
+  const publicResult = await response.json() as ProjectListResponse;
+  return { ...publicResult, items: localizeProjects(publicResult.items) };
 }
 
 export async function fetchMyProjects(params?: {
@@ -172,14 +176,15 @@ export async function fetchMyProjects(params?: {
   if (params?.limit !== undefined) searchParams.set('limit', String(params.limit));
 
   const url = '/api/v1/entities/projects' + (searchParams.toString() ? '?' + searchParams.toString() : '');
-  return await fetchAPI<ProjectListResponse>(url);
+  const result = await fetchAPI<ProjectListResponse>(url);
+  return { ...result, items: localizeProjects(result.items) };
 }
 
 export async function fetchProjectById(id: number): Promise<Project | null> {
   try {
     const url = '/api/v1/entities/projects/all?query=' + encodeURIComponent(JSON.stringify({ id }));
     const data = await fetchAPI<ProjectListResponse>(url);
-    return data?.items?.[0] || null;
+    return data?.items?.[0] ? localizeProject(data.items[0]) : null;
   } catch {
     return null;
   }
