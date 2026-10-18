@@ -25,7 +25,6 @@ router = APIRouter(prefix="/api/v1/governance", tags=["governance"])
 class VoteRequest(BaseModel):
     project_id: int
     vote_type: str  # "for", "against", "abstain"
-    pi_uid: str
 
 
 class FinalizeRequest(BaseModel):
@@ -74,19 +73,13 @@ async def submit_vote(
         raise HTTPException(status_code=400, detail="vote_type must be 'for', 'against', or 'abstain'")
 
     try:
-        # Check if user already voted on this project
-        existing_vote_stmt = select(Votes).where(
-            Votes.project_id == data.project_id,
-            Votes.pi_uid == data.pi_uid
+        # Lock the project row so concurrent votes for the same project are
+        # serialized; duplicate checks and counter updates stay atomic.
+        project_stmt = (
+            select(Projects)
+            .where(Projects.id == data.project_id)
+            .with_for_update()
         )
-        existing_result = await db.execute(existing_vote_stmt)
-        existing_vote = existing_result.scalar_one_or_none()
-
-        if existing_vote:
-            raise HTTPException(status_code=400, detail="You have already voted on this project")
-
-        # Get project
-        project_stmt = select(Projects).where(Projects.id == data.project_id)
         project_result = await db.execute(project_stmt)
         project = project_result.scalar_one_or_none()
 
@@ -96,14 +89,24 @@ async def submit_vote(
         if project.status not in ("proposed", "voting"):
             raise HTTPException(status_code=400, detail=f"Project is not in voting phase (current: {project.status})")
 
-        # Get user's reputation to calculate vote weight
-        profile_stmt = select(Pi_profiles).where(Pi_profiles.pi_uid == data.pi_uid)
+        profile_stmt = select(Pi_profiles).where(
+            Pi_profiles.user_id == str(current_user.id)
+        )
         profile_result = await db.execute(profile_stmt)
         profile = profile_result.scalar_one_or_none()
+        if not profile:
+            raise HTTPException(status_code=403, detail="A linked Pi profile is required to vote")
 
-        reputation = 0
-        if profile:
-            reputation = profile.reputation or 0
+        pi_uid = profile.pi_uid
+        existing_vote_stmt = select(Votes).where(
+            Votes.project_id == data.project_id,
+            Votes.pi_uid == pi_uid,
+        )
+        existing_result = await db.execute(existing_vote_stmt)
+        if existing_result.scalar_one_or_none():
+            raise HTTPException(status_code=409, detail="You have already voted on this project")
+
+        reputation = profile.reputation or 0
 
         # Calculate weight using logarithmic formula
         weight = round(math.log10(reputation + 10) * 10, 2)
@@ -113,7 +116,7 @@ async def submit_vote(
             project_id=data.project_id,
             vote_type=data.vote_type,
             weight=weight,
-            pi_uid=data.pi_uid,
+            pi_uid=pi_uid,
             user_id=str(current_user.id)
         )
         db.add(vote)

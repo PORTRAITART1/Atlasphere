@@ -374,10 +374,30 @@ export function getCategoryLabel(category: string): string {
   return translated !== key ? translated : category;
 }
 
-export function parseMilestones(milestones: string | null): { title: string; description: string; completed: boolean }[] {
+export type MilestoneStatus = 'upcoming' | 'in_progress' | 'completed';
+
+export interface Milestone {
+  title: string;
+  description: string;
+  status: MilestoneStatus;
+}
+
+export function parseMilestones(milestones: string | null): Milestone[] {
   if (!milestones) return [];
   try {
-    return JSON.parse(milestones);
+    const parsed = JSON.parse(milestones) as Array<Partial<Milestone> & { completed?: boolean }>;
+    if (!Array.isArray(parsed)) return [];
+    return parsed
+      .filter((item) => typeof item.title === 'string' && typeof item.description === 'string')
+      .map((item) => ({
+        title: item.title as string,
+        description: item.description as string,
+        status: item.status === 'completed' || item.status === 'in_progress' || item.status === 'upcoming'
+          ? item.status
+          : item.completed
+            ? 'completed'
+            : 'upcoming',
+      }));
   } catch {
     return [];
   }

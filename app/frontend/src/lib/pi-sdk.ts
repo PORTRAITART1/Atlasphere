@@ -1,6 +1,7 @@
 // Pi Network SDK v2.0 Integration for Atlasphere
 // Aligned with @pinetwork-js/sdk and Pi Develop platform standards
 // Reference: https://github.com/pi-apps/pi-platform-docs/blob/master/SDK_reference.md
+import { createClient } from '@metagptx/web-sdk';
 import { getAPIBaseURL } from './config';
 
 // --- Pi SDK Types (aligned with @pinetwork-js/api-typing) ---
@@ -150,6 +151,7 @@ declare global {
 }
 
 let currentUser: PiUser | null = null;
+const client = createClient();
 const listeners: Set<() => void> = new Set();
 let piSdkInitialized = false;
 
@@ -521,22 +523,21 @@ export async function submitGovernanceVote(projectId: number, voteType: 'for' | 
   }
 
   try {
-    const response = await fetch(`${getAPIBaseURL()}/api/v1/governance/vote`, {
+    const atlasphereJwt = localStorage.getItem('atlasphere_jwt') || '';
+    const response = await client.apiCall.invoke({
+      url: '/api/v1/governance/vote',
       method: 'POST',
-      headers: authHeaders(),
-      body: JSON.stringify({
+      data: {
         project_id: projectId,
         vote_type: voteType,
-        pi_uid: currentUser.uid,
-      }),
+      },
+      options: atlasphereJwt
+        ? { headers: { Authorization: `Bearer ${atlasphereJwt}` } }
+        : undefined,
     });
 
-    if (!response.ok) {
-      const errText = await response.text().catch(() => '');
-      return { success: false, message: `Vote failed (${response.status}): ${errText}` };
-    }
-
-    const data = await response.json();
+    const envelope = response as { data?: Record<string, unknown> };
+    const data = (envelope.data ?? response) as Record<string, unknown>;
     if (data) {
       currentUser = {
         ...currentUser,
@@ -550,16 +551,21 @@ export async function submitGovernanceVote(projectId: number, voteType: 'for' | 
 
       return {
         success: true,
-        weight: data.weight,
-        votesFor: data.project_votes_for,
-        votesAgainst: data.project_votes_against,
-        message: data.message,
+        weight: Number(data.weight),
+        votesFor: Number(data.project_votes_for),
+        votesAgainst: Number(data.project_votes_against),
+        message: String(data.message ?? ''),
       };
     }
     return { success: false, message: 'No response data' };
   } catch (error) {
-    const msg = error instanceof Error ? error.message : 'Vote submission failed';
-    return { success: false, message: msg };
+    const apiError = error as {
+      message?: string;
+      response?: { status?: number; data?: { detail?: string } };
+    };
+    const detail = apiError.response?.data?.detail ?? apiError.message ?? 'Vote submission failed';
+    const duplicate = apiError.response?.status === 409 || detail.toLowerCase().includes('already voted');
+    return { success: false, message: duplicate ? 'already_voted' : detail };
   }
 }
 

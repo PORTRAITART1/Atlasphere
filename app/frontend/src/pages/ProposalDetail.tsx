@@ -30,6 +30,8 @@ export default function ProposalDetail() {
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState(getCurrentUser());
   const [voted, setVoted] = useState(false);
+  const [voteSubmitting, setVoteSubmitting] = useState(false);
+  const [voteError, setVoteError] = useState('');
   const [contributionAmount, setContributionAmount] = useState('10');
   const [contributing, setContributing] = useState(false);
   const [activeTab, setActiveTab] = useState<'overview' | 'milestones' | 'team'>('overview');
@@ -45,6 +47,10 @@ export default function ProposalDetail() {
   useEffect(() => {
     return subscribe(() => setUser(getCurrentUser()));
   }, []);
+
+  useEffect(() => {
+    setVoted(Boolean(user && votes.some((vote) => vote.pi_uid === user.uid)));
+  }, [user, votes]);
 
   useEffect(() => {
     if (id) loadProject(parseInt(id));
@@ -77,11 +83,25 @@ export default function ProposalDetail() {
   };
 
   const handleVote = async (voteType: 'for' | 'against') => {
-    if (!user || !project || voted) return;
+    if (!user || !project || voted || voteSubmitting) return;
+
+    setVoteSubmitting(true);
+    setVoteError('');
     try {
       const result = await submitGovernanceVote(project.id, voteType);
 
       if (result.success) {
+        const recordedVote: Vote = {
+          id: Date.now(),
+          project_id: project.id,
+          vote_type: voteType,
+          weight: result.weight ?? 0,
+          pi_uid: user.uid,
+          user_id: user.uid,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        };
+        setVotes((current) => [recordedVote, ...current]);
         setProject({
           ...project,
           votes_for: result.votesFor ?? (project.votes_for || 0),
@@ -89,15 +109,17 @@ export default function ProposalDetail() {
           voter_count: (project.voter_count || 0) + 1,
         });
         setVoted(true);
+      } else if (result.message === 'already_voted') {
+        setVoted(true);
+        setVoteError(t('detail.vote_duplicate'));
       } else {
-        console.error('Vote failed:', result.message);
-        // If already voted, mark as voted
-        if (result.message?.includes('already voted')) {
-          setVoted(true);
-        }
+        setVoteError(t('detail.vote_error'));
       }
     } catch (err) {
       console.error('Vote failed:', err);
+      setVoteError(t('detail.vote_error'));
+    } finally {
+      setVoteSubmitting(false);
     }
   };
 
@@ -273,27 +295,34 @@ export default function ProposalDetail() {
                   <h3 className="text-lg font-semibold text-white mb-4">{t('detail.milestones_title')}</h3>
                   {milestones.length > 0 ? (
                     <div className="space-y-4">
-                      {milestones.map((m, i) => (
-                        <div key={i} className="flex items-start gap-3">
-                          <div
-                            className={`w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 ${
-                              m.completed ? 'bg-emerald-500' : 'bg-slate-700'
-                            }`}
-                          >
-                            {m.completed ? (
-                              <span className="text-white text-xs">✓</span>
-                            ) : (
-                              <span className="text-gray-400 text-xs">{i + 1}</span>
-                            )}
-                          </div>
-                          <div>
-                            <div className={`font-medium ${m.completed ? 'text-emerald-400' : 'text-white'}`}>
-                              {m.title}
+                      {milestones.map((milestone, index) => {
+                        const statusStyles = {
+                          completed: 'border-emerald-500/30 bg-emerald-500/10 text-emerald-300',
+                          in_progress: 'border-amber-500/30 bg-amber-500/10 text-amber-300',
+                          upcoming: 'border-slate-600 bg-slate-900/60 text-slate-300',
+                        } as const;
+                        const dotStyles = {
+                          completed: 'bg-emerald-500 text-white',
+                          in_progress: 'bg-amber-500 text-slate-950',
+                          upcoming: 'bg-slate-700 text-slate-300',
+                        } as const;
+                        return (
+                          <div key={`${milestone.title}-${index}`} className="flex items-start gap-3">
+                            <div className={`mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-xs font-semibold ${dotStyles[milestone.status]}`}>
+                              {milestone.status === 'completed' ? '✓' : index + 1}
                             </div>
-                            <div className="text-sm text-gray-400">{m.description}</div>
+                            <div className="min-w-0 flex-1 rounded-lg border border-slate-700/60 bg-slate-900/30 p-3">
+                              <div className="flex flex-wrap items-center justify-between gap-2">
+                                <div className="font-medium text-white">{milestone.title}</div>
+                                <span className={`rounded-full border px-2 py-0.5 text-xs font-medium ${statusStyles[milestone.status]}`}>
+                                  {t(`detail.milestone.${milestone.status}`)}
+                                </span>
+                              </div>
+                              <div className="mt-1 text-sm leading-relaxed text-gray-400">{milestone.description}</div>
+                            </div>
                           </div>
-                        </div>
-                      ))}
+                        );
+                      })}
                     </div>
                   ) : (
                     <p className="text-gray-400 text-sm">{t('detail.no_milestones')}</p>
@@ -391,22 +420,31 @@ export default function ProposalDetail() {
                   {user && !voted ? (
                     <div className="flex gap-2">
                       <button
+                        type="button"
                         onClick={() => handleVote('for')}
-                        className="flex-1 px-4 py-2 rounded-lg bg-emerald-600 text-white text-sm font-medium hover:bg-emerald-500 transition-colors"
+                        disabled={voteSubmitting}
+                        className="flex-1 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-emerald-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400 disabled:pointer-events-none disabled:opacity-50"
                       >
-                        {t('detail.vote_for')}
+                        {voteSubmitting ? t('detail.vote_submitting') : t('detail.vote_for')}
                       </button>
                       <button
+                        type="button"
                         onClick={() => handleVote('against')}
-                        className="flex-1 px-4 py-2 rounded-lg bg-red-600 text-white text-sm font-medium hover:bg-red-500 transition-colors"
+                        disabled={voteSubmitting}
+                        className="flex-1 rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-red-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-400 disabled:pointer-events-none disabled:opacity-50"
                       >
-                        {t('detail.vote_against')}
+                        {voteSubmitting ? t('detail.vote_submitting') : t('detail.vote_against')}
                       </button>
                     </div>
                   ) : voted ? (
                     <div className="text-center text-emerald-400 text-sm py-2">{t('detail.vote_recorded')}</div>
                   ) : (
                     <div className="text-center text-gray-400 text-sm py-2">{t('detail.login_to_vote')}</div>
+                  )}
+                  {voteError && (
+                    <p className="mt-3 rounded-lg border border-red-500/30 bg-red-500/10 px-3 py-2 text-sm text-red-300" role="alert">
+                      {voteError}
+                    </p>
                   )}
                 </motion.div>
               )}
