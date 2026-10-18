@@ -496,14 +496,22 @@ export async function createPiPayment(
       {
         onReadyForServerApproval: async (paymentId: string) => {
           try {
-            await client.apiCall.invoke({
-              url: '/api/v1/pi-pay/approve',
+            const apiBase = getAPIBaseURL();
+            const response = await fetch(`${apiBase}/api/v1/pi-pay/approve`, {
               method: 'POST',
-              data: {
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
                 payment_id: paymentId,
                 pi_access_token: auth.accessToken,
-              },
+              }),
             });
+
+            if (!response.ok) {
+              const errText = await response.text();
+              throw new Error(`HTTP ${response.status}: ${errText}`);
+            }
 
             console.log('[Atlasphere] Payment approved by server:', paymentId);
           } catch (err) {
