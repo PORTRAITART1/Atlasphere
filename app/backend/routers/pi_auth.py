@@ -230,3 +230,86 @@ async def _calculate_reputation(db: AsyncSession, pi_uid: str, profile: Pi_profi
         await db.commit()
 
     return reputation
+
+# ---------------------------------------------------------------------------
+# Exchange Pi access token for an Atlasphere JWT
+# ---------------------------------------------------------------------------
+class PiExchangeRequest(BaseModel):
+    access_token: str
+
+
+@router.post("/exchange")
+async def exchange_pi_token(
+    data: PiExchangeRequest,
+    db: AsyncSession = Depends(get_db),
+):
+    """
+    Exchange a Pi Network access token for an Atlasphere JWT.
+    This allows the frontend to authenticate users with Pi and then
+    call protected routes (votes, comments) with a standard Bearer token.
+    """
+    pi_api_key = os.environ.get("PI_API_KEY", "")
+
+    # 1. Verify the Pi token against the Pi Platform API
+    try:
+        async with httpx.AsyncClient(timeout=20.0) as client:
+            response = await client.get(
+                f"{PI_API_BASE}/v2/me",
+                headers={"Authorization": f"Bearer {data.access_token}"}
+            )
+        if response.status_code != 200:
+            raise HTTPException(status_code=401, detail="Invalid Pi access token")
+        pi_data = response.json()
+        pi_uid = pi_data.get("uid", "")
+        username = pi_data.get("username", "")
+        if not pi_uid or not username:
+            raise HTTPException(status_code=401, detail="Invalid Pi user data")
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Pi token exchange failed: {str(e)}", exc_info=True)
+        raise HTTPException(status_code=500, detail="Pi token verification failed")
+
+    # 2. Find or create the user profile in our database
+    stmt = select(Pi_profiles).where(Pi_profiles.pi_uid == pi_uid)
+    result = await db.execute(stmt)
+    profile = result.scalar_one_or_none()
+
+    if profile is None:
+        # Create a new profile for this Pi user (without a linked platform account)
+        profile = Pi_profiles(
+            pi_uid=pi_uid,
+            username=username,
+            display_name=username,
+            reputation=0,
+            voting_power=1.0,
+            pi_locked=0,
+            streak_days=0,
+            kyc_verified=False,
+            language="fr",
+            badges="[]",
+            level="bronze",
+            last_active="now",
+            user_id=pi_uid  # Use pi_uid as a placeholder user_id
+        )
+        db.add(profile)
+        await db.commit()
+        await db.refresh(profile)
+
+    # 3. Create an Atlasphere JWT for this Pi user
+    from app.backend.core.auth import create_access_token
+    atlasphere_jwt = create_access_token({
+        "sub": str(profile.id),   # Use the profile ID as the subject
+        "email": "",
+        "name": username,
+        "role": "user",
+        "pi_uid": pi_uid,
+        "pi_username": username,
+    })
+
+    # 4. Return the JWT to the frontend
+    return {
+        "atlasphere_jwt": atlasphere_jwt,
+        "pi_uid": pi_uid,
+        "username": username,
+    }

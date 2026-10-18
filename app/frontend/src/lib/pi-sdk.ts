@@ -273,7 +273,7 @@ async function onIncompletePaymentFound(payment: APIPayment) {
 async function verifyWithBackend(accessToken: string): Promise<PiUser | null> {
   try {
     // Note : la vérification initiale utilise le token Pi, pas le JWT
-    const response = await fetch(`${getAPIBaseURL()}/api/v1/pi-auth/verify`, {
+    const response = await fetch(`${getAPIBaseURL()}/api/v1/pi-auth/exchange`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
