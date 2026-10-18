@@ -490,7 +490,14 @@ export async function createPiPayment(
     delete normalizedMetadata.projectId;
     if (projectId) normalizedMetadata.project_id = projectId;
 
-    await window.Pi.createPayment(
+    let resolveLifecycle!: (completed: boolean) => void;
+    let rejectLifecycle!: (error: Error) => void;
+    const lifecycle = new Promise<boolean>((resolve, reject) => {
+      resolveLifecycle = resolve;
+      rejectLifecycle = reject;
+    });
+
+    const walletFlow = window.Pi.createPayment(
       { amount, memo, metadata: normalizedMetadata },
       {
         onReadyForServerApproval: async (paymentId: string) => {
@@ -512,7 +519,9 @@ export async function createPiPayment(
             console.log('[Atlasphere] Payment approved by server:', paymentId);
           } catch (err) {
             console.error('[Atlasphere] Server approval failed:', err);
-            throw err;
+            const error = err instanceof Error ? err : new Error(String(err));
+            rejectLifecycle(error);
+            throw error;
           }
 
           if (onApprove) await onApprove(paymentId);
@@ -536,25 +545,40 @@ export async function createPiPayment(
             }
 
             console.log('[Atlasphere] Payment completed:', paymentId, txid);
+            if (onComplete) await onComplete(paymentId, txid);
+            resolveLifecycle(true);
           } catch (err) {
             console.error('[Atlasphere] Server completion failed:', err);
-            throw err;
+            const error = err instanceof Error ? err : new Error(String(err));
+            rejectLifecycle(error);
+            throw error;
           }
-
-          if (onComplete) await onComplete(paymentId, txid);
         },
 
         onCancel: (paymentId: string) => {
           console.log('[Atlasphere] Payment cancelled:', paymentId);
+          void fetch(`${getAPIBaseURL()}/api/v1/pi-pay/cancel`, {
+            method: 'POST',
+            headers: authHeaders(),
+            body: JSON.stringify({
+              payment_id: paymentId,
+              reason: 'Cancelled by the Pioneer in Pi Wallet',
+            }),
+          }).catch((error) => {
+            console.warn('[Atlasphere] Could not record payment cancellation:', error);
+          });
+          rejectLifecycle(new Error('Paiement annulé dans Pi Wallet.'));
         },
 
         onError: (error: Error) => {
           console.error('[Atlasphere] Payment error:', error);
+          rejectLifecycle(error);
         }
       }
     );
 
-    return true;
+    const [, completed] = await Promise.all([walletFlow, lifecycle]);
+    return completed;
   } catch (error) {
     const msg = error instanceof Error ? error.message : String(error);
     console.error('[Atlasphere] Payment creation failed:', msg);

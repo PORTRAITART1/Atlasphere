@@ -109,8 +109,8 @@ export default function PiPaymentButton({
         onSuccess?.();
       } else {
         setStatus('error');
-        setMessage(t('common.error'));
-        onError?.(t('common.error'));
+        setMessage(cleaned.rawMessage || t('common.error'));
+        onError?.(cleaned.rawMessage || t('common.error'));
       }
     } finally {
       setIsProcessing(false);

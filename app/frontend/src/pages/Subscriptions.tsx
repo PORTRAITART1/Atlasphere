@@ -117,10 +117,10 @@ export default function Subscriptions() {
       if (!hasTrial || autoRenew) {
         // Per PiRC2 spec: immediate payment for first period (no trial) or approval for auto-renew
         const success = await createPiPayment(
-          hasTrial ? 0 : piAmount,
+          piAmount,
           `Atlasphere ${service.name} - Abonnement`,
           {
-            type: 'subscription',
+            purpose: 'subscription',
             service_id: service.service_id.toString(),
             auto_renew: autoRenew.toString(),
             contract_id: PIRC2_CONTRACT_ID,

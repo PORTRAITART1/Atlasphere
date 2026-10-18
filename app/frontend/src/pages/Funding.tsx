@@ -8,8 +8,6 @@ import PiPaymentButton from '@/components/PiPaymentButton';
 import { t, subscribeI18n } from '@/lib/i18n';
 import {
   fetchAllProjects,
-  createContribution,
-  updateProject,
   type Project,
 } from '@/lib/api';
 import { getCurrentUser, subscribe } from '@/lib/pi-sdk';
@@ -18,7 +16,6 @@ export default function Funding() {
   const [user, setUser] = useState(getCurrentUser());
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
-  const [contributedIds, setContributedIds] = useState<Set<number>>(new Set());
   const [, setLangTick] = useState(0);
 
   useEffect(() => {
@@ -48,30 +45,6 @@ export default function Funding() {
       console.error('Failed to load funding projects:', err);
     } finally {
       setLoading(false);
-    }
-  };
-
-  const handleContribute = async (project: Project, amount: number) => {
-    if (!user) return;
-    try {
-      await createContribution({
-        project_id: project.id,
-        amount,
-        pi_uid: user.uid,
-        status: 'completed',
-      });
-
-      // Update project raised amount
-      const newRaised = (project.raised || 0) + amount;
-      await updateProject(project.id, { raised: newRaised });
-
-      // Update local state
-      setProjects((prev) =>
-        prev.map((p) => (p.id === project.id ? { ...p, raised: newRaised } : p))
-      );
-      setContributedIds(new Set([...contributedIds, project.id]));
-    } catch (err) {
-      console.error('Contribution failed:', err);
     }
   };
 
@@ -127,8 +100,6 @@ export default function Funding() {
             <div className="space-y-6">
               {projects.map((p, i) => {
                 const percentage = p.budget > 0 ? ((p.raised || 0) / p.budget) * 100 : 0;
-                const hasContributed = contributedIds.has(p.id);
-
                 return (
                   <motion.div
                     key={p.id}
@@ -178,35 +149,22 @@ export default function Funding() {
                       </div>
 
                       <div className="flex flex-col gap-2 min-w-[160px]">
-                        {user && !hasContributed ? (
+                        {user ? (
                           <>
-                            <button
-                              onClick={() => handleContribute(p, 10)}
-                              className="px-4 py-2 rounded-lg bg-amber-600 text-white text-sm font-medium hover:bg-amber-500 transition-colors"
-                            >
-                              {t('funding.contribute_10')}
-                            </button>
-                            <button
-                              onClick={() => handleContribute(p, 50)}
-                              className="px-4 py-2 rounded-lg bg-amber-700 text-white text-sm font-medium hover:bg-amber-600 transition-colors"
-                            >
-                              {t('funding.contribute_50')}
-                            </button>
-                            <PiPaymentButton
-                              amount={100}
-                              projectId={p.id}
-                              purpose="project_funding"
-                              memo={`${t('funding.memo')} ${p.title}`}
-                              onSuccess={() => loadFundingProjects()}
-                              className="px-4 py-2 rounded-lg bg-gradient-to-r from-amber-600 to-amber-500 text-white text-sm font-medium hover:from-amber-500 hover:to-amber-400 transition-all"
-                            >
-                              {t('funding.contribute_100')}
-                            </PiPaymentButton>
+                            {[10, 50, 100].map((amount) => (
+                              <PiPaymentButton
+                                key={amount}
+                                amount={amount}
+                                projectId={p.id}
+                                purpose="project_funding"
+                                memo={`${t('funding.memo')} ${p.title}`}
+                                onSuccess={() => loadFundingProjects()}
+                                className="px-4 py-2 rounded-lg bg-amber-600 text-white text-sm font-medium hover:bg-amber-500 transition-colors"
+                              >
+                                {t(`funding.contribute_${amount}`)}
+                              </PiPaymentButton>
+                            ))}
                           </>
-                        ) : hasContributed ? (
-                          <div className="text-center text-amber-400 text-sm py-2">
-                            {t('funding.thanks')}
-                          </div>
                         ) : (
                           <div className="text-center text-gray-400 text-sm py-2">
                             {t('funding.login_to_contribute')}

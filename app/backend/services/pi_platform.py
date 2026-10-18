@@ -223,4 +223,4 @@ def detect_network(payment: Dict[str, Any]) -> str:
     raw = str(payment.get("network") or "").strip()
     if raw:
         return raw.lower().replace("pi ", "").replace(" ", "_")
-    return "testnet"
+    return "mainnet"

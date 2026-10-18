@@ -14,7 +14,7 @@ export default function EcoPremium() {
     if (price === 0) return;
     setProcessing(planId);
     try {
-      await createPiPayment(price, `EcoChain Premium - ${planId}`, { planId, type: 'subscription' });
+      await createPiPayment(price, `EcoChain Premium - ${planId}`, { planId, purpose: 'premium' });
       setSuccess(true);
       setTimeout(() => setSuccess(false), 3000);
     } catch (err) {
