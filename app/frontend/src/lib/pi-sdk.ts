@@ -259,20 +259,17 @@ async function onIncompletePaymentFound(payment: APIPayment) {
       console.log('[Atlasphere] Approving incomplete payment:', payment.identifier);
 
       const piAccessToken = localStorage.getItem('atlasphere_pi_token') || '';
-      const approveResponse = await fetch(`${getAPIBaseURL()}/api/v1/pi-pay/approve`, {
+      const approveResponse = await client.apiCall.invoke({
+        url: '/api/v1/pi-pay/approve',
         method: 'POST',
-        headers: authHeaders(),
-        body: JSON.stringify({
+        data: {
           payment_id: payment.identifier,
           pi_access_token: piAccessToken,
-        }),
+        },
       });
 
-      if (!approveResponse.ok) {
-        const errorText = await approveResponse.text().catch(() => '');
-        throw new Error(
-          `Server approval failed with status ${approveResponse.status}${errorText ? `: ${errorText}` : ''}`
-        );
+      if (!approveResponse) {
+        throw new Error('Le serveur n’a pas confirmé l’approbation du paiement.');
       }
     }
 
@@ -280,21 +277,18 @@ async function onIncompletePaymentFound(payment: APIPayment) {
       console.log('[Atlasphere] Completing incomplete payment:', payment.identifier);
 
       const piAccessToken = localStorage.getItem('atlasphere_pi_token') || '';
-      const completeResponse = await fetch(`${getAPIBaseURL()}/api/v1/pi-pay/complete`, {
+      const completeResponse = await client.apiCall.invoke({
+        url: '/api/v1/pi-pay/complete',
         method: 'POST',
-        headers: authHeaders(),
-        body: JSON.stringify({
+        data: {
           payment_id: payment.identifier,
           txid: payment.transaction.txid,
           pi_access_token: piAccessToken,
-        }),
+        },
       });
 
-      if (!completeResponse.ok) {
-        const errorText = await completeResponse.text().catch(() => '');
-        throw new Error(
-          `Server completion failed with status ${completeResponse.status}${errorText ? `: ${errorText}` : ''}`
-        );
+      if (!completeResponse) {
+        throw new Error('Le serveur n’a pas confirmé la finalisation du paiement.');
       }
 
       console.log('[Atlasphere] Incomplete payment completed successfully:', payment.identifier);
@@ -502,19 +496,14 @@ export async function createPiPayment(
       {
         onReadyForServerApproval: async (paymentId: string) => {
           try {
-            const response = await fetch(`${getAPIBaseURL()}/api/v1/pi-pay/approve`, {
+            await client.apiCall.invoke({
+              url: '/api/v1/pi-pay/approve',
               method: 'POST',
-              headers: authHeaders(),
-              body: JSON.stringify({
+              data: {
                 payment_id: paymentId,
                 pi_access_token: auth.accessToken,
-              })
+              },
             });
-
-            if (!response.ok) {
-              const errText = await response.text().catch(() => '');
-              throw new Error(`Server approval failed (${response.status}): ${errText}`);
-            }
 
             console.log('[Atlasphere] Payment approved by server:', paymentId);
           } catch (err) {
@@ -529,20 +518,15 @@ export async function createPiPayment(
 
         onReadyForServerCompletion: async (paymentId: string, txid: string) => {
           try {
-            const response = await fetch(`${getAPIBaseURL()}/api/v1/pi-pay/complete`, {
+            await client.apiCall.invoke({
+              url: '/api/v1/pi-pay/complete',
               method: 'POST',
-              headers: authHeaders(),
-              body: JSON.stringify({
+              data: {
                 payment_id: paymentId,
                 txid,
                 pi_access_token: auth.accessToken,
-              })
+              },
             });
-
-            if (!response.ok) {
-              const errText = await response.text().catch(() => '');
-              throw new Error(`Server completion failed (${response.status}): ${errText}`);
-            }
 
             console.log('[Atlasphere] Payment completed:', paymentId, txid);
             if (onComplete) await onComplete(paymentId, txid);
@@ -557,13 +541,13 @@ export async function createPiPayment(
 
         onCancel: (paymentId: string) => {
           console.log('[Atlasphere] Payment cancelled:', paymentId);
-          void fetch(`${getAPIBaseURL()}/api/v1/pi-pay/cancel`, {
+          void client.apiCall.invoke({
+            url: '/api/v1/pi-pay/cancel',
             method: 'POST',
-            headers: authHeaders(),
-            body: JSON.stringify({
+            data: {
               payment_id: paymentId,
               reason: 'Cancelled by the Pioneer in Pi Wallet',
-            }),
+            },
           }).catch((error) => {
             console.warn('[Atlasphere] Could not record payment cancellation:', error);
           });
