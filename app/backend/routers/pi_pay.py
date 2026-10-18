@@ -17,7 +17,6 @@ Security rules enforced here:
   * ``PI_API_KEY`` stays on the server; it is never returned to the frontend.
 """
 
-import asyncio
 import logging
 from typing import Any, Dict, List, Optional
 
@@ -291,68 +290,26 @@ async def approve_payment(
     ledger = PiPaymentLedger(db)
 
     try:
-        payment_task = _load_authoritative_payment(service, data.payment_id)
-        if data.pi_access_token:
-            info, verified_pi_user = await asyncio.gather(
-                payment_task,
-                service.verify_access_token(data.pi_access_token),
-            )
-        else:
-            info = await payment_task
-            verified_pi_user = None
+        # Keep the wallet handshake minimal. Pi Network only needs its own
+        # server-side approval here; payer identity, amount, purpose, project,
+        # transaction and idempotent business effects are all authoritatively
+        # validated again by /complete before anything is credited.
+        info = await _load_authoritative_payment(service, data.payment_id)
         flags = info["flags"]
 
         if flags["cancelled"]:
-            await ledger.record_cancellation(data.payment_id, "Cancelled on the Pi Network side")
             raise HTTPException(status_code=409, detail="This Pi payment was cancelled.")
 
-        if verified_pi_user:
-            verified_uid = str(verified_pi_user.get("uid") or "")
-            if not verified_uid or verified_uid != info["pi_uid"]:
-                raise HTTPException(
-                    status_code=403,
-                    detail="This Pi payment belongs to a different Pi Network account.",
-                )
-        elif current_user is None:
-            raise HTTPException(
-                status_code=403,
-                detail="Sign in with Pi Network before submitting a Pi payment.",
-            )
-
-        # The wallet is timing-sensitive: approve on Pi Network immediately
-        # after authoritative payment/token validation, before local profile or
-        # ledger writes that are not required by the wallet handshake.
         if not flags["developer_approved"]:
             await service.approve_payment(data.payment_id)
 
-        identity = await _resolve_caller_identity(
-            db,
-            service,
-            current_user,
-            info["pi_uid"],
-            data.pi_access_token,
-            verified_pi_user,
-        )
-
-        row = await ledger.record_approval(
-            payment_id=data.payment_id,
-            user_id=identity["user_id"],
-            pi_uid=identity["pi_uid"],
-            pi_username=identity["pi_username"],
-            amount=info["amount"],
-            memo=info["memo"],
-            purpose=info["purpose"],
-            project_id=info["project_id"],
-            network=info["network"],
-        )
-
         return PaymentResult(
             status="approved",
-            payment_id=row.payment_id,
-            amount=float(row.amount),
-            purpose=row.purpose,
-            project_id=row.project_id or 0,
-            message=f"Payment of {row.amount} \u03c0 approved by the Atlasphere server.",
+            payment_id=data.payment_id,
+            amount=info["amount"],
+            purpose=info["purpose"],
+            project_id=info["project_id"],
+            message="Payment approved by the Atlasphere server.",
         )
 
     except PiPlatformError as exc:
