@@ -406,7 +406,7 @@ export async function authenticate(): Promise<PiUser> {
   }
 
   try {
-    const scopes: APIScopes = ['username'];
+    const scopes: APIScopes = ['username', 'payments'];
     const auth = await withTimeout(
       window.Pi.authenticate(scopes, onIncompletePaymentFound),
       15000,
