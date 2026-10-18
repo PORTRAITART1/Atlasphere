@@ -173,6 +173,37 @@ function authHeaders(): Record<string, string> {
 }
 
 let _piInitPromise: Promise<void> | null = null;
+let _atlasphereExchangePromise: Promise<string> | null = null;
+
+export async function ensureAtlasphereJwt(): Promise<string> {
+  const piAccessToken = localStorage.getItem('atlasphere_pi_token') || '';
+  if (!piAccessToken) {
+    throw new Error('Pi authentication is required');
+  }
+
+  if (!_atlasphereExchangePromise) {
+    _atlasphereExchangePromise = fetch(`${getAPIBaseURL()}/api/v1/pi-auth/exchange`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ access_token: piAccessToken }),
+    })
+      .then(async (response) => {
+        if (!response.ok) {
+          localStorage.removeItem('atlasphere_jwt');
+          throw new Error(`Pi token exchange failed (${response.status})`);
+        }
+        const data = await response.json() as { atlasphere_jwt?: string };
+        if (!data.atlasphere_jwt) throw new Error('Atlasphere token missing');
+        localStorage.setItem('atlasphere_jwt', data.atlasphere_jwt);
+        return data.atlasphere_jwt;
+      })
+      .finally(() => {
+        _atlasphereExchangePromise = null;
+      });
+  }
+
+  return _atlasphereExchangePromise;
+}
 
 export async function initPiSdk(): Promise<void> {
   if (piSdkInitialized) return;
@@ -185,10 +216,10 @@ export async function initPiSdk(): Promise<void> {
   if (!_piInitPromise) {
     _piInitPromise = window.Pi.init({
       version: '2.0',
-      sandbox: true
+      sandbox: false
     }).then(() => {
       piSdkInitialized = true;
-      console.log('[Atlasphere] Pi SDK initialized', { sandbox: true });
+      console.log('[Atlasphere] Pi SDK initialized', { sandbox: false });
     });
   }
 
@@ -523,7 +554,7 @@ export async function submitGovernanceVote(projectId: number, voteType: 'for' | 
   }
 
   try {
-    const atlasphereJwt = localStorage.getItem('atlasphere_jwt') || '';
+    const atlasphereJwt = await ensureAtlasphereJwt();
     const apiBase = getAPIBaseURL();
     const response = await fetch(`${apiBase}/api/v1/governance/vote`, {
       method: 'POST',

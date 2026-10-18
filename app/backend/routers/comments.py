@@ -6,9 +6,11 @@ from datetime import datetime, date
 
 from fastapi import APIRouter, Body, Depends, HTTPException, Query
 from pydantic import BaseModel
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.backend.core.database import get_db
+from app.backend.models.pi_profiles import Pi_profiles
 from app.backend.services.comments import CommentsService
 from app.backend.dependencies.auth import get_current_user
 from app.backend.schemas.auth import UserResponse
@@ -79,6 +81,17 @@ class CommentsBatchDeleteRequest(BaseModel):
 
 
 # ---------- Routes ----------
+async def get_pi_identity(db: AsyncSession, current_user: UserResponse) -> tuple[str, str]:
+    """Resolve the authoritative Pi identity linked to the Atlasphere JWT."""
+    result = await db.execute(
+        select(Pi_profiles).where(Pi_profiles.user_id == str(current_user.id))
+    )
+    profile = result.scalar_one_or_none()
+    if not profile:
+        raise HTTPException(status_code=403, detail="A linked Pi profile is required")
+    return profile.pi_uid, profile.username
+
+
 @router.get("", response_model=CommentsListResponse)
 async def query_commentss(
     query: str = Query(None, description="Query conditions (JSON string)"),
@@ -189,7 +202,9 @@ async def create_comments(
     service = CommentsService(db)
     try:
         payload = data.model_dump()
-        payload["pi_uid"] = str(current_user.id)
+        pi_uid, pi_username = await get_pi_identity(db, current_user)
+        payload["pi_uid"] = pi_uid
+        payload["pi_username"] = pi_username
         payload["likes"] = 0
         result = await service.create(payload)
         if not result:
@@ -197,6 +212,8 @@ async def create_comments(
         
         logger.info(f"Comments created successfully with id: {result.id}")
         return result
+    except HTTPException:
+        raise
     except ValueError as e:
         logger.error(f"Validation error creating comments: {str(e)}")
         raise HTTPException(status_code=400, detail=str(e))
@@ -218,9 +235,11 @@ async def create_commentss_batch(
     results = []
 
     try:
+        pi_uid, pi_username = await get_pi_identity(db, current_user)
         for item_data in request.items:
             payload = item_data.model_dump()
-            payload["pi_uid"] = str(current_user.id)
+            payload["pi_uid"] = pi_uid
+            payload["pi_username"] = pi_username
             payload["likes"] = 0
             result = await service.create(payload)
             if result:
@@ -247,11 +266,12 @@ async def update_commentss_batch(
     results = []
 
     try:
+        owner_pi_uid, _ = await get_pi_identity(db, current_user)
         for item in request.items:
             comment = await service.get_by_id(item.id)
             if not comment:
                 raise HTTPException(status_code=404, detail="Comment not found")
-            if comment.pi_uid != str(current_user.id):
+            if comment.pi_uid != owner_pi_uid:
                 raise HTTPException(status_code=403, detail="You can only update your own comments")
             update_dict = {k: v for k, v in item.updates.model_dump().items() if v is not None}
             result = await service.update(item.id, update_dict)
@@ -297,7 +317,8 @@ async def update_comments(
         comment = await service.get_by_id(id)
         if not comment:
             raise HTTPException(status_code=404, detail="Comment not found")
-        if comment.pi_uid != str(current_user.id):
+        owner_pi_uid, _ = await get_pi_identity(db, current_user)
+        if comment.pi_uid != owner_pi_uid:
             raise HTTPException(status_code=403, detail="You can only update your own comments")
         update_dict = {k: v for k, v in data.model_dump().items() if v is not None}
         result = await service.update(id, update_dict)
@@ -330,11 +351,12 @@ async def delete_commentss_batch(
     deleted_count = 0
 
     try:
+        owner_pi_uid, _ = await get_pi_identity(db, current_user)
         for item_id in request.ids:
             comment = await service.get_by_id(item_id)
             if not comment:
                 raise HTTPException(status_code=404, detail="Comment not found")
-            if comment.pi_uid != str(current_user.id):
+            if comment.pi_uid != owner_pi_uid:
                 raise HTTPException(status_code=403, detail="You can only delete your own comments")
             success = await service.delete(item_id)
             if success:
@@ -364,7 +386,8 @@ async def delete_comments(
         comment = await service.get_by_id(id)
         if not comment:
             raise HTTPException(status_code=404, detail="Comment not found")
-        if comment.pi_uid != str(current_user.id):
+        owner_pi_uid, _ = await get_pi_identity(db, current_user)
+        if comment.pi_uid != owner_pi_uid:
             raise HTTPException(status_code=403, detail="You can only delete your own comments")
         success = await service.delete(id)
         if not success:

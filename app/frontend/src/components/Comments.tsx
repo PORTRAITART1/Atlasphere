@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { getCurrentUser } from '@/lib/pi-sdk';
+import { ensureAtlasphereJwt, getCurrentUser } from '@/lib/pi-sdk';
 import { getLocale, t, useI18nRerender } from '@/lib/i18n';
 
 interface Comment {
@@ -24,11 +24,10 @@ interface CommentsProps {
   projectId: number;
 }
 
-function authHeaders(): HeadersInit {
-  const jwt = localStorage.getItem('atlasphere_jwt');
+function authHeaders(jwt: string): HeadersInit {
   return {
     'Content-Type': 'application/json',
-    ...(jwt ? { Authorization: `Bearer ${jwt}` } : {}),
+    Authorization: `Bearer ${jwt}`,
   };
 }
 
@@ -84,15 +83,14 @@ export default function Comments({ projectId }: CommentsProps) {
     setSubmitting(true);
     setError(null);
     try {
+      const jwt = await ensureAtlasphereJwt();
       const response = await fetch('/api/v1/entities/comments', {
         method: 'POST',
-        headers: authHeaders(),
+        headers: authHeaders(jwt),
         body: JSON.stringify({
           project_id: projectId,
           content,
-          pi_uid: user.uid,
           pi_username: user.username,
-          likes: 0,
         }),
       });
       if (!response.ok) throw new Error(await readError(response));
@@ -109,9 +107,10 @@ export default function Comments({ projectId }: CommentsProps) {
   const handleLike = async (commentId: number) => {
     if (!user) return;
     try {
+      const jwt = await ensureAtlasphereJwt();
       const response = await fetch(`/api/v1/entities/comments/${commentId}/like`, {
         method: 'POST',
-        headers: authHeaders(),
+        headers: authHeaders(jwt),
       });
       if (!response.ok) throw new Error(await readError(response));
       await loadComments();
@@ -124,9 +123,10 @@ export default function Comments({ projectId }: CommentsProps) {
   const handleDelete = async (commentId: number) => {
     if (!window.confirm(t('comments.delete_confirm'))) return;
     try {
+      const jwt = await ensureAtlasphereJwt();
       const response = await fetch(`/api/v1/entities/comments/${commentId}`, {
         method: 'DELETE',
-        headers: authHeaders(),
+        headers: authHeaders(jwt),
       });
       if (!response.ok) throw new Error(await readError(response));
       await loadComments();

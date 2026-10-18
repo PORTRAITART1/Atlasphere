@@ -22,7 +22,7 @@ logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/api/v1/pi-auth", tags=["pi-auth"])
 
-PI_API_BASE = "https://api.testnet.minepi.com"
+PI_API_BASE = "https://api.minepi.com"
 
 
 class PiAuthRequest(BaseModel):
@@ -51,7 +51,6 @@ async def verify_pi_auth(
     db: AsyncSession = Depends(get_db),
 ):
     """Verify Pi Network access token and create/update user profile"""
-    pi_api_key = os.environ.get("PI_API_KEY", "")
 
     try:
         # Call Pi API to verify the token
@@ -248,7 +247,6 @@ async def exchange_pi_token(
     This allows the frontend to authenticate users with Pi and then
     call protected routes (votes, comments) with a standard Bearer token.
     """
-    pi_api_key = os.environ.get("PI_API_KEY", "")
 
     # 1. Verify the Pi token against the Pi Platform API
     try:
@@ -276,7 +274,6 @@ async def exchange_pi_token(
     profile = result.scalar_one_or_none()
 
     if profile is None:
-        # Create a new profile for this Pi user (without a linked platform account)
         profile = Pi_profiles(
             pi_uid=pi_uid,
             username=username,
@@ -290,16 +287,20 @@ async def exchange_pi_token(
             badges="[]",
             level="bronze",
             last_active="now",
-            user_id=pi_uid  # Use pi_uid as a placeholder user_id
+            user_id=pi_uid,
         )
         db.add(profile)
-        await db.commit()
-        await db.refresh(profile)
+    else:
+        profile.username = username
+        profile.display_name = username
+        profile.last_active = "now"
+
+    await db.commit()
+    await db.refresh(profile)
 
     # 3. Create an Atlasphere JWT for this Pi user
-    from app.backend.core.auth import create_access_token
     atlasphere_jwt = create_access_token({
-        "sub": str(profile.id),   # Use the profile ID as the subject
+        "sub": str(profile.user_id),
         "email": "",
         "name": username,
         "role": "user",
