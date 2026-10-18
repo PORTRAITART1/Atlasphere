@@ -69,12 +69,16 @@ export default function PiPaymentButton({
   children,
 }: PiPaymentButtonProps) {
   const [isProcessing, setIsProcessing] = useState(false);
+  const [debugInfo, setDebugInfo] = useState<string>('');
   const [status, setStatus] = useState<'idle' | 'approving' | 'completing' | 'done' | 'error' | 'success'>('idle');
   const [message, setMessage] = useState<string>('');
 
   const handlePayment = async () => {
     setMessage('');
     const user = getCurrentUser();
+    const jwt = localStorage.getItem('atlasphere_jwt');
+    const piToken = localStorage.getItem('atlasphere_pi_token');
+    setDebugInfo(`user=${user ? 'OK(' + user.username + ')' : 'NULL'} | jwt=${jwt ? 'OK' : 'NULL'} | piToken=${piToken ? 'OK' : 'NULL'}`);
     if (!user) {
       setStatus('error');
       setMessage(t('payment.login_required'));
@@ -142,6 +146,11 @@ export default function PiPaymentButton({
 
   return (
     <div className="w-full">
+      {debugInfo && (
+        <div className="bg-red-600 text-white p-2 text-xs rounded mb-2 font-mono">
+          DEBUG: {debugInfo}
+        </div>
+      )}
       <button
         onClick={handlePayment}
         disabled={isProcessing || status === 'done' || status === 'success'}
