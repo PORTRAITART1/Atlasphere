@@ -74,12 +74,12 @@ class DatabaseManager:
             importlib.import_module(module_name)
 
     async def create_tables(self):
-        """Create database tables and indexes if they do not already exist.
+        """Create database tables and indexes safely for SQLite.
 
-        SQLite (used on Render fallback) has known issues with the global
-        ``checkfirst`` flag when creating indexes: an index may be reported
-        as missing even though it already exists. We therefore create tables
-        first, then create each index individually with ``checkfirst=True``.
+        SQLite has a known issue: ``create_all`` creates the table *and* its
+        indexes, so creating them again raises "already exists". We therefore
+        create tables *without* indexes first, then create each index
+        individually with ``checkfirst=True``.
         """
         if not self.engine:
             await self.init_db()
@@ -87,12 +87,21 @@ class DatabaseManager:
         self.import_models()
 
         async with self.engine.begin() as conn:
-            # 1. Create tables first (without indexes, handled below).
-            await conn.run_sync(
-                lambda sync_conn: Base.metadata.create_all(sync_conn, checkfirst=True)
-            )
+            # 1. Create tables WITHOUT their indexes (SQLite will not
+            #    auto-create them because we detach them first).
+            for table in Base.metadata.tables.values():
+                indexes = list(table.indexes)
+                for idx in indexes:
+                    table.indexes.discard(idx)
+                try:
+                    await conn.run_sync(
+                        lambda sync_conn, tbl=table: tbl.create(sync_conn, checkfirst=True)
+                    )
+                finally:
+                    for idx in indexes:
+                        table.indexes.add(idx)
 
-            # 2. Create indexes one by one, ignoring "already exists" errors.
+            # 2. Now create each index individually with checkfirst.
             for table in Base.metadata.tables.values():
                 for index in table.indexes:
                     try:
