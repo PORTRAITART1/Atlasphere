@@ -39,4 +39,4 @@ EXPOSE 8000 3000
 
 # Start backend
 WORKDIR /app/app/backend
-CMD ["python3", "-m", "uvicorn", "app.backend.main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD rm -f ./atlasphere_render.db && python3 -m uvicorn app.backend.main:app --host 0.0.0.0 --port $PORT
