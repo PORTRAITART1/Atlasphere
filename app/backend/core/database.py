@@ -74,14 +74,36 @@ class DatabaseManager:
             importlib.import_module(module_name)
 
     async def create_tables(self):
-        """Create database tables if they do not already exist."""
+        """Create database tables and indexes if they do not already exist.
+
+        SQLite (used on Render fallback) has known issues with the global
+        ``checkfirst`` flag when creating indexes: an index may be reported
+        as missing even though it already exists. We therefore create tables
+        first, then create each index individually with ``checkfirst=True``.
+        """
         if not self.engine:
             await self.init_db()
 
         self.import_models()
 
         async with self.engine.begin() as conn:
-            await conn.run_sync(Base.metadata.create_all)
+            # 1. Create tables first (without indexes, handled below).
+            await conn.run_sync(
+                lambda sync_conn: Base.metadata.create_all(sync_conn, checkfirst=True)
+            )
+
+            # 2. Create indexes one by one, ignoring "already exists" errors.
+            for table in Base.metadata.tables.values():
+                for index in table.indexes:
+                    try:
+                        await conn.run_sync(
+                            lambda sync_conn, idx=index: idx.create(
+                                sync_conn, checkfirst=True
+                            )
+                        )
+                    except Exception as exc:
+                        if "already exists" not in str(exc).lower():
+                            raise
 
         logger.info("Database tables created or already exist")
 
