@@ -20,3 +20,8 @@ async def get_validation_key():
 async def get_validation_key_txt():
     """Return the Pi Network validation key as plain text (alternate .txt path)."""
     return PlainTextResponse(content=VALIDATION_KEY, media_type="text/plain")
+
+@router.get("/validation-key.txt", response_class=PlainTextResponse, include_in_schema=False)
+async def get_validation_key_root():
+    """Serve the validation key at the domain root (Pi Network requirement)."""
+    return PlainTextResponse(content=VALIDATION_KEY, media_type="text/plain")
