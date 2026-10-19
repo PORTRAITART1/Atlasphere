@@ -15,9 +15,12 @@ logger = logging.getLogger(__name__)
 load_dotenv()
 
 DATABASE_URL = os.getenv("DATABASE_URL")
-
 if not DATABASE_URL:
-    raise ValueError("DATABASE_URL environment variable is not set.")
+    # Fallback SQLite pour le déploiement Render (validation Pi)
+    DATABASE_URL = "sqlite+aiosqlite:///./atlasphere_render.db"
+    print("⚠️ DATABASE_URL non défini, utilisation de SQLite local pour Render.")
+
+# Le fallback SQLite ci-dessus remplace cette vérification stricte.
 
 # Remplacer les URLs PostgreSQL synchrones par le driver asyncpg
 if DATABASE_URL.startswith("postgres://"):
