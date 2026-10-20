@@ -362,16 +362,19 @@ import os
 
 @app.get("/privacy.html", response_class=HTMLResponse)
 async def privacy_html():
-    file_path = Path("/app/app/frontend/public/privacy.html")
-    if file_path.exists():
-        return HTMLResponse(content=file_path.read_text(encoding="utf-8"))
+    # Try languages in order of preference
+    for lang in ["en", "fr", "es", "de", "it", "pt", "ar", "zh", "ru", "ja"]:
+        file_path = Path(f"/app/app/frontend/public/privacy.{lang}.html")
+        if file_path.exists():
+            return HTMLResponse(content=file_path.read_text(encoding="utf-8"))
     return HTMLResponse(content="<h1>Privacy Policy - Page not found</h1>", status_code=404)
 
 @app.get("/terms.html", response_class=HTMLResponse)
 async def terms_html():
-    file_path = Path("/app/app/frontend/public/terms.html")
-    if file_path.exists():
-        return HTMLResponse(content=file_path.read_text(encoding="utf-8"))
+    for lang in ["en", "fr", "es", "de", "it", "pt", "ar", "zh", "ru", "ja"]:
+        file_path = Path(f"/app/app/frontend/public/terms.{lang}.html")
+        if file_path.exists():
+            return HTMLResponse(content=file_path.read_text(encoding="utf-8"))
     return HTMLResponse(content="<h1>Terms of Service - Page not found</h1>", status_code=404)
 
 
