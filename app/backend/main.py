@@ -7,7 +7,8 @@ from contextlib import asynccontextmanager
 from datetime import datetime
 
 from app.backend.core.config import settings
-from fastapi import FastAPI, HTTPException, Request, status
+from fastapi import FastAPI
+from fastapi.staticfiles import StaticFiles, HTTPException, Request, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.openapi.docs import get_swagger_ui_html
 from fastapi.responses import JSONResponse
@@ -397,3 +398,22 @@ async def debug_files():
         else:
             result[path] = "N'existe pas"
     return result
+
+
+# --- SERVIR LE FRONTEND REACT (dossier dist) ---
+import os
+frontend_dist = Path("/app/app/frontend/dist")
+if frontend_dist.exists():
+    app.mount("/assets", StaticFiles(directory=str(frontend_dist / "assets")), name="assets")
+    
+    @app.get("/{full_path:path}")
+    async def serve_frontend(full_path: str):
+        # Si le fichier existe dans dist, on le sert
+        file_path = frontend_dist / full_path
+        if file_path.exists() and file_path.is_file():
+            return FileResponse(str(file_path))
+        # Sinon, on renvoie index.html (pour React Router)
+        index_path = frontend_dist / "index.html"
+        if index_path.exists():
+            return FileResponse(str(index_path))
+        return HTMLResponse(content="<h1>Frontend not built</h1>", status_code=404)
