@@ -403,7 +403,7 @@ async def debug_files():
 
 # --- SERVIR LE FRONTEND REACT (dossier dist) ---
 import os
-frontend_dist = Path("/app/app/frontend/dist")
+frontend_dist = Path("/app/app/backend/static")
 if frontend_dist.exists():
     app.mount("/assets", StaticFiles(directory=str(frontend_dist / "assets")), name="assets")
     

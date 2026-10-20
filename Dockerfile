@@ -26,13 +26,7 @@ ENV ENVIRONMENT=dev
 RUN pip install --no-cache-dir -r app/backend/requirements.txt || \
     pip install --no-cache-dir -r requirements.txt
 
-# Install Node.js for frontend build
-RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
-    apt-get install -y nodejs
-
-# Build frontend
-WORKDIR /app/app/frontend
-RUN npm install && npm run build && test -f dist/index.html || (echo "ERROR: Frontend build failed - dist/index.html not found" && exit 1)
+# Frontend is pre-built and copied via static/ (no build needed)
 
 # Expose ports
 EXPOSE 8000 3000
