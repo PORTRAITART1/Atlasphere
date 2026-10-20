@@ -237,7 +237,10 @@ async def general_exception_handler(request: Request, exc: Exception):
 
 @app.get("/")
 def root():
-    return {"message": "FastAPI Modular Template is running"}
+    index_path = Path("/app/app/backend/static/index.html")
+    if index_path.exists():
+        return FileResponse(str(index_path))
+    return {"message": "Frontend not built yet"}
 
 
 @app.get("/health")
