@@ -8,7 +8,8 @@ from datetime import datetime
 
 from app.backend.core.config import settings
 from fastapi import FastAPI
-from fastapi.staticfiles import StaticFiles, HTTPException, Request, status
+from fastapi.staticfiles import StaticFiles
+from fastapi import HTTPException, Request, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.openapi.docs import get_swagger_ui_html
 from fastapi.responses import JSONResponse
