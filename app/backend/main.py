@@ -353,3 +353,44 @@ async def terms_of_service():
         </body>
     </html>
     """
+
+
+# --- SERVIR LES PAGES LEGALES STATIQUES ---
+from fastapi.responses import FileResponse
+from pathlib import Path
+import os
+
+@app.get("/privacy.html", response_class=HTMLResponse)
+async def privacy_html():
+    file_path = Path("/app/app/frontend/public/privacy.html")
+    if file_path.exists():
+        return HTMLResponse(content=file_path.read_text(encoding="utf-8"))
+    return HTMLResponse(content="<h1>Privacy Policy - Page not found</h1>", status_code=404)
+
+@app.get("/terms.html", response_class=HTMLResponse)
+async def terms_html():
+    file_path = Path("/app/app/frontend/public/terms.html")
+    if file_path.exists():
+        return HTMLResponse(content=file_path.read_text(encoding="utf-8"))
+    return HTMLResponse(content="<h1>Terms of Service - Page not found</h1>", status_code=404)
+
+
+@app.get("/debug-files")
+async def debug_files():
+    """Liste les fichiers dans les dossiers clés pour diagnostiquer le 404."""
+    import os
+    paths = [
+        "/app/app/frontend/public/",
+        "/app/app/frontend/",
+        "/app/",
+    ]
+    result = {}
+    for path in paths:
+        if os.path.exists(path):
+            try:
+                result[path] = os.listdir(path)[:20]
+            except Exception as e:
+                result[path] = f"Erreur: {e}"
+        else:
+            result[path] = "N'existe pas"
+    return result
