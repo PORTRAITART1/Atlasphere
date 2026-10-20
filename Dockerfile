@@ -32,7 +32,7 @@ RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
 
 # Build frontend
 WORKDIR /app/app/frontend
-RUN npm install && npm run build
+RUN npm install && npm run build && test -f dist/index.html || (echo "ERROR: Frontend build failed - dist/index.html not found" && exit 1)
 
 # Expose ports
 EXPOSE 8000 3000
