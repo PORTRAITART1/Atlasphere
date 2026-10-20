@@ -133,7 +133,7 @@ export default function Navbar() {
           <Link to="/" className="flex items-center gap-2.5 shrink-0 group">
             <div className="relative">
               <img
-                src="/icons/icon-192.png"
+                src="/icons/icon-192-color.png"
                 alt="Atlasphere"
                 className="w-9 h-9 object-contain transition-transform duration-300 group-hover:scale-110"
                 style={{ filter: 'brightness(0) saturate(100%) invert(72%) sepia(58%) saturate(600%) hue-rotate(2deg) brightness(103%) contrast(104%)' }}
