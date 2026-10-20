@@ -328,7 +328,7 @@ async def privacy_policy():
             <h2>3. Data Storage</h2>
             <p>Data is stored securely on our servers. We do not sell or share your data with third parties.</p>
             <h2>4. Contact</h2>
-            <p>For any privacy-related questions, contact us at support@atlasphere.world.</p>
+            <p>For any privacy-related questions, contact us at contact@atlasphere.pub.</p>
         </body>
     </html>
     """
