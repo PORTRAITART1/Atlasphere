@@ -307,3 +307,49 @@ if __name__ == "__main__":
             port=int(settings.port),
             reload_excludes=["**/*.py"],
         )
+
+
+# --- PAGES LEGALES POUR PI NETWORK ---
+from fastapi.responses import HTMLResponse
+
+@app.get("/privacy", response_class=HTMLResponse)
+async def privacy_policy():
+    return """
+    <html>
+        <head><title>Privacy Policy - Atlasphere</title></head>
+        <body style="font-family: sans-serif; max-width: 800px; margin: 40px auto; padding: 20px; line-height: 1.6;">
+            <h1>Privacy Policy</h1>
+            <p><strong>Last updated:</strong> October 2026</p>
+            <p>Atlasphere is committed to protecting your privacy. We collect only the information necessary to provide decentralized governance services on the Pi Network.</p>
+            <h2>1. Information We Collect</h2>
+            <p>We collect your Pi Network username and UID when you authenticate. We do not collect passwords or private keys.</p>
+            <h2>2. How We Use Your Information</h2>
+            <p>Your information is used to identify you within the application, allow you to vote, comment, and participate in community governance.</p>
+            <h2>3. Data Storage</h2>
+            <p>Data is stored securely on our servers. We do not sell or share your data with third parties.</p>
+            <h2>4. Contact</h2>
+            <p>For any privacy-related questions, contact us at support@atlasphere.world.</p>
+        </body>
+    </html>
+    """
+
+@app.get("/terms", response_class=HTMLResponse)
+async def terms_of_service():
+    return """
+    <html>
+        <head><title>Terms of Service - Atlasphere</title></head>
+        <body style="font-family: sans-serif; max-width: 800px; margin: 40px auto; padding: 20px; line-height: 1.6;">
+            <h1>Terms of Service</h1>
+            <p><strong>Last updated:</strong> October 2026</p>
+            <p>By using Atlasphere, you agree to these terms.</p>
+            <h2>1. Use of the Application</h2>
+            <p>Atlasphere is a decentralized governance platform on the Pi Network. You must be a verified Pi Network Pioneer to use it.</p>
+            <h2>2. User Responsibilities</h2>
+            <p>You are responsible for your actions within the application. Do not use the platform for illegal activities or to harm others.</p>
+            <h2>3. Payments</h2>
+            <p>All payments are made in Pi Network tokens. We are not responsible for fluctuations in value or network issues.</p>
+            <h2>4. Changes to Terms</h2>
+            <p>We reserve the right to update these terms at any time. Continued use of the application constitutes acceptance of the new terms.</p>
+        </body>
+    </html>
+    """
