@@ -367,27 +367,27 @@ import os
 
 @app.get("/privacy.html", response_class=HTMLResponse)
 async def privacy_html():
-    # Try languages in order of preference
-    for lang in ["en", "fr", "es", "de", "it", "pt", "ar", "zh", "ru", "ja"]:
+    # English is the default (no suffix)
+    default_path = Path("/app/app/backend/static/privacy.html")
+    if default_path.exists():
+        return HTMLResponse(content=default_path.read_text(encoding="utf-8"))
+    # Fallback: try language-specific files
+    for lang in ["fr", "es", "de", "it", "pt", "ar", "zh", "ru", "ja"]:
         file_path = Path(f"/app/app/backend/static/privacy.{lang}.html")
         if file_path.exists():
             return HTMLResponse(content=file_path.read_text(encoding="utf-8"))
-    # Fallback: English version (no suffix)
-    file_path = Path("/app/app/backend/static/privacy.html")
-    if file_path.exists():
-        return HTMLResponse(content=file_path.read_text(encoding="utf-8"))
     return HTMLResponse(content="<h1>Privacy Policy - Page not found</h1>", status_code=404)
 
 @app.get("/terms.html", response_class=HTMLResponse)
 async def terms_html():
-    for lang in ["en", "fr", "es", "de", "it", "pt", "ar", "zh", "ru", "ja"]:
+    # English is the default (no suffix)
+    default_path = Path("/app/app/backend/static/terms.html")
+    if default_path.exists():
+        return HTMLResponse(content=default_path.read_text(encoding="utf-8"))
+    for lang in ["fr", "es", "de", "it", "pt", "ar", "zh", "ru", "ja"]:
         file_path = Path(f"/app/app/backend/static/terms.{lang}.html")
         if file_path.exists():
             return HTMLResponse(content=file_path.read_text(encoding="utf-8"))
-    # Fallback: English version (no suffix)
-    file_path = Path("/app/app/backend/static/terms.html")
-    if file_path.exists():
-        return HTMLResponse(content=file_path.read_text(encoding="utf-8"))
     return HTMLResponse(content="<h1>Terms of Service - Page not found</h1>", status_code=404)
 
 
