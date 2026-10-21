@@ -259,17 +259,19 @@ async function onIncompletePaymentFound(payment: APIPayment) {
       console.log('[Atlasphere] Approving incomplete payment:', payment.identifier);
 
       const piAccessToken = localStorage.getItem('atlasphere_pi_token') || '';
-      const approveResponse = await client.apiCall.invoke({
-        url: '/api/v1/pi-pay/approve',
+      const base = getAPIBaseURL();
+      const approveResponse = await fetch(`${base}/api/v1/pi-pay/approve`, {
         method: 'POST',
-        data: {
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
           payment_id: payment.identifier,
           pi_access_token: piAccessToken,
-        },
+        }),
       });
 
-      if (!approveResponse) {
-        throw new Error('Le serveur n’a pas confirmé l’approbation du paiement.');
+      if (!approveResponse.ok) {
+        const errText = await approveResponse.text();
+        throw new Error(`Approbation échouée: ${approveResponse.status} ${errText}`);
       }
     }
 
@@ -277,18 +279,20 @@ async function onIncompletePaymentFound(payment: APIPayment) {
       console.log('[Atlasphere] Completing incomplete payment:', payment.identifier);
 
       const piAccessToken = localStorage.getItem('atlasphere_pi_token') || '';
-      const completeResponse = await client.apiCall.invoke({
-        url: '/api/v1/pi-pay/complete',
+      const base = getAPIBaseURL();
+      const completeResponse = await fetch(`${base}/api/v1/pi-pay/complete`, {
         method: 'POST',
-        data: {
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
           payment_id: payment.identifier,
           txid: payment.transaction.txid,
           pi_access_token: piAccessToken,
-        },
+        }),
       });
 
-      if (!completeResponse) {
-        throw new Error('Le serveur n’a pas confirmé la finalisation du paiement.');
+      if (!completeResponse.ok) {
+        const errText = await completeResponse.text();
+        throw new Error(`Finalisation échouée: ${completeResponse.status} ${errText}`);
       }
 
       console.log('[Atlasphere] Incomplete payment completed successfully:', payment.identifier);
