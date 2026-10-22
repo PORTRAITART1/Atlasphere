@@ -78,7 +78,21 @@ export default function PiPaymentButton({
     const user = getCurrentUser();
     const jwt = localStorage.getItem('atlasphere_jwt');
     const piToken = localStorage.getItem('atlasphere_pi_token');
-    setDebugInfo(`user=${user ? 'OK(' + user.username + ')' : 'NULL'} | jwt=${jwt ? 'OK' : 'NULL'} | piToken=${piToken ? 'OK' : 'NULL'}`);
+    setDebugInfo(`user=${user ? 'OK(' + user.username + ')' : 'NULL'} | uid=${user?.uid || 'NULL'} | jwt=${jwt ? 'OK' : 'NULL'} | piToken=${piToken ? 'OK' : 'NULL'}`);
+    if (piToken) {
+      try {
+        const base = getAPIBaseURL();
+        const res = await fetch(`${base}/api/v1/pi-auth/exchange`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ access_token: piToken })
+        });
+        const txt = await res.text();
+        setDebugInfo(prev => prev + ` | EX=${res.status}: ${txt.substring(0, 150)}`);
+      } catch (e: any) {
+        setDebugInfo(prev => prev + ` | EX_ERR=${e.message}`);
+      }
+    }
     if (!user) {
       setStatus('error');
       setMessage(t('payment.login_required'));
