@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { createPiPayment, getCurrentUser } from '@/lib/pi-sdk';
+import { getAPIBaseURL } from '@/lib/config';
 import { t } from '@/lib/i18n';
 
 interface PiPaymentButtonProps {
