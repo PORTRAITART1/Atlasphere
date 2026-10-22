@@ -314,3 +314,22 @@ async def exchange_pi_token(
         "pi_uid": pi_uid,
         "username": username,
     }
+
+
+class DebugUidRequest(BaseModel):
+    access_token: str
+
+@router.post("/debug-uid")
+async def debug_uid(data: DebugUidRequest):
+    try:
+        async with httpx.AsyncClient(timeout=20.0) as client:
+            response = await client.get(
+                f"{PI_API_BASE}/v2/me",
+                headers={"Authorization": f"Bearer {data.access_token}"}
+            )
+        if response.status_code != 200:
+            raise HTTPException(status_code=401, detail="Invalid token")
+        pi_data = response.json()
+        return {"pi_uid": pi_data.get("uid"), "username": pi_data.get("username")}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
