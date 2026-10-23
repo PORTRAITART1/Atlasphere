@@ -8,6 +8,11 @@ logger = logging.getLogger(__name__)
 
 
 class Settings(BaseSettings):
+    # JWT Configuration (with defaults to avoid AttributeError)
+    jwt_secret_key: str = "change-me-in-production"
+    jwt_algorithm: str = "HS256"
+    jwt_expire_minutes: int = 1440
+
     # Application
     app_name: str = "FastAPI Modular Template"
     debug: bool = False
