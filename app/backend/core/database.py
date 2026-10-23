@@ -36,6 +36,7 @@ MODEL_MODULES = (
     "app.backend.models.quest_progress",
     "app.backend.models.quests",
     "app.backend.models.pi_profiles",
+    "app.backend.models.pi_payments",
     "app.backend.models.votes",
     "app.backend.models.contributions",
     "app.backend.models.notifications",
