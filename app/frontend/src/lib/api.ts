@@ -153,7 +153,7 @@ export async function fetchAllProjects(params?: {
     console.warn('[api] Current-origin projects endpoint unavailable, using public endpoint.', error);
   }
 
-  const response = await fetch('https://atlasphere.pub.atoms.world' + endpoint, {
+  const response = await fetch(API_BASE_URL + endpoint, {
     headers: { 'Content-Type': 'application/json' },
   });
   if (!response.ok) {

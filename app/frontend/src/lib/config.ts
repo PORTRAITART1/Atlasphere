@@ -8,7 +8,7 @@ let configLoading = true;
 
 // Default configuration
 const defaultConfig = {
-  API_BASE_URL: 'https://atlasphere.pub.atoms.world', // Production default if runtime config fails to load
+  API_BASE_URL: 'https://atlasphere.onrender.com', // Production default if runtime config fails to load
 };
 
 // Function to load runtime configuration
