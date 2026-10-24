@@ -427,6 +427,36 @@ async def debug_db():
     return result
 
 
+@app.get("/debug-insert-profile")
+async def debug_insert_profile():
+    from app.backend.core.database import db_manager
+    from app.backend.models.pi_profiles import Pi_profiles
+    async with db_manager.async_session_maker() as db:
+        try:
+            test = Pi_profiles(
+                pi_uid="debug_test_uid", username="debug_test",
+                display_name="Debug", reputation=42, voting_power=1.5,
+                pi_locked=0, streak_days=0, kyc_verified=False,
+                language="fr", badges="[]", level="bronze",
+                last_active="now", user_id="debug_test_uid",
+            )
+            db.add(test)
+            await db.commit()
+            return {"status": "ok", "inserted": "debug_test_uid"}
+        except Exception as e:
+            return {"status": "error", "error": str(e)}
+
+
+@app.get("/debug-list-profiles")
+async def debug_list_profiles():
+    from app.backend.core.database import db_manager
+    from app.backend.models.pi_profiles import Pi_profiles
+    from sqlalchemy import select
+    async with db_manager.async_session_maker() as db:
+        result = await db.execute(select(Pi_profiles))
+        return [{"id": p.id, "pi_uid": p.pi_uid, "username": p.username, "user_id": p.user_id} for p in result.scalars().all()]
+
+
 # --- SERVIR LE FRONTEND REACT (dossier dist) ---
 import os
 frontend_dist = Path("/app/app/backend/static")
