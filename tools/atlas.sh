@@ -114,6 +114,16 @@ case "${1:-help}" in
     tail -50 "$LOG_FILE"
     ;;
 
+  message|msg)
+    shift || true
+    "$SCRIPT_DIR/run-from-message.py" "$@"
+    ;;
+
+  clipboard|clip)
+    shift || true
+    "$SCRIPT_DIR/run-from-clipboard.sh" "$@"
+    ;;
+
   help|-h|--help) usage ;;
   *) echo "Commande inconnue: $1"; usage; exit 1 ;;
 esac
