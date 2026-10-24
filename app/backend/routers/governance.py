@@ -94,7 +94,7 @@ async def submit_vote(
             Pi_profiles.user_id == str(current_user.id)
         )
         profile_result = await db.execute(profile_stmt)
-        profile = profile_result.scalar_one_or_none()
+        profile = profile_result.scalars().first()
         if not profile:
             raise HTTPException(status_code=403, detail="A linked Pi profile is required to vote")
 

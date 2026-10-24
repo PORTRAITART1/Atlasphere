@@ -457,6 +457,16 @@ async def debug_list_profiles():
         return [{"id": p.id, "pi_uid": p.pi_uid, "username": p.username, "user_id": p.user_id} for p in result.scalars().all()]
 
 
+@app.get("/debug-cleanup-profiles")
+async def debug_cleanup_profiles():
+    from app.backend.core.database import db_manager
+    from sqlalchemy import text
+    async with db_manager.async_session_maker() as db:
+        r = await db.execute(text("DELETE FROM pi_profiles WHERE pi_uid LIKE 'debug_%'"))
+        await db.commit()
+        return {"deleted": r.rowcount}
+
+
 # --- SERVIR LE FRONTEND REACT (dossier dist) ---
 import os
 frontend_dist = Path("/app/app/backend/static")
