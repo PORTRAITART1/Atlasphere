@@ -1,7 +1,7 @@
 // Service HTTP local conservé pour compatibilité avec les anciens modules.
 // Les nouvelles API `/api/v1/*` doivent utiliser `client.apiCall.invoke`.
 
-// GUARD: reject unresolved Atoms placeholders like $$backend_domain$$ or $$BACKEND_DOMAIN$$
+// GUARD: reject any unresolved env placeholder like $$BACKEND_DOMAIN$$
 // Also reject URLs without a protocol. Fall back to the production URL if needed.
 function resolveApiBaseUrl(): string {
   const raw = import.meta.env.VITE_API_BASE_URL as string | undefined;

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # app/backend/seeds/unified_projects.py
 # UNIFIED PROJECTS DATA SOURCE — Unique source of truth for all 15 projects
-# Projects 1-10: Demo projects (from Atoms)
+# Projects 1-10: Demo projects
 # Projects 11-15: Beta test projects (author: portraitart, Pi Network admin)
 
 unified_projects = [

@@ -429,3 +429,19 @@ if frontend_dist.exists():
         if index_path.exists():
             return FileResponse(str(index_path))
         return HTMLResponse(content="<h1>Frontend not built</h1>", status_code=404)
+
+
+@app.get("/debug-db")
+async def debug_db():
+    """Liste toutes les tables et leur nombre de lignes (debug)."""
+    from app.backend.core.database import Base, db_manager
+    from sqlalchemy import text
+    result = {}
+    async with db_manager.async_session_maker() as db:
+        for table_name in Base.metadata.tables.keys():
+            try:
+                r = await db.execute(text(f"SELECT COUNT(*) FROM {table_name}"))
+                result[table_name] = r.scalar()
+            except Exception as e:
+                result[table_name] = f"ERREUR: {e}"
+    return result

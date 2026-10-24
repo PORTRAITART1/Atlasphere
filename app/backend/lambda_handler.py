@@ -33,7 +33,7 @@ dynamic_routes_initialized = False
 seo_paths = set()
 
 # SEO domain placeholder - will be replaced with actual request domain at runtime
-SEO_DOMAIN_PLACEHOLDER = "https://atlasphere.pub.atoms.world"
+SEO_DOMAIN_PLACEHOLDER = "https://atlasphere.onrender.com"
 
 
 def format_traceback() -> str:
