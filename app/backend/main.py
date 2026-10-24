@@ -467,6 +467,42 @@ async def debug_cleanup_profiles():
         return {"deleted": r.rowcount}
 
 
+@app.get("/debug-passport/{pi_uid}")
+async def debug_passport(pi_uid: str):
+    from app.backend.core.database import db_manager
+    from app.backend.models.pi_profiles import Pi_profiles
+    from app.backend.models.votes import Votes
+    from app.backend.models.contributions import Contributions
+    from sqlalchemy import select, func
+    from app.backend.core.reputation_model import WEIGHTS, level_from_score
+    async with db_manager.async_session_maker() as db:
+        profile = (await db.execute(select(Pi_profiles).where(Pi_profiles.pi_uid == pi_uid))).scalars().first()
+        if not profile:
+            return {"detail": "Pi profile not found"}
+        votes_cast = (await db.execute(select(func.count()).select_from(Votes).where(Votes.pi_uid == pi_uid))).scalar() or 0
+        projects_funded = (await db.execute(select(func.count(func.distinct(Contributions.project_id))).where(Contributions.pi_uid == pi_uid, Contributions.status == "completed"))).scalar() or 0
+        breakdown = {
+            "governance": min(100, votes_cast * 5),
+            "community_trust": 50,
+            "contribution": min(100, projects_funded * 20),
+            "verification": 15 if profile.kyc_verified else 0,
+            "solohost_integration": 0,
+            "risk": 0,
+        }
+        score = sum(breakdown[k] * WEIGHTS[k] // 100 for k in WEIGHTS)
+        return {
+            "pi_uid": profile.pi_uid,
+            "username": profile.username,
+            "score": score,
+            "level": level_from_score(score),
+            "breakdown": breakdown,
+            "weights": WEIGHTS,
+            "votes_cast": votes_cast,
+            "projects_funded": projects_funded,
+            "kyc_verified": profile.kyc_verified or False,
+        }
+
+
 # --- SERVIR LE FRONTEND REACT (dossier dist) ---
 import os
 frontend_dist = Path("/app/app/backend/static")
