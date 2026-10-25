@@ -461,7 +461,7 @@ async def debug_passport(pi_uid: str):
             "governance": min(100, votes_cast * 10),
             "community_trust": 50,
             "contribution": min(100, projects_funded * 20),
-            "verification": 15 if profile.kyc_verified else 0,
+            "verification": 100 if profile.kyc_verified else 0,
             "solohost_integration": 0,
             "risk": 0,
         }
