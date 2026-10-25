@@ -503,6 +503,125 @@ async def debug_passport(pi_uid: str):
         }
 
 
+@app.post("/debug-seed-translated-projects")
+async def debug_seed_translated_projects():
+    """Seed 5 visionary projects with full translations in 10 languages."""
+    from app.backend.core.database import db_manager
+    from app.backend.models.projects import Projects
+    from sqlalchemy import select
+    import datetime, json
+
+    MY_USER_ID = "portraitart"
+    projects_data = [
+        {
+            "title": "Pi Neural Grid — Compute-to-Earn DAO",
+            "description": "Decentralized GPU compute network for AI training. $50B market.",
+            "translations": {
+                "en": {"title": "Pi Neural Grid — Compute-to-Earn DAO", "description": "Decentralized GPU compute network for AI training. Rewards Pioneers in Pi."},
+                "fr": {"title": "Pi Neural Grid — DAO du Calcul Rémunéré", "description": "Réseau décentralisé de calcul GPU pour l'IA. Récompense les Pioneers en Pi."},
+                "es": {"title": "Pi Neural Grid — DAO de Computación Recompensada", "description": "Red descentralizada de cómputo GPU para IA. Recompensa a los Pioneers en Pi."},
+                "de": {"title": "Pi Neural Grid — Compute-to-Earn DAO", "description": "Dezentrales GPU-Computing-Netzwerk für KI-Training. Belohnt Pioneers mit Pi."},
+                "it": {"title": "Pi Neural Grid — DAO del Calcolo Remunerato", "description": "Rete decentralizzata di calcolo GPU per l'IA. Ricompensa i Pioneers in Pi."},
+                "pt": {"title": "Pi Neural Grid — DAO de Computação Recompensada", "description": "Rede descentralizada de computação GPU para IA. Recompensa Pioneers em Pi."},
+                "ru": {"title": "Pi Neural Grid — DAO вычислений с вознаграждением", "description": "Децентрализованная сеть GPU-вычислений для ИИ. Вознаграждение Pioneers в Pi."},
+                "ar": {"title": "Pi Neural Grid — DAO للحوسبة المكافأة", "description": "شبكة حوسبة GPU لامركزية للذكاء الاصطناعي. تكافئ الرواد بعملة Pi."},
+                "zh": {"title": "Pi Neural Grid — 计算即赚取 DAO", "description": "去中心化GPU计算网络用于AI训练。以Pi奖励先锋。"},
+                "ja": {"title": "Pi Neural Grid — コンピュート・トゥ・アーンDAO", "description": "AIトレーニング用の分散型GPUコンピューティングネットワーク。PioneersにPiで報酬。"},
+            },
+            "category": "technology", "budget": 250000.0,
+        },
+        {
+            "title": "AtlasPulse — Real-Time Global Sentiment Oracle",
+            "description": "Decentralized oracle for Pi community sentiment, sold to institutions.",
+            "translations": {
+                "en": {"title": "AtlasPulse — Real-Time Global Sentiment Oracle", "description": "Decentralized sentiment oracle for institutions and governments."},
+                "fr": {"title": "AtlasPulse — Oracle de Sentiment Mondial en Temps Réel", "description": "Oracle décentralisé de sentiment pour institutions et gouvernements."},
+                "es": {"title": "AtlasPulse — Oráculo de Sentimiento Global en Tiempo Real", "description": "Oráculo descentralizado de sentimiento para instituciones y gobiernos."},
+                "de": {"title": "AtlasPulse — Echtzeit-Weltstimmungs-Orakel", "description": "Dezentrales Stimmungs-Orakel für Institutionen und Regierungen."},
+                "it": {"title": "AtlasPulse — Oracolo del Sentiment Globale in Tempo Reale", "description": "Oracolo decentralizzato del sentiment per istituzioni e governi."},
+                "pt": {"title": "AtlasPulse — Oráculo de Sentimento Global em Tempo Real", "description": "Oráculo descentralizado de sentimento para instituições e governos."},
+                "ru": {"title": "AtlasPulse — Оракул глобальных настроений в реальном времени", "description": "Децентрализованный оракул настроений для институтов и правительств."},
+                "ar": {"title": "AtlasPulse — أوراكل المشاعر العالمية في الوقت الفعلي", "description": "أوراكل لامركزي للمشاعر للمؤسسات والحكومات."},
+                "zh": {"title": "AtlasPulse — 实时全球情绪预言机", "description": "面向机构和政府的去中心化情绪预言机。"},
+                "ja": {"title": "AtlasPulse — リアルタイム世界感情オラクル", "description": "機関や政府向けの分散型感情オラクル。"},
+            },
+            "category": "technology", "budget": 180000.0,
+        },
+        {
+            "title": "PiScribe — AI-to-Pi Content Marketplace",
+            "description": "Marketplace where AIs buy human-curated data, paid in Pi. $12B market.",
+            "translations": {
+                "en": {"title": "PiScribe — AI-to-Pi Content Marketplace", "description": "AI models buy human-curated data, paid in Pi. EU AI Act compliant."},
+                "fr": {"title": "PiScribe — Place de Marché de Contenu IA-vers-Pi", "description": "Les IA achètent du contenu humain, payé en Pi. Conforme à l'EU AI Act."},
+                "es": {"title": "PiScribe — Mercado de Contenido IA-a-Pi", "description": "Los modelos de IA compran contenido humano, pagado en Pi. Cumple con la EU AI Act."},
+                "de": {"title": "PiScribe — KI-zu-Pi-Inhaltsmarktplatz", "description": "KI-Modelle kaufen menschliche Inhalte, bezahlt in Pi. EU AI Act-konform."},
+                "it": {"title": "PiScribe — Marketplace di Contenuti IA-a-Pi", "description": "I modelli IA acquistano contenuti umani, pagati in Pi. Conforme all'EU AI Act."},
+                "pt": {"title": "PiScribe — Marketplace de Conteúdo IA-para-Pi", "description": "Modelos de IA compram conteúdo humano, pago em Pi. Em conformidade com a EU AI Act."},
+                "ru": {"title": "PiScribe — Рынок контента ИИ-в-Pi", "description": "Модели ИИ покупают человеческий контент, оплата в Pi. Соответствует EU AI Act."},
+                "ar": {"title": "PiScribe — سوق المحتوى من الذكاء الاصطناعي إلى Pi", "description": "نماذج الذكاء الاصطناعي تشتري محتوى بشري، مدفوع بـ Pi. متوافق مع EU AI Act."},
+                "zh": {"title": "PiScribe — AI到Pi内容市场", "description": "AI模型购买人类精选内容，以Pi支付。符合EU AI Act。"},
+                "ja": {"title": "PiScribe — AIからPiへのコンテンツマーケット", "description": "AIモデルが人間のコンテンツをPiで購入。EU AI Act準拠。"},
+            },
+            "category": "technology", "budget": 150000.0,
+        },
+        {
+            "title": "AtlasChain Sentinel — Post-Quantum Security Layer",
+            "description": "Post-quantum security for Pi dApps, community-voted standards.",
+            "translations": {
+                "en": {"title": "AtlasChain Sentinel — Post-Quantum Security Layer", "description": "Post-quantum cryptographic layer for all Pi dApps. Community-certified."},
+                "fr": {"title": "AtlasChain Sentinel — Couche de Sécurité Post-Quantique", "description": "Couche cryptographique post-quantique pour toutes les dApps Pi. Certifiée par la communauté."},
+                "es": {"title": "AtlasChain Sentinel — Capa de Seguridad Post-Cuántica", "description": "Capa criptográfica post-cuántica para todas las dApps Pi. Certificada por la comunidad."},
+                "de": {"title": "AtlasChain Sentinel — Post-Quanten-Sicherheitsschicht", "description": "Post-quanten-kryptografische Schicht für alle Pi-dApps. Von der Community zertifiziert."},
+                "it": {"title": "AtlasChain Sentinel — Livello di Sicurezza Post-Quantistica", "description": "Livello crittografico post-quantistico per tutte le dApp Pi. Certificato dalla community."},
+                "pt": {"title": "AtlasChain Sentinel — Camada de Segurança Pós-Quântica", "description": "Camada criptográfica pós-quântica para todas as dApps Pi. Certificada pela comunidade."},
+                "ru": {"title": "AtlasChain Sentinel — Пост-квантовый уровень безопасности", "description": "Пост-квантовый криптографический слой для всех dApps Pi. Сертифицирован сообществом."},
+                "ar": {"title": "AtlasChain Sentinel — طبقة أمان ما بعد الكم", "description": "طبقة تشفير ما بعد الكم لجميع تطبيقات Pi. معتمدة من المجتمع."},
+                "zh": {"title": "AtlasChain Sentinel — 后量子安全层", "description": "面向所有Pi dApp的后量子密码层。社区认证。"},
+                "ja": {"title": "AtlasChain Sentinel — ポスト量子セキュリティ層", "description": "すべてのPi dApp向けのポスト量子暗号層。コミュニティ認証。"},
+            },
+            "category": "technology", "budget": 200000.0,
+        },
+        {
+            "title": "Gaia Protocol — Planetary Climate Oracle",
+            "description": "IoT sensor network for CO2, air quality, biodiversity. $30B market.",
+            "translations": {
+                "en": {"title": "Gaia Protocol — Planetary Climate Oracle", "description": "IoT sensor network for CO2, air quality, biodiversity. Data sold to governments."},
+                "fr": {"title": "Gaia Protocol — Oracle Climatique Planétaire", "description": "Réseau de capteurs IoT pour CO2, qualité de l'air, biodiversité. Données vendues aux gouvernements."},
+                "es": {"title": "Gaia Protocol — Oráculo Climático Planetario", "description": "Red de sensores IoT para CO2, calidad del aire, biodiversidad. Datos vendidos a gobiernos."},
+                "de": {"title": "Gaia Protocol — Planetarisches Klima-Orakel", "description": "IoT-Sensornetzwerk für CO2, Luftqualität, Biodiversität. Daten an Regierungen verkauft."},
+                "it": {"title": "Gaia Protocol — Oracolo Climatico Planetario", "description": "Rete di sensori IoT per CO2, qualità dell'aria, biodiversità. Dati venduti ai governi."},
+                "pt": {"title": "Gaia Protocol — Oráculo Climático Planetário", "description": "Rede de sensores IoT para CO2, qualidade do ar, biodiversidade. Dados vendidos a governos."},
+                "ru": {"title": "Gaia Protocol — Планетарный климатический оракул", "description": "Сеть IoT-датчиков для CO2, качества воздуха, биоразнообразия. Данные продаются правительствам."},
+                "ar": {"title": "Gaia Protocol — أوراكل المناخ الكوكبي", "description": "شبكة أجهزة استشعار إنترنت الأشياء لـ CO2 وجودة الهواء والتنوع البيولوجي. البيانات تُباع للحكومات."},
+                "zh": {"title": "Gaia Protocol — 行星气候预言机", "description": "用于CO2、空气质量和生物多样性的物联网传感器网络。数据出售给政府。"},
+                "ja": {"title": "Gaia Protocol — 惑星気候オラクル", "description": "CO2、大気質、生物多様性のためのIoTセンサーネットワーク。データは政府に販売。"},
+            },
+            "category": "environment", "budget": 220000.0,
+        },
+    ]
+
+    async with db_manager.async_session_maker() as db:
+        created = []
+        for data in projects_data:
+            existing = (await db.execute(select(Projects).where(Projects.title == data["title"]))).scalars().first()
+            if existing:
+                continue
+            now = datetime.datetime.utcnow()
+            p_obj = Projects(
+                title=data["title"], description=data["description"], category=data["category"],
+                budget=data["budget"], raised=0.0, status="voting",
+                votes_for=0, votes_against=0, voter_count=0,
+                milestones=json.dumps(data["translations"]),
+                team='["portraitart"]', region="Global",
+                deadline="2027-12-31", quorum=1000.0, threshold=60.0,
+                user_id=MY_USER_ID, created_at=now, updated_at=now,
+            )
+            db.add(p_obj)
+            created.append(data["title"])
+        await db.commit()
+        return {"created": created, "total": len(created), "languages": 10}
+
+
 # --- SERVIR LE FRONTEND REACT (dossier dist) ---
 import os
 frontend_dist = Path("/app/app/backend/static")
