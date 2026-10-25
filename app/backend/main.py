@@ -695,6 +695,16 @@ async def debug_fix_sequence():
         return {"status": "error", "msg": str(e), "tb": traceback.format_exc()[-300:]}
 
 
+@app.post("/debug-cleanup-test-projects")
+async def debug_cleanup_test_projects():
+    from app.backend.core.database import db_manager
+    from sqlalchemy import text
+    async with db_manager.async_session_maker() as db:
+        r = await db.execute(text("DELETE FROM projects WHERE title LIKE 'TEST%'"))
+        await db.commit()
+        return {"deleted": r.rowcount}
+
+
 # --- SERVIR LE FRONTEND REACT (dossier dist) ---
 import os
 frontend_dist = Path("/app/app/backend/static")
