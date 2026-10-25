@@ -696,6 +696,46 @@ async def debug_set_kyc(pi_uid: str):
         return {"status": "ok", "pi_uid": pi_uid, "kyc_verified": True}
 
 
+@app.post("/debug-vote-batch/{pi_uid}")
+async def debug_vote_batch(pi_uid: str):
+    """Admin: batch vote on all projects for testing."""
+    from app.backend.core.database import db_manager
+    from app.backend.models.pi_profiles import Pi_profiles
+    from app.backend.models.votes import Votes
+    from app.backend.models.projects import Projects
+    from sqlalchemy import select, update
+    import datetime
+
+    async with db_manager.async_session_maker() as db:
+        profile = (await db.execute(select(Pi_profiles).where(Pi_profiles.pi_uid == pi_uid))).scalars().first()
+        if not profile:
+            return {"status": "error", "msg": "profile not found"}
+
+        projects = (await db.execute(select(Projects).order_by(Projects.id))).scalars().all()
+        created = 0
+        for proj in projects:
+            existing = (await db.execute(
+                select(Votes).where(Votes.project_id == proj.id, Votes.pi_uid == pi_uid)
+            )).scalars().first()
+            if existing:
+                continue
+            v = Votes(
+                project_id=proj.id,
+                vote_type="for",
+                weight=10.0,
+                pi_uid=pi_uid,
+                user_id=pi_uid,
+                created_at=datetime.datetime.utcnow(),
+                updated_at=datetime.datetime.utcnow(),
+            )
+            db.add(v)
+            proj.votes_for = (proj.votes_for or 0) + 10
+            proj.voter_count = (proj.voter_count or 0) + 1
+            created += 1
+        await db.commit()
+        return {"status": "ok", "created": created, "total_projects": len(projects)}
+
+
 # --- SERVIR LE FRONTEND REACT (dossier dist) ---
 import os
 frontend_dist = Path("/app/app/backend/static")
