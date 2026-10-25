@@ -71,7 +71,9 @@ async def lifespan(app: FastAPI):
 
     # MODULE_STARTUP_START
     await initialize_database()
-    await initialize_mock_data()
+    # DISABLED: mock_data écrase les projets des pionniers
+    # await initialize_mock_data()
+    logger.info("Mock data initialization DISABLED to protect pioneer projects")
     # Seed disabled - keep existing projects in DB
     logger.info("Seed skipped - using existing projects from database")
     
