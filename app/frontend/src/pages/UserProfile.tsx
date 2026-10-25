@@ -11,6 +11,7 @@ import { Link } from 'react-router-dom';
 export default function UserProfile() {
   const [user, setUser] = useState<PiUser | null>(getCurrentUser());
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  const [realStats, setRealStats] = useState<{proposals: number; votes: number; contributions: number} | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
   const profile = getUserProfile();
@@ -42,6 +43,19 @@ export default function UserProfile() {
       if (savedAvatar) setAvatarUrl(savedAvatar);
     };
     loadAvatar();
+    // Charger les vraies stats
+    const loadStats = async () => {
+      try {
+        const user = getCurrentUser();
+        if (!user?.uid) return;
+        const res = await fetch(`/api/v1/pi-auth/stats/${user.uid}`);
+        if (res.ok) {
+          const stats = await res.json();
+          setRealStats(stats);
+        }
+      } catch {}
+    };
+    loadStats();
   }, []);
 
   const handleLogout = () => {
@@ -105,9 +119,9 @@ export default function UserProfile() {
 
   const statCards = [
     { label: t('profile.reputation'), value: user?.reputation || profile.reputation, icon: <Award className="w-4 h-4" />, color: 'text-amber-400' },
-    { label: t('profile.proposals'), value: user?.proposalsCreated || profile.proposals, icon: <Vote className="w-4 h-4" />, color: 'text-indigo-400' },
-    { label: t('profile.votes'), value: user?.votescast || profile.votes, icon: <Vote className="w-4 h-4" />, color: 'text-cyan-400' },
-    { label: t('profile.contributions'), value: user?.contributions || profile.contributions, icon: <Coins className="w-4 h-4" />, color: 'text-emerald-400' },
+    { label: t('profile.proposals'), value: realStats?.proposals ?? 0, icon: <Vote className="w-4 h-4" />, color: 'text-indigo-400' },
+    { label: t('profile.votes'), value: realStats?.votes ?? 0, icon: <Vote className="w-4 h-4" />, color: 'text-cyan-400' },
+    { label: t('profile.contributions'), value: realStats?.contributions ?? 0, icon: <Coins className="w-4 h-4" />, color: 'text-emerald-400' },
     { label: 'NFTs', value: profile.nfts, icon: <Database className="w-4 h-4" />, color: 'text-purple-400' },
     { label: t('profile.referrals'), value: profile.referrals, icon: <Users className="w-4 h-4" />, color: 'text-orange-400' },
     { label: 'Streak', value: `${user?.streakDays || profile.streak}j`, icon: <Flame className="w-4 h-4" />, color: 'text-red-400' },

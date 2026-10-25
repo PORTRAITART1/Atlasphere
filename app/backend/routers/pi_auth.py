@@ -333,3 +333,31 @@ async def debug_uid(data: DebugUidRequest):
         return {"pi_uid": pi_data.get("uid"), "username": pi_data.get("username")}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/stats/{pi_uid}")
+async def get_user_stats(pi_uid: str, db: AsyncSession = Depends(get_db)):
+    """Calcule les vraies stats d'un utilisateur depuis la DB."""
+    from sqlalchemy import select, func
+    from app.backend.models.projects import Projects
+    from app.backend.models.votes import Votes
+    from app.backend.models.contributions import Contributions
+
+    projects_count = (await db.execute(
+        select(func.count()).select_from(Projects).where(Projects.user_id == pi_uid)
+    )).scalar() or 0
+
+    votes_count = (await db.execute(
+        select(func.count()).select_from(Votes).where(Votes.pi_uid == pi_uid)
+    )).scalar() or 0
+
+    contributions_count = (await db.execute(
+        select(func.count()).select_from(Contributions).where(Contributions.pi_uid == pi_uid)
+    )).scalar() or 0
+
+    return {
+        "pi_uid": pi_uid,
+        "proposals": projects_count,
+        "votes": votes_count,
+        "contributions": contributions_count,
+    }
