@@ -25,6 +25,7 @@ class Pi_profilesData(BaseModel):
     pi_uid: str
     username: str
     display_name: str = None
+    avatar: str = None
     reputation: int = None
     voting_power: float = None
     pi_locked: float = None
@@ -41,6 +42,7 @@ class Pi_profilesUpdateData(BaseModel):
     pi_uid: Optional[str] = None
     username: Optional[str] = None
     display_name: Optional[str] = None
+    avatar: Optional[str] = None
     reputation: Optional[int] = None
     voting_power: Optional[float] = None
     pi_locked: Optional[float] = None

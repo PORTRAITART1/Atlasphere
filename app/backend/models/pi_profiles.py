@@ -11,6 +11,7 @@ class Pi_profiles(Base):
     pi_uid = Column(String, nullable=False)
     username = Column(String, nullable=False)
     display_name = Column(String, nullable=True)
+    avatar = Column(String, nullable=True)
     reputation = Column(Integer, nullable=True, default=0, server_default='0')
     voting_power = Column(Float, nullable=True, default=1.0, server_default='1.0')
     pi_locked = Column(Float, nullable=True, default=0, server_default='0')

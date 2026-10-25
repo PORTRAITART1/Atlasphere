@@ -827,6 +827,19 @@ async def debug_simulate_comments(pi_uid: str):
         return {"status": "ok", "created": created, "total_projects": len(projects)}
 
 
+@app.post("/debug-add-avatar-column")
+async def debug_add_avatar_column():
+    from app.backend.core.database import db_manager
+    from sqlalchemy import text
+    try:
+        async with db_manager.async_session_maker() as db:
+            await db.execute(text("ALTER TABLE pi_profiles ADD COLUMN IF NOT EXISTS avatar VARCHAR"))
+            await db.commit()
+            return {"status": "ok", "message": "avatar column added"}
+    except Exception as e:
+        return {"status": "error", "msg": str(e)}
+
+
 # --- SERVIR LE FRONTEND REACT (dossier dist) ---
 import os
 frontend_dist = Path("/app/app/backend/static")
