@@ -457,9 +457,15 @@ async def debug_passport(pi_uid: str):
             return {"detail": "Pi profile not found"}
         votes_cast = (await db.execute(select(func.count()).select_from(Votes).where(Votes.pi_uid == pi_uid))).scalar() or 0
         projects_funded = (await db.execute(select(func.count(func.distinct(Contributions.project_id))).where(Contributions.pi_uid == pi_uid, Contributions.status == "completed"))).scalar() or 0
+        comments_count = (await db.execute(select(func.count()).select_from(Comments).where(Comments.pi_uid == pi_uid))).scalar() or 0
+        likes_total = (await db.execute(select(func.coalesce(func.sum(Comments.likes), 0)).where(Comments.pi_uid == pi_uid))).scalar() or 0
+
+        # community_trust = min(100, comments × 10 + likes / 10)
+        community_trust = min(100, comments_count * 10 + likes_total // 10)
+
         breakdown = {
             "governance": min(100, votes_cast * 10),
-            "community_trust": 50,
+            "community_trust": community_trust,
             "contribution": min(100, projects_funded * 20),
             "verification": 100 if profile.kyc_verified else 0,
             "solohost_integration": 0,
