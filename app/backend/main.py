@@ -449,6 +449,7 @@ async def debug_passport(pi_uid: str):
     from app.backend.models.pi_profiles import Pi_profiles
     from app.backend.models.votes import Votes
     from app.backend.models.contributions import Contributions
+    from app.backend.models.comments import Comments
     from sqlalchemy import select, func
     from app.backend.core.reputation_model import WEIGHTS, level_from_score
     async with db_manager.async_session_maker() as db:
