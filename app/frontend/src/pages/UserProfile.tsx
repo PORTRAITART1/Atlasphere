@@ -19,12 +19,29 @@ export default function UserProfile() {
     return subscribe(() => setUser(getCurrentUser()));
   }, []);
 
-  // Load saved avatar from localStorage
+  // Load avatar from API (fallback to localStorage)
   useEffect(() => {
-    const savedAvatar = localStorage.getItem('atlasphere_avatar');
-    if (savedAvatar) {
-      setAvatarUrl(savedAvatar);
-    }
+    const loadAvatar = async () => {
+      try {
+        const jwt = localStorage.getItem('atlasphere_jwt');
+        if (jwt) {
+          const res = await fetch('/api/v1/entities/pi_profiles', {
+            headers: { Authorization: `Bearer ${jwt}` },
+          });
+          if (res.ok) {
+            const data = await res.json();
+            const profile = data.items?.[0];
+            if (profile?.avatar) {
+              setAvatarUrl(profile.avatar);
+              return;
+            }
+          }
+        }
+      } catch {}
+      const savedAvatar = localStorage.getItem('atlasphere_avatar');
+      if (savedAvatar) setAvatarUrl(savedAvatar);
+    };
+    loadAvatar();
   }, []);
 
   const handleLogout = () => {
@@ -47,10 +64,36 @@ export default function UserProfile() {
     if (file.size > 5 * 1024 * 1024) return;
 
     const reader = new FileReader();
-    reader.onload = (event) => {
+    reader.onload = async (event) => {
       const dataUrl = event.target?.result as string;
-      setAvatarUrl(dataUrl);
+      if (!dataUrl) return;
+      // 1. Instant: localStorage + state
       localStorage.setItem('atlasphere_avatar', dataUrl);
+      setAvatarUrl(dataUrl);
+      // 2. Persist: PUT /pi_profiles/{id}
+      try {
+        const jwt = localStorage.getItem('atlasphere_jwt');
+        if (!jwt) return;
+        const me = await fetch('/api/v1/entities/pi_profiles', {
+          headers: { Authorization: `Bearer ${jwt}` },
+        });
+        if (!me.ok) return;
+        const list = await me.json();
+        const profileId = list.items?.[0]?.id;
+        if (!profileId) return;
+        const res = await fetch(`/api/v1/entities/pi_profiles/${profileId}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${jwt}`,
+          },
+          body: JSON.stringify({ avatar: dataUrl }),
+        });
+        if (res.ok) console.log('[Avatar] Saved to DB');
+        else console.warn('[Avatar] DB save failed:', res.status);
+      } catch (err) {
+        console.warn('[Avatar] DB save failed (localStorage fallback)', err);
+      }
     };
     reader.readAsDataURL(file);
   };

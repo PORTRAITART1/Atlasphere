@@ -370,8 +370,12 @@ export default function Navbar() {
                   to="/dashboard"
                   className="flex items-center gap-1.5 sm:gap-2 px-1.5 sm:px-2 py-1.5 rounded-xl hover:bg-white/[0.06] transition-all duration-200 group"
                 >
-                  <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white text-xs sm:text-sm font-bold ring-2 ring-indigo-500/30 group-hover:ring-indigo-400/50 transition-all">
-                    {user.username.charAt(0).toUpperCase()}
+                  <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white text-xs sm:text-sm font-bold ring-2 ring-indigo-500/30 group-hover:ring-indigo-400/50 transition-all overflow-hidden">
+                    {localStorage.getItem('atlasphere_avatar') ? (
+                      <img src={localStorage.getItem('atlasphere_avatar') || ''} alt={user.username} className="w-full h-full object-cover" />
+                    ) : (
+                      user.username.charAt(0).toUpperCase()
+                    )}
                   </div>
                   <div className="hidden sm:flex flex-col">
                     <span className="text-sm text-white font-medium leading-tight">@{user.username}</span>
