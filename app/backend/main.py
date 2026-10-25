@@ -458,7 +458,7 @@ async def debug_passport(pi_uid: str):
         votes_cast = (await db.execute(select(func.count()).select_from(Votes).where(Votes.pi_uid == pi_uid))).scalar() or 0
         projects_funded = (await db.execute(select(func.count(func.distinct(Contributions.project_id))).where(Contributions.pi_uid == pi_uid, Contributions.status == "completed"))).scalar() or 0
         breakdown = {
-            "governance": min(100, votes_cast * 5),
+            "governance": min(100, votes_cast * 10),
             "community_trust": 50,
             "contribution": min(100, projects_funded * 20),
             "verification": 15 if profile.kyc_verified else 0,
