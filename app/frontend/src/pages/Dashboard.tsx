@@ -22,6 +22,7 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(false);
   const [dataLoading, setDataLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<'overview' | 'proposals' | 'votes' | 'contributions'>('overview');
+  const [realStats, setRealStats] = useState<{proposals: number; votes: number; contributions: number} | null>(null);
   const [myProjects, setMyProjects] = useState<Project[]>([]);
   const [myVotes, setMyVotes] = useState<Vote[]>([]);
   const [myContributions, setMyContributions] = useState<Contribution[]>([]);
@@ -51,6 +52,17 @@ export default function Dashboard() {
       if (projectsRes?.items) setMyProjects(projectsRes.items);
       if (votesRes?.items) setMyVotes(votesRes.items);
       if (contributionsRes?.items) setMyContributions(contributionsRes.items);
+      // Charger les vraies stats depuis l'API
+      try {
+        const user = getCurrentUser();
+        if (user?.uid) {
+          const statsRes = await fetch(`/api/v1/pi-auth/stats/${user.uid}`);
+          if (statsRes.ok) {
+            const stats = await statsRes.json();
+            setRealStats(stats);
+          }
+        }
+      } catch {}
     } catch (err) {
       console.error('Failed to load dashboard data:', err);
     } finally {
@@ -119,7 +131,11 @@ export default function Dashboard() {
                 animate={{ scale: 1, opacity: 1 }}
                 transition={{ duration: 0.4, delay: 0.1 }}
               >
-                {user.avatar}
+                {localStorage.getItem('atlasphere_avatar') ? (
+                  <img src={localStorage.getItem('atlasphere_avatar') || ''} alt={user.username} className="w-full h-full object-cover" />
+                ) : (
+                  user.username.charAt(0).toUpperCase()
+                )}
               </motion.div>
               <div className="text-center sm:text-left flex-1">
                 <h1 className="text-2xl font-bold text-white">{user.displayName}</h1>
@@ -153,9 +169,9 @@ export default function Dashboard() {
           {/* Stats Grid */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
             {[
-              { label: t('dashboard.my_proposals'), value: myProjects.length, icon: '📋', color: 'text-indigo-400' },
-              { label: t('dashboard.my_votes'), value: myVotes.length, icon: '🗳️', color: 'text-emerald-400' },
-              { label: t('dashboard.contributions'), value: myContributions.length, icon: '💰', color: 'text-amber-400' },
+              { label: t('dashboard.my_proposals'), value: realStats?.proposals ?? myProjects.length, icon: '📋', color: 'text-indigo-400' },
+              { label: t('dashboard.my_votes'), value: realStats?.votes ?? myVotes.length, icon: '🗳️', color: 'text-emerald-400' },
+              { label: t('dashboard.contributions'), value: realStats?.contributions ?? myContributions.length, icon: '💰', color: 'text-amber-400' },
               { label: t('dashboard.total_contributed'), value: `${totalContributed.toFixed(0)} π`, icon: '💎', color: 'text-purple-400' },
             ].map((stat, i) => (
               <motion.div
