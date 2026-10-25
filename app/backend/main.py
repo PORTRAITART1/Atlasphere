@@ -781,6 +781,45 @@ async def debug_simulate_funding(pi_uid: str):
         return {"status": "ok", "created": created, "total_projects": len(projects)}
 
 
+@app.post("/debug-simulate-comments/{pi_uid}")
+async def debug_simulate_comments(pi_uid: str):
+    """Admin: simulate comments and likes for community trust."""
+    from app.backend.core.database import db_manager
+    from app.backend.models.pi_profiles import Pi_profiles
+    from app.backend.models.comments import Comments
+    from app.backend.models.projects import Projects
+    from sqlalchemy import select
+    import datetime
+
+    async with db_manager.async_session_maker() as db:
+        profile = (await db.execute(select(Pi_profiles).where(Pi_profiles.pi_uid == pi_uid))).scalars().first()
+        if not profile:
+            return {"status": "error", "msg": "profile not found"}
+
+        projects = (await db.execute(select(Projects).order_by(Projects.id).limit(5))).scalars().all()
+        created = 0
+        for proj in projects:
+            existing = (await db.execute(
+                select(Comments).where(Comments.project_id == proj.id, Comments.pi_uid == pi_uid)
+            )).scalars().first()
+            if existing:
+                continue
+            c = Comments(
+                project_id=proj.id,
+                content=f"Great project! {proj.title} is exactly what Atlasphere needs.",
+                pi_uid=pi_uid,
+                pi_username=profile.username,
+                likes=20,
+                parent_id=None,
+                created_at=datetime.datetime.utcnow(),
+                updated_at=datetime.datetime.utcnow(),
+            )
+            db.add(c)
+            created += 1
+        await db.commit()
+        return {"status": "ok", "created": created, "total_projects": len(projects)}
+
+
 # --- SERVIR LE FRONTEND REACT (dossier dist) ---
 import os
 frontend_dist = Path("/app/app/backend/static")
