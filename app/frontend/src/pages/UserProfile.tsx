@@ -94,6 +94,8 @@ export default function UserProfile() {
       } catch (err) {
         console.warn('[Avatar] DB save failed (localStorage fallback)', err);
       }
+      // Force UI refresh to display new avatar
+      window.location.reload();
     };
     reader.readAsDataURL(file);
   };
