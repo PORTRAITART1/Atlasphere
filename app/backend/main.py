@@ -681,6 +681,21 @@ async def debug_cleanup_test_projects():
         return {"deleted": r.rowcount}
 
 
+@app.post("/debug-set-kyc/{pi_uid}")
+async def debug_set_kyc(pi_uid: str):
+    """Set kyc_verified=True for a given pi_uid (admin only, dev)."""
+    from app.backend.core.database import db_manager
+    from app.backend.models.pi_profiles import Pi_profiles
+    from sqlalchemy import select
+    async with db_manager.async_session_maker() as db:
+        profile = (await db.execute(select(Pi_profiles).where(Pi_profiles.pi_uid == pi_uid))).scalars().first()
+        if not profile:
+            return {"status": "error", "msg": "profile not found"}
+        profile.kyc_verified = True
+        await db.commit()
+        return {"status": "ok", "pi_uid": pi_uid, "kyc_verified": True}
+
+
 # --- SERVIR LE FRONTEND REACT (dossier dist) ---
 import os
 frontend_dist = Path("/app/app/backend/static")
