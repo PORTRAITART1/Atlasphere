@@ -338,13 +338,21 @@ async def debug_uid(data: DebugUidRequest):
 @router.get("/stats/{pi_uid}")
 async def get_user_stats(pi_uid: str, db: AsyncSession = Depends(get_db)):
     """Calcule les vraies stats d'un utilisateur depuis la DB."""
-    from sqlalchemy import select, func
+    from sqlalchemy import select, func, or_
     from app.backend.models.projects import Projects
     from app.backend.models.votes import Votes
     from app.backend.models.contributions import Contributions
 
+    # Récupérer le username depuis la DB
+    profile_stmt = select(Pi_profiles).where(Pi_profiles.pi_uid == pi_uid)
+    profile = (await db.execute(profile_stmt)).scalars().first()
+    username = profile.username if profile else pi_uid
+
+    # Chercher les projets par user_id == pi_uid OU user_id == username
     projects_count = (await db.execute(
-        select(func.count()).select_from(Projects).where(Projects.user_id == pi_uid)
+        select(func.count()).select_from(Projects).where(
+            or_(Projects.user_id == pi_uid, Projects.user_id == username)
+        )
     )).scalar() or 0
 
     votes_count = (await db.execute(
@@ -357,6 +365,7 @@ async def get_user_stats(pi_uid: str, db: AsyncSession = Depends(get_db)):
 
     return {
         "pi_uid": pi_uid,
+        "username": username,
         "proposals": projects_count,
         "votes": votes_count,
         "contributions": contributions_count,
