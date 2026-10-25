@@ -840,6 +840,26 @@ async def debug_add_avatar_column():
         return {"status": "error", "msg": str(e)}
 
 
+@app.post("/debug-set-member-since/{pi_uid}")
+async def debug_set_member_since(pi_uid: str, days_ago: int = 180):
+    """Admin: update the created_at of a profile to simulate an older member."""
+    from app.backend.core.database import db_manager
+    from app.backend.models.pi_profiles import Pi_profiles
+    from sqlalchemy import select
+    import datetime
+    try:
+        async with db_manager.async_session_maker() as db:
+            profile = (await db.execute(select(Pi_profiles).where(Pi_profiles.pi_uid == pi_uid))).scalars().first()
+            if not profile:
+                return {"status": "error", "msg": "profile not found"}
+            new_date = datetime.datetime.utcnow() - datetime.timedelta(days=days_ago)
+            profile.created_at = new_date
+            await db.commit()
+            return {"status": "ok", "pi_uid": pi_uid, "new_created_at": new_date.isoformat()}
+    except Exception as e:
+        return {"status": "error", "msg": str(e)}
+
+
 # --- SERVIR LE FRONTEND REACT (dossier dist) ---
 import os
 frontend_dist = Path("/app/app/backend/static")
