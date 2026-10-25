@@ -470,7 +470,7 @@ async def debug_passport(pi_uid: str):
             "contribution": min(100, projects_funded * 20),
             "verification": 100 if profile.kyc_verified else 0,
             "solohost_integration": 0,
-            "risk": 0,
+            "risk": 100 if profile.kyc_verified else 0,
         }
         score = sum(breakdown[k] * WEIGHTS[k] // 100 for k in WEIGHTS)
         return {
