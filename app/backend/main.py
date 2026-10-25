@@ -622,6 +622,56 @@ async def debug_seed_translated_projects():
         return {"created": created, "total": len(created), "languages": 10}
 
 
+@app.post("/debug-test-insert-1")
+async def debug_test_insert_1():
+    from app.backend.core.database import db_manager
+    from app.backend.models.projects import Projects
+    import datetime, json
+    try:
+        async with db_manager.async_session_maker() as db:
+            now = datetime.datetime.utcnow()
+            p = Projects(
+                title="TEST MINIMAL", description="test", category="technology",
+                budget=1000.0, raised=0.0, status="voting",
+                votes_for=0, votes_against=0, voter_count=0,
+                milestones=json.dumps({"en": "test"}),
+                team='["portraitart"]', region="Global",
+                deadline="2027-12-31", quorum=1000.0, threshold=60.0,
+                user_id="portraitart", created_at=now, updated_at=now,
+            )
+            db.add(p)
+            await db.commit()
+            return {"status": "ok"}
+    except Exception as e:
+        import traceback
+        return {"status": "error", "type": type(e).__name__, "msg": str(e), "tb": traceback.format_exc()[-500:]}
+
+
+@app.post("/debug-test-insert-long")
+async def debug_test_insert_long():
+    from app.backend.core.database import db_manager
+    from app.backend.models.projects import Projects
+    import datetime, json
+    try:
+        long_json = json.dumps({f"lang{i}": "x" * 500 for i in range(10)})
+        async with db_manager.async_session_maker() as db:
+            now = datetime.datetime.utcnow()
+            p = Projects(
+                title="TEST LONG", description="test", category="technology",
+                budget=1000.0, raised=0.0, status="voting",
+                votes_for=0, votes_against=0, voter_count=0,
+                milestones=long_json, team='["portraitart"]', region="Global",
+                deadline="2027-12-31", quorum=1000.0, threshold=60.0,
+                user_id="portraitart", created_at=now, updated_at=now,
+            )
+            db.add(p)
+            await db.commit()
+            return {"status": "ok", "json_len": len(long_json)}
+    except Exception as e:
+        import traceback
+        return {"status": "error", "type": type(e).__name__, "msg": str(e), "tb": traceback.format_exc()[-500:]}
+
+
 # --- SERVIR LE FRONTEND REACT (dossier dist) ---
 import os
 frontend_dist = Path("/app/app/backend/static")
