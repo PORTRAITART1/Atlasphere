@@ -75,34 +75,8 @@ async def lifespan(app: FastAPI):
     # Seed disabled - keep existing projects in DB
     logger.info("Seed skipped - using existing projects from database")
     
-    # --- AUTO-FIX: CLEAN TEST PROJECTS & INJECT REAL PROJECTS ---
-    try:
-        from sqlalchemy import text
-        from app.backend.core.database import db
-        from app.backend.seeds.atoms_projects import atoms_projects
-        
-        async with db.engine.begin() as conn:
-            # 1. Supprimer les projets de test (ceux qui finissent par '.t')
-            await conn.execute(text("DELETE FROM projects WHERE title LIKE '%.t'"))
-            
-            # 2. Vérifier combien de vrais projets il reste
-            res = await conn.execute(text("SELECT COUNT(*) FROM projects"))
-            count = res.scalar()
-            
-            # 3. Si la base est vide, on injecte nos vrais projets
-            if count == 0:
-                logger.info("[auto-fix] Base vide. Injection des vrais projets...")
-                for proj in atoms_projects:
-                    # On construit dynamiquement l'insertion SQL
-                    keys = ', '.join(proj.keys())
-                    placeholders = ', '.join([f':{k}' for k in proj.keys()])
-                    await conn.execute(text(f"INSERT INTO projects ({keys}) VALUES ({placeholders})"), proj)
-                logger.info(f"[auto-fix] {len(atoms_projects)} vrais projets injectés !")
-            else:
-                logger.info(f"[auto-fix] {count} projets déjà en base. Pas d'injection.")
-                
-    except Exception as e:
-        logger.warning(f"[auto-fix] failed: {e}")
+    # DISABLED: auto-seed removed to protect pioneer projects (fiabilité)
+    logger.info("[auto-fix] DISABLED - seed automatique désactivé pour protéger les données")
     # ---------------------------------------------------------------
     
     await initialize_admin_user()
