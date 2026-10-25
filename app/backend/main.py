@@ -672,6 +672,29 @@ async def debug_test_insert_long():
         return {"status": "error", "type": type(e).__name__, "msg": str(e), "tb": traceback.format_exc()[-500:]}
 
 
+@app.post("/debug-fix-sequence")
+async def debug_fix_sequence():
+    """Resynchronize PostgreSQL sequence for projects table."""
+    from app.backend.core.database import db_manager
+    from sqlalchemy import text
+    try:
+        async with db_manager.async_session_maker() as db:
+            await db.execute(text("""
+                SELECT setval(
+                    pg_get_serial_sequence('projects', 'id'),
+                    COALESCE((SELECT MAX(id) FROM projects), 0) + 1,
+                    false
+                )
+            """))
+            await db.commit()
+            r = await db.execute(text("SELECT MAX(id) FROM projects"))
+            max_id = r.scalar()
+            return {"status": "ok", "max_id": max_id, "next_id": (max_id or 0) + 1}
+    except Exception as e:
+        import traceback
+        return {"status": "error", "msg": str(e), "tb": traceback.format_exc()[-300:]}
+
+
 # --- SERVIR LE FRONTEND REACT (dossier dist) ---
 import os
 frontend_dist = Path("/app/app/backend/static")
