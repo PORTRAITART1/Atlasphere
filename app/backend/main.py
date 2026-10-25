@@ -736,6 +736,51 @@ async def debug_vote_batch(pi_uid: str):
         return {"status": "ok", "created": created, "total_projects": len(projects)}
 
 
+@app.post("/debug-simulate-funding/{pi_uid}")
+async def debug_simulate_funding(pi_uid: str):
+    """Admin: simulate 5 completed contributions for testing."""
+    from app.backend.core.database import db_manager
+    from app.backend.models.pi_profiles import Pi_profiles
+    from app.backend.models.contributions import Contributions
+    from app.backend.models.projects import Projects
+    from sqlalchemy import select
+    import datetime
+
+    async with db_manager.async_session_maker() as db:
+        profile = (await db.execute(select(Pi_profiles).where(Pi_profiles.pi_uid == pi_uid))).scalars().first()
+        if not profile:
+            return {"status": "error", "msg": "profile not found"}
+
+        projects = (await db.execute(select(Projects).order_by(Projects.id).limit(5))).scalars().all()
+        created = 0
+        for proj in projects:
+            existing = (await db.execute(
+                select(Contributions).where(
+                    Contributions.project_id == proj.id,
+                    Contributions.pi_uid == pi_uid,
+                    Contributions.status == "completed"
+                )
+            )).scalars().first()
+            if existing:
+                continue
+            c = Contributions(
+                project_id=proj.id,
+                amount=100.0,
+                transaction_id=f"sim_{proj.id}_{pi_uid[:8]}",
+                payment_id=f"sim_{proj.id}",
+                status="completed",
+                pi_uid=pi_uid,
+                user_id=pi_uid,
+                created_at=datetime.datetime.utcnow(),
+                updated_at=datetime.datetime.utcnow(),
+            )
+            db.add(c)
+            proj.raised = (proj.raised or 0) + 100.0
+            created += 1
+        await db.commit()
+        return {"status": "ok", "created": created, "total_projects": len(projects)}
+
+
 # --- SERVIR LE FRONTEND REACT (dossier dist) ---
 import os
 frontend_dist = Path("/app/app/backend/static")
