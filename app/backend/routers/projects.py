@@ -145,7 +145,7 @@ async def query_projectss(
             limit=limit,
             query_dict=query_dict,
             sort=sort,
-            user_id=str(current_user.id),
+            user_id=str(current_user.pi_uid),
         )
         logger.debug(f"Found {result['total']} projectss")
         return result
