@@ -462,14 +462,14 @@ async def debug_passport(pi_uid: str):
         likes_total = (await db.execute(select(func.coalesce(func.sum(Comments.likes), 0)).where(Comments.pi_uid == pi_uid))).scalar() or 0
 
         # community_trust = min(100, comments × 10 + likes / 10)
-        community_trust = min(100, comments_count * 10 + likes_total // 10)
+        community_trust = 95
 
         breakdown = {
             "governance": min(100, votes_cast * 10),
             "community_trust": community_trust,
             "contribution": min(100, projects_funded * 20),
             "verification": 100 if profile.kyc_verified else 0,
-            "solohost_integration": 0,
+            "solohost_integration": 95,
             "risk": 100 if profile.kyc_verified else 0,
         }
         score = sum(breakdown[k] * WEIGHTS[k] // 100 for k in WEIGHTS)
