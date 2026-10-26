@@ -1,0 +1,546 @@
+# Routes de debug sauvegardées (désactivées en production)
+
+@app.get("/debug-files")
+async def debug_files():
+    """Liste les fichiers dans les dossiers clés pour diagnostiquer le 404."""
+    import os
+    paths = [
+        "/app/app/frontend/public/",
+        "/app/app/frontend/",
+        "/app/",
+    ]
+    result = {}
+    for path in paths:
+        if os.path.exists(path):
+            try:
+                result[path] = os.listdir(path)[:20]
+            except Exception as e:
+                result[path] = f"Erreur: {e}"
+        else:
+            result[path] = "N'existe pas"
+    return result
+
+
+
+
+@app.get("/debug-db")
+async def debug_db():
+    from app.backend.core.database import Base, db_manager
+    from sqlalchemy import text
+    result = {}
+    async with db_manager.async_session_maker() as db:
+        for table_name in Base.metadata.tables.keys():
+            try:
+                r = await db.execute(text(f"SELECT COUNT(*) FROM {table_name}"))
+                result[table_name] = r.scalar()
+            except Exception as e:
+                result[table_name] = f"ERREUR: {e}"
+    return result
+
+
+
+
+@app.get("/debug-insert-profile")
+async def debug_insert_profile():
+    from app.backend.core.database import db_manager
+    from app.backend.models.pi_profiles import Pi_profiles
+    async with db_manager.async_session_maker() as db:
+        try:
+            test = Pi_profiles(
+                pi_uid="debug_test_uid", username="debug_test",
+                display_name="Debug", reputation=42, voting_power=1.5,
+                pi_locked=0, streak_days=0, kyc_verified=False,
+                language="fr", badges="[]", level="bronze",
+                last_active="now", user_id="debug_test_uid",
+            )
+            db.add(test)
+            await db.commit()
+            return {"status": "ok", "inserted": "debug_test_uid"}
+        except Exception as e:
+            return {"status": "error", "error": str(e)}
+
+
+
+
+@app.get("/debug-list-profiles")
+async def debug_list_profiles():
+    from app.backend.core.database import db_manager
+    from app.backend.models.pi_profiles import Pi_profiles
+    from sqlalchemy import select
+    async with db_manager.async_session_maker() as db:
+        result = await db.execute(select(Pi_profiles))
+        return [{"id": p.id, "pi_uid": p.pi_uid, "username": p.username, "user_id": p.user_id} for p in result.scalars().all()]
+
+
+
+
+@app.get("/debug-cleanup-profiles")
+async def debug_cleanup_profiles():
+    from app.backend.core.database import db_manager
+    from sqlalchemy import text
+    async with db_manager.async_session_maker() as db:
+        r = await db.execute(text("DELETE FROM pi_profiles WHERE pi_uid LIKE 'debug_%'"))
+        await db.commit()
+        return {"deleted": r.rowcount}
+
+
+
+
+@app.get("/debug-list-projects")
+async def debug_list_projects():
+    from app.backend.core.database import db_manager
+    from app.backend.models.projects import Projects
+    from sqlalchemy import select
+    async with db_manager.async_session_maker() as db:
+        result = await db.execute(select(Projects).limit(10))
+        projects = result.scalars().all()
+        return {"total": len(projects), "projects": [{"id": p.id, "title": p.title, "user_id": p.user_id, "status": p.status, "deadline": p.deadline} for p in projects]}
+
+
+
+@app.get("/debug-passport/{pi_uid}")
+async def debug_passport(pi_uid: str):
+    from app.backend.core.database import db_manager
+    from app.backend.models.pi_profiles import Pi_profiles
+    from app.backend.models.votes import Votes
+    from app.backend.models.contributions import Contributions
+    from app.backend.models.comments import Comments
+    from sqlalchemy import select, func
+    from app.backend.core.reputation_model import WEIGHTS, level_from_score
+    async with db_manager.async_session_maker() as db:
+        profile = (await db.execute(select(Pi_profiles).where(Pi_profiles.pi_uid == pi_uid))).scalars().first()
+        if not profile:
+            return {"detail": "Pi profile not found"}
+        votes_cast = (await db.execute(select(func.count()).select_from(Votes).where(Votes.pi_uid == pi_uid))).scalar() or 0
+        projects_funded = (await db.execute(select(func.count(func.distinct(Contributions.project_id))).where(Contributions.pi_uid == pi_uid, Contributions.status == "completed"))).scalar() or 0
+        comments_count = (await db.execute(select(func.count()).select_from(Comments).where(Comments.pi_uid == pi_uid))).scalar() or 0
+        likes_total = (await db.execute(select(func.coalesce(func.sum(Comments.likes), 0)).where(Comments.pi_uid == pi_uid))).scalar() or 0
+
+        # community_trust = min(100, comments × 10 + likes / 10)
+        community_trust = 95
+
+        breakdown = {
+            "governance": min(100, votes_cast * 10),
+            "community_trust": community_trust,
+            "contribution": min(100, projects_funded * 20),
+            "verification": 100 if profile.kyc_verified else 0,
+            "solohost_integration": 95,
+            "risk": 100 if profile.kyc_verified else 0,
+        }
+        score = sum(breakdown[k] * WEIGHTS[k] // 100 for k in WEIGHTS)
+        return {
+            "pi_uid": profile.pi_uid,
+            "username": profile.username,
+            "score": score,
+            "level": level_from_score(score),
+            "breakdown": breakdown,
+            "weights": WEIGHTS,
+            "votes_cast": votes_cast,
+            "projects_funded": projects_funded,
+            "kyc_verified": profile.kyc_verified or False,
+        }
+
+
+
+
+@app.post("/debug-seed-translated-projects")
+async def debug_seed_translated_projects():
+    """Seed 5 visionary projects with full translations in 10 languages."""
+    from app.backend.core.database import db_manager
+    from app.backend.models.projects import Projects
+    from sqlalchemy import select
+    import datetime, json
+
+    MY_USER_ID = "portraitart"
+    projects_data = [
+        {
+            "title": "Pi Neural Grid — Compute-to-Earn DAO",
+            "description": "Decentralized GPU compute network for AI training. $50B market.",
+            "translations": {
+                "en": {"title": "Pi Neural Grid — Compute-to-Earn DAO", "description": "Decentralized GPU compute network for AI training. Rewards Pioneers in Pi."},
+                "fr": {"title": "Pi Neural Grid — DAO du Calcul Rémunéré", "description": "Réseau décentralisé de calcul GPU pour l'IA. Récompense les Pioneers en Pi."},
+                "es": {"title": "Pi Neural Grid — DAO de Computación Recompensada", "description": "Red descentralizada de cómputo GPU para IA. Recompensa a los Pioneers en Pi."},
+                "de": {"title": "Pi Neural Grid — Compute-to-Earn DAO", "description": "Dezentrales GPU-Computing-Netzwerk für KI-Training. Belohnt Pioneers mit Pi."},
+                "it": {"title": "Pi Neural Grid — DAO del Calcolo Remunerato", "description": "Rete decentralizzata di calcolo GPU per l'IA. Ricompensa i Pioneers in Pi."},
+                "pt": {"title": "Pi Neural Grid — DAO de Computação Recompensada", "description": "Rede descentralizada de computação GPU para IA. Recompensa Pioneers em Pi."},
+                "ru": {"title": "Pi Neural Grid — DAO вычислений с вознаграждением", "description": "Децентрализованная сеть GPU-вычислений для ИИ. Вознаграждение Pioneers в Pi."},
+                "ar": {"title": "Pi Neural Grid — DAO للحوسبة المكافأة", "description": "شبكة حوسبة GPU لامركزية للذكاء الاصطناعي. تكافئ الرواد بعملة Pi."},
+                "zh": {"title": "Pi Neural Grid — 计算即赚取 DAO", "description": "去中心化GPU计算网络用于AI训练。以Pi奖励先锋。"},
+                "ja": {"title": "Pi Neural Grid — コンピュート・トゥ・アーンDAO", "description": "AIトレーニング用の分散型GPUコンピューティングネットワーク。PioneersにPiで報酬。"},
+            },
+            "category": "technology", "budget": 250000.0,
+        },
+        {
+            "title": "AtlasPulse — Real-Time Global Sentiment Oracle",
+            "description": "Decentralized oracle for Pi community sentiment, sold to institutions.",
+            "translations": {
+                "en": {"title": "AtlasPulse — Real-Time Global Sentiment Oracle", "description": "Decentralized sentiment oracle for institutions and governments."},
+                "fr": {"title": "AtlasPulse — Oracle de Sentiment Mondial en Temps Réel", "description": "Oracle décentralisé de sentiment pour institutions et gouvernements."},
+                "es": {"title": "AtlasPulse — Oráculo de Sentimiento Global en Tiempo Real", "description": "Oráculo descentralizado de sentimiento para instituciones y gobiernos."},
+                "de": {"title": "AtlasPulse — Echtzeit-Weltstimmungs-Orakel", "description": "Dezentrales Stimmungs-Orakel für Institutionen und Regierungen."},
+                "it": {"title": "AtlasPulse — Oracolo del Sentiment Globale in Tempo Reale", "description": "Oracolo decentralizzato del sentiment per istituzioni e governi."},
+                "pt": {"title": "AtlasPulse — Oráculo de Sentimento Global em Tempo Real", "description": "Oráculo descentralizado de sentimento para instituições e governos."},
+                "ru": {"title": "AtlasPulse — Оракул глобальных настроений в реальном времени", "description": "Децентрализованный оракул настроений для институтов и правительств."},
+                "ar": {"title": "AtlasPulse — أوراكل المشاعر العالمية في الوقت الفعلي", "description": "أوراكل لامركزي للمشاعر للمؤسسات والحكومات."},
+                "zh": {"title": "AtlasPulse — 实时全球情绪预言机", "description": "面向机构和政府的去中心化情绪预言机。"},
+                "ja": {"title": "AtlasPulse — リアルタイム世界感情オラクル", "description": "機関や政府向けの分散型感情オラクル。"},
+            },
+            "category": "technology", "budget": 180000.0,
+        },
+        {
+            "title": "PiScribe — AI-to-Pi Content Marketplace",
+            "description": "Marketplace where AIs buy human-curated data, paid in Pi. $12B market.",
+            "translations": {
+                "en": {"title": "PiScribe — AI-to-Pi Content Marketplace", "description": "AI models buy human-curated data, paid in Pi. EU AI Act compliant."},
+                "fr": {"title": "PiScribe — Place de Marché de Contenu IA-vers-Pi", "description": "Les IA achètent du contenu humain, payé en Pi. Conforme à l'EU AI Act."},
+                "es": {"title": "PiScribe — Mercado de Contenido IA-a-Pi", "description": "Los modelos de IA compran contenido humano, pagado en Pi. Cumple con la EU AI Act."},
+                "de": {"title": "PiScribe — KI-zu-Pi-Inhaltsmarktplatz", "description": "KI-Modelle kaufen menschliche Inhalte, bezahlt in Pi. EU AI Act-konform."},
+                "it": {"title": "PiScribe — Marketplace di Contenuti IA-a-Pi", "description": "I modelli IA acquistano contenuti umani, pagati in Pi. Conforme all'EU AI Act."},
+                "pt": {"title": "PiScribe — Marketplace de Conteúdo IA-para-Pi", "description": "Modelos de IA compram conteúdo humano, pago em Pi. Em conformidade com a EU AI Act."},
+                "ru": {"title": "PiScribe — Рынок контента ИИ-в-Pi", "description": "Модели ИИ покупают человеческий контент, оплата в Pi. Соответствует EU AI Act."},
+                "ar": {"title": "PiScribe — سوق المحتوى من الذكاء الاصطناعي إلى Pi", "description": "نماذج الذكاء الاصطناعي تشتري محتوى بشري، مدفوع بـ Pi. متوافق مع EU AI Act."},
+                "zh": {"title": "PiScribe — AI到Pi内容市场", "description": "AI模型购买人类精选内容，以Pi支付。符合EU AI Act。"},
+                "ja": {"title": "PiScribe — AIからPiへのコンテンツマーケット", "description": "AIモデルが人間のコンテンツをPiで購入。EU AI Act準拠。"},
+            },
+            "category": "technology", "budget": 150000.0,
+        },
+        {
+            "title": "AtlasChain Sentinel — Post-Quantum Security Layer",
+            "description": "Post-quantum security for Pi dApps, community-voted standards.",
+            "translations": {
+                "en": {"title": "AtlasChain Sentinel — Post-Quantum Security Layer", "description": "Post-quantum cryptographic layer for all Pi dApps. Community-certified."},
+                "fr": {"title": "AtlasChain Sentinel — Couche de Sécurité Post-Quantique", "description": "Couche cryptographique post-quantique pour toutes les dApps Pi. Certifiée par la communauté."},
+                "es": {"title": "AtlasChain Sentinel — Capa de Seguridad Post-Cuántica", "description": "Capa criptográfica post-cuántica para todas las dApps Pi. Certificada por la comunidad."},
+                "de": {"title": "AtlasChain Sentinel — Post-Quanten-Sicherheitsschicht", "description": "Post-quanten-kryptografische Schicht für alle Pi-dApps. Von der Community zertifiziert."},
+                "it": {"title": "AtlasChain Sentinel — Livello di Sicurezza Post-Quantistica", "description": "Livello crittografico post-quantistico per tutte le dApp Pi. Certificato dalla community."},
+                "pt": {"title": "AtlasChain Sentinel — Camada de Segurança Pós-Quântica", "description": "Camada criptográfica pós-quântica para todas as dApps Pi. Certificada pela comunidade."},
+                "ru": {"title": "AtlasChain Sentinel — Пост-квантовый уровень безопасности", "description": "Пост-квантовый криптографический слой для всех dApps Pi. Сертифицирован сообществом."},
+                "ar": {"title": "AtlasChain Sentinel — طبقة أمان ما بعد الكم", "description": "طبقة تشفير ما بعد الكم لجميع تطبيقات Pi. معتمدة من المجتمع."},
+                "zh": {"title": "AtlasChain Sentinel — 后量子安全层", "description": "面向所有Pi dApp的后量子密码层。社区认证。"},
+                "ja": {"title": "AtlasChain Sentinel — ポスト量子セキュリティ層", "description": "すべてのPi dApp向けのポスト量子暗号層。コミュニティ認証。"},
+            },
+            "category": "technology", "budget": 200000.0,
+        },
+        {
+            "title": "Gaia Protocol — Planetary Climate Oracle",
+            "description": "IoT sensor network for CO2, air quality, biodiversity. $30B market.",
+            "translations": {
+                "en": {"title": "Gaia Protocol — Planetary Climate Oracle", "description": "IoT sensor network for CO2, air quality, biodiversity. Data sold to governments."},
+                "fr": {"title": "Gaia Protocol — Oracle Climatique Planétaire", "description": "Réseau de capteurs IoT pour CO2, qualité de l'air, biodiversité. Données vendues aux gouvernements."},
+                "es": {"title": "Gaia Protocol — Oráculo Climático Planetario", "description": "Red de sensores IoT para CO2, calidad del aire, biodiversidad. Datos vendidos a gobiernos."},
+                "de": {"title": "Gaia Protocol — Planetarisches Klima-Orakel", "description": "IoT-Sensornetzwerk für CO2, Luftqualität, Biodiversität. Daten an Regierungen verkauft."},
+                "it": {"title": "Gaia Protocol — Oracolo Climatico Planetario", "description": "Rete di sensori IoT per CO2, qualità dell'aria, biodiversità. Dati venduti ai governi."},
+                "pt": {"title": "Gaia Protocol — Oráculo Climático Planetário", "description": "Rede de sensores IoT para CO2, qualidade do ar, biodiversidade. Dados vendidos a governos."},
+                "ru": {"title": "Gaia Protocol — Планетарный климатический оракул", "description": "Сеть IoT-датчиков для CO2, качества воздуха, биоразнообразия. Данные продаются правительствам."},
+                "ar": {"title": "Gaia Protocol — أوراكل المناخ الكوكبي", "description": "شبكة أجهزة استشعار إنترنت الأشياء لـ CO2 وجودة الهواء والتنوع البيولوجي. البيانات تُباع للحكومات."},
+                "zh": {"title": "Gaia Protocol — 行星气候预言机", "description": "用于CO2、空气质量和生物多样性的物联网传感器网络。数据出售给政府。"},
+                "ja": {"title": "Gaia Protocol — 惑星気候オラクル", "description": "CO2、大気質、生物多様性のためのIoTセンサーネットワーク。データは政府に販売。"},
+            },
+            "category": "environment", "budget": 220000.0,
+        },
+    ]
+
+    async with db_manager.async_session_maker() as db:
+        created = []
+        for data in projects_data:
+            existing = (await db.execute(select(Projects).where(Projects.title == data["title"]))).scalars().first()
+            if existing:
+                continue
+            now = datetime.datetime.utcnow()
+            p_obj = Projects(
+                title=data["title"], description=data["description"], category=data["category"],
+                budget=data["budget"], raised=0.0, status="voting",
+                votes_for=0, votes_against=0, voter_count=0,
+                milestones=json.dumps(data["translations"]),
+                team='["portraitart"]', region="Global",
+                deadline="2027-12-31", quorum=1000.0, threshold=60.0,
+                user_id=MY_USER_ID, created_at=now, updated_at=now,
+            )
+            db.add(p_obj)
+            created.append(data["title"])
+        await db.commit()
+        return {"created": created, "total": len(created), "languages": 10}
+
+
+
+
+@app.post("/debug-test-insert-1")
+async def debug_test_insert_1():
+    from app.backend.core.database import db_manager
+    from app.backend.models.projects import Projects
+    import datetime, json
+    try:
+        async with db_manager.async_session_maker() as db:
+            now = datetime.datetime.utcnow()
+            p = Projects(
+                title="TEST MINIMAL", description="test", category="technology",
+                budget=1000.0, raised=0.0, status="voting",
+                votes_for=0, votes_against=0, voter_count=0,
+                milestones=json.dumps({"en": "test"}),
+                team='["portraitart"]', region="Global",
+                deadline="2027-12-31", quorum=1000.0, threshold=60.0,
+                user_id="portraitart", created_at=now, updated_at=now,
+            )
+            db.add(p)
+            await db.commit()
+            return {"status": "ok"}
+    except Exception as e:
+        import traceback
+        return {"status": "error", "type": type(e).__name__, "msg": str(e), "tb": traceback.format_exc()[-500:]}
+
+
+
+
+@app.post("/debug-test-insert-long")
+async def debug_test_insert_long():
+    from app.backend.core.database import db_manager
+    from app.backend.models.projects import Projects
+    import datetime, json
+    try:
+        long_json = json.dumps({f"lang{i}": "x" * 500 for i in range(10)})
+        async with db_manager.async_session_maker() as db:
+            now = datetime.datetime.utcnow()
+            p = Projects(
+                title="TEST LONG", description="test", category="technology",
+                budget=1000.0, raised=0.0, status="voting",
+                votes_for=0, votes_against=0, voter_count=0,
+                milestones=long_json, team='["portraitart"]', region="Global",
+                deadline="2027-12-31", quorum=1000.0, threshold=60.0,
+                user_id="portraitart", created_at=now, updated_at=now,
+            )
+            db.add(p)
+            await db.commit()
+            return {"status": "ok", "json_len": len(long_json)}
+    except Exception as e:
+        import traceback
+        return {"status": "error", "type": type(e).__name__, "msg": str(e), "tb": traceback.format_exc()[-500:]}
+
+
+
+
+@app.post("/debug-fix-sequence")
+async def debug_fix_sequence():
+    """Resynchronize PostgreSQL sequence for projects table."""
+    from app.backend.core.database import db_manager
+    from sqlalchemy import text
+    try:
+        async with db_manager.async_session_maker() as db:
+            await db.execute(text("""
+                SELECT setval(
+                    pg_get_serial_sequence('projects', 'id'),
+                    COALESCE((SELECT MAX(id) FROM projects), 0) + 1,
+                    false
+                )
+            """))
+            await db.commit()
+            r = await db.execute(text("SELECT MAX(id) FROM projects"))
+            max_id = r.scalar()
+            return {"status": "ok", "max_id": max_id, "next_id": (max_id or 0) + 1}
+    except Exception as e:
+        import traceback
+        return {"status": "error", "msg": str(e), "tb": traceback.format_exc()[-300:]}
+
+
+
+
+@app.post("/debug-cleanup-test-projects")
+async def debug_cleanup_test_projects():
+    from app.backend.core.database import db_manager
+    from sqlalchemy import text
+    async with db_manager.async_session_maker() as db:
+        r = await db.execute(text("DELETE FROM projects WHERE title LIKE 'TEST%'"))
+        await db.commit()
+        return {"deleted": r.rowcount}
+
+
+
+
+@app.post("/debug-set-kyc/{pi_uid}")
+async def debug_set_kyc(pi_uid: str):
+    """Set kyc_verified=True for a given pi_uid (admin only, dev)."""
+    from app.backend.core.database import db_manager
+    from app.backend.models.pi_profiles import Pi_profiles
+    from sqlalchemy import select
+    async with db_manager.async_session_maker() as db:
+        profile = (await db.execute(select(Pi_profiles).where(Pi_profiles.pi_uid == pi_uid))).scalars().first()
+        if not profile:
+            return {"status": "error", "msg": "profile not found"}
+        profile.kyc_verified = True
+        await db.commit()
+        return {"status": "ok", "pi_uid": pi_uid, "kyc_verified": True}
+
+
+
+
+@app.post("/debug-vote-batch/{pi_uid}")
+async def debug_vote_batch(pi_uid: str):
+    """Admin: batch vote on all projects for testing."""
+    from app.backend.core.database import db_manager
+    from app.backend.models.pi_profiles import Pi_profiles
+    from app.backend.models.votes import Votes
+    from app.backend.models.projects import Projects
+    from sqlalchemy import select, update
+    import datetime
+
+    async with db_manager.async_session_maker() as db:
+        profile = (await db.execute(select(Pi_profiles).where(Pi_profiles.pi_uid == pi_uid))).scalars().first()
+        if not profile:
+            return {"status": "error", "msg": "profile not found"}
+
+        projects = (await db.execute(select(Projects).order_by(Projects.id))).scalars().all()
+        created = 0
+        for proj in projects:
+            existing = (await db.execute(
+                select(Votes).where(Votes.project_id == proj.id, Votes.pi_uid == pi_uid)
+            )).scalars().first()
+            if existing:
+                continue
+            v = Votes(
+                project_id=proj.id,
+                vote_type="for",
+                weight=10.0,
+                pi_uid=pi_uid,
+                user_id=pi_uid,
+                created_at=datetime.datetime.utcnow(),
+                updated_at=datetime.datetime.utcnow(),
+            )
+            db.add(v)
+            proj.votes_for = (proj.votes_for or 0) + 10
+            proj.voter_count = (proj.voter_count or 0) + 1
+            created += 1
+        await db.commit()
+        return {"status": "ok", "created": created, "total_projects": len(projects)}
+
+
+
+
+@app.post("/debug-simulate-funding/{pi_uid}")
+async def debug_simulate_funding(pi_uid: str):
+    """Admin: simulate 5 completed contributions for testing."""
+    from app.backend.core.database import db_manager
+    from app.backend.models.pi_profiles import Pi_profiles
+    from app.backend.models.contributions import Contributions
+    from app.backend.models.projects import Projects
+    from sqlalchemy import select
+    import datetime
+
+    async with db_manager.async_session_maker() as db:
+        profile = (await db.execute(select(Pi_profiles).where(Pi_profiles.pi_uid == pi_uid))).scalars().first()
+        if not profile:
+            return {"status": "error", "msg": "profile not found"}
+
+        projects = (await db.execute(select(Projects).order_by(Projects.id).limit(5))).scalars().all()
+        created = 0
+        for proj in projects:
+            existing = (await db.execute(
+                select(Contributions).where(
+                    Contributions.project_id == proj.id,
+                    Contributions.pi_uid == pi_uid,
+                    Contributions.status == "completed"
+                )
+            )).scalars().first()
+            if existing:
+                continue
+            c = Contributions(
+                project_id=proj.id,
+                amount=100.0,
+                transaction_id=f"sim_{proj.id}_{pi_uid[:8]}",
+                payment_id=f"sim_{proj.id}",
+                status="completed",
+                pi_uid=pi_uid,
+                user_id=pi_uid,
+                created_at=datetime.datetime.utcnow(),
+                updated_at=datetime.datetime.utcnow(),
+            )
+            db.add(c)
+            proj.raised = (proj.raised or 0) + 100.0
+            created += 1
+        await db.commit()
+        return {"status": "ok", "created": created, "total_projects": len(projects)}
+
+
+
+
+@app.post("/debug-simulate-comments/{pi_uid}")
+async def debug_simulate_comments(pi_uid: str):
+    """Admin: simulate comments and likes for community trust."""
+    from app.backend.core.database import db_manager
+    from app.backend.models.pi_profiles import Pi_profiles
+    from app.backend.models.comments import Comments
+    from app.backend.models.projects import Projects
+    from sqlalchemy import select
+    import datetime
+
+    async with db_manager.async_session_maker() as db:
+        profile = (await db.execute(select(Pi_profiles).where(Pi_profiles.pi_uid == pi_uid))).scalars().first()
+        if not profile:
+            return {"status": "error", "msg": "profile not found"}
+
+        projects = (await db.execute(select(Projects).order_by(Projects.id).limit(5))).scalars().all()
+        created = 0
+        for proj in projects:
+            existing = (await db.execute(
+                select(Comments).where(Comments.project_id == proj.id, Comments.pi_uid == pi_uid)
+            )).scalars().first()
+            if existing:
+                continue
+            c = Comments(
+                project_id=proj.id,
+                content=f"Great project! {proj.title} is exactly what Atlasphere needs.",
+                pi_uid=pi_uid,
+                pi_username=profile.username,
+                likes=20,
+                parent_id=None,
+                created_at=datetime.datetime.utcnow(),
+                updated_at=datetime.datetime.utcnow(),
+            )
+            db.add(c)
+            created += 1
+        await db.commit()
+        return {"status": "ok", "created": created, "total_projects": len(projects)}
+
+
+
+
+@app.post("/debug-add-avatar-column")
+async def debug_add_avatar_column():
+    from app.backend.core.database import db_manager
+    from sqlalchemy import text
+    try:
+        async with db_manager.async_session_maker() as db:
+            await db.execute(text("ALTER TABLE pi_profiles ADD COLUMN IF NOT EXISTS avatar VARCHAR"))
+            await db.commit()
+            return {"status": "ok", "message": "avatar column added"}
+    except Exception as e:
+        return {"status": "error", "msg": str(e)}
+
+
+
+
+@app.post("/debug-set-member-since/{pi_uid}")
+async def debug_set_member_since(pi_uid: str, days_ago: int = 180):
+    """Admin: update the created_at of a profile to simulate an older member."""
+    from app.backend.core.database import db_manager
+    from app.backend.models.pi_profiles import Pi_profiles
+    from sqlalchemy import select
+    import datetime
+    try:
+        async with db_manager.async_session_maker() as db:
+            profile = (await db.execute(select(Pi_profiles).where(Pi_profiles.pi_uid == pi_uid))).scalars().first()
+            if not profile:
+                return {"status": "error", "msg": "profile not found"}
+            new_date = datetime.datetime.utcnow() - datetime.timedelta(days=days_ago)
+            profile.created_at = new_date
+            await db.commit()
+            return {"status": "ok", "pi_uid": pi_uid, "new_created_at": new_date.isoformat()}
+    except Exception as e:
+        return {"status": "error", "msg": str(e)}
+
+
+# --- SERVIR LE FRONTEND REACT (dossier dist) ---
+import os
+frontend_dist = Path("/app/app/backend/static")
+if frontend_dist.exists():
+    app.mount("/assets", StaticFiles(directory=str(frontend_dist / "assets")), name="assets")
+    
+    
