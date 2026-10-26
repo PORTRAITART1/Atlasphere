@@ -443,6 +443,16 @@ async def debug_cleanup_profiles():
         return {"deleted": r.rowcount}
 
 
+@app.get("/debug-list-projects")
+async def debug_list_projects():
+    from app.backend.core.database import db_manager
+    from app.backend.models.projects import Projects
+    from sqlalchemy import select
+    async with db_manager.async_session_maker() as db:
+        result = await db.execute(select(Projects).limit(10))
+        projects = result.scalars().all()
+        return {"total": len(projects), "projects": [{"id": p.id, "title": p.title, "user_id": p.user_id, "status": p.status, "deadline": p.deadline} for p in projects]}
+
 @app.get("/debug-passport/{pi_uid}")
 async def debug_passport(pi_uid: str):
     from app.backend.core.database import db_manager
