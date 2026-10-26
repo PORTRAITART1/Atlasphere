@@ -11,16 +11,17 @@ WEIGHTS: Dict[str, int] = {
 }
 
 LEVELS = [
-    (0,    "novice"),
-    (100,  "active"),
-    (500,  "verified"),
-    (1000, "trusted"),
-    (5000, "pioneer"),
-    (10000,"flagship"),
+    (0,      "novice"),
+    (1000,   "active"),
+    (5000,   "verified"),
+    (10000,  "trusted"),
+    (50000,  "pioneer"),
+    (100000, "flagship"),
 ]
 
 def level_from_score(score: int) -> str:
+    xp_equivalent = score * 1000  # 1 point de score = 1000 XP
     for threshold, name in reversed(LEVELS):
-        if score >= threshold:
+        if xp_equivalent >= threshold:
             return name
     return "novice"
