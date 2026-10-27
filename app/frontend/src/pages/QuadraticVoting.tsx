@@ -1,11 +1,48 @@
-import { useState } from 'react';
+import { useState, useEffect } from "react";
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
-import { getQuadraticProposals, calculateQuadraticCost, calculateQuadraticVotes } from '@/lib/dao-advanced';
+import { calculateQuadraticCost, calculateQuadraticVotes } from "@/lib/dao-advanced";
+import { fetchMyProjects } from "@/lib/api";
 import { Vote, Calculator, TrendingUp, Info } from 'lucide-react';
 
 export default function QuadraticVoting() {
-  const proposals = getQuadraticProposals();
+  const [proposals, setProposals] = useState<any[]>([]);
+
+  useEffect(() => {
+    const load = () => {
+      const jwt = localStorage.getItem("atlasphere_jwt");
+      if (!jwt) {
+        setTimeout(load, 500);
+        return;
+      }
+      fetchMyProjects({ limit: 50, sort: "-created_at" })
+        .then(d => {
+          const mapped = (d.items || []).map((p: any) => ({
+            id: p.id,
+            title: p.title,
+            category: p.category || "general",
+            votesFor: p.votes_for || 0,
+            votesAgainst: p.votes_against || 0,
+            creditsSpent: (p.budget || 0) * (p.votes_for || 1),
+            totalVoters: p.voter_count || 0,
+            deadline: p.deadline || "",
+            status: (() => {
+              const apiStatus = (p.status || "").toLowerCase();
+              if (apiStatus === "voting" || apiStatus === "active" || apiStatus === "pending") {
+                if (p.deadline && new Date(p.deadline) < new Date()) return "passed";
+                return "active";
+              }
+              if (apiStatus === "approved" || apiStatus === "passed") return "passed";
+              if (apiStatus === "rejected" || apiStatus === "failed") return "rejected";
+              return "active";
+            })(),
+          }));
+          setProposals(mapped);
+        })
+        .catch(err => console.error("[QV] fetch error:", err));
+    };
+    load();
+  }, []);
   const [credits, setCredits] = useState(10);
   const [showCalc, setShowCalc] = useState(false);
   const userCredits = 500;
