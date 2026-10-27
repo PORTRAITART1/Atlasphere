@@ -211,13 +211,6 @@ async def general_exception_handler(request: Request, exc: Exception):
         )
 
 
-@app.get("/")
-def root():
-    index_path = Path(__file__).parent / "static" / "index.html"
-    if index_path.exists():
-        return FileResponse(str(index_path))
-    return {"message": "Frontend not built yet"}
-
 
 @app.get("/health")
 def health_check():
@@ -268,6 +261,12 @@ def run_in_debug_mode(app: FastAPI):
     server = uvicorn.Server(config)
     asyncio.run(server.serve())
 
+
+
+# ============================================
+# Servir le frontend React (SPA)
+# ============================================
+app.frontend("/", directory="app/backend/static", fallback="index.html")
 
 if __name__ == "__main__":
     import sys
