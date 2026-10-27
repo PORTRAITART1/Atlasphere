@@ -366,20 +366,45 @@ async def terms_html():
     return HTMLResponse(content="<h1>Terms of Service - Page not found</h1>", status_code=404)
 
 # ============================================
-# Serve React SPA (unconditional mount + debug)
+# Serve React SPA (simple routes, no mount)
 # ============================================
 import os
 from pathlib import Path
-from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
+from fastapi import HTTPException
 
 _static_dir = Path(__file__).parent / "static"
-_assets_dir = _static_dir / "assets"
 
-# Monter /assets SANS condition (si le dossier n'existe pas, StaticFiles lèvera une erreur claire)
-app.mount("/assets", StaticFiles(directory=str(_assets_dir)), name="assets")
+# 1. Route pour les assets (JS/CSS) - servis à la demande
+@app.get("/assets/{file_path:path}")
+async def serve_assets(file_path: str):
+    full_path = _static_dir / "assets" / file_path
+    if full_path.exists() and full_path.is_file():
+        return FileResponse(str(full_path))
+    raise HTTPException(status_code=404)
 
-# Debug : lister les fichiers réellement présents
+# 2. Route pour la racine (index.html)
+@app.get("/")
+async def serve_root():
+    index_file = _static_dir / "index.html"
+    if index_file.exists():
+        return FileResponse(str(index_file))
+    return {"detail": "Frontend not built yet"}
+
+# 3. Catch-all pour React Router (doit être APRÈS les autres routes)
+@app.get("/{full_path:path}")
+async def serve_spa(full_path: str):
+    if full_path.startswith("api/") or full_path.startswith("__"):
+        raise HTTPException(status_code=404)
+    file_path = _static_dir / full_path
+    if file_path.exists() and file_path.is_file():
+        return FileResponse(str(file_path))
+    index_file = _static_dir / "index.html"
+    if index_file.exists():
+        return FileResponse(str(index_file))
+    return {"detail": "Frontend not built yet"}
+
+# 4. Debug
 @app.get("/__debug_static")
 async def debug_static():
     files = []
@@ -391,21 +416,7 @@ async def debug_static():
     return {
         "static_dir": str(_static_dir),
         "exists": _static_dir.exists(),
-        "assets_exists": _assets_dir.exists(),
+        "assets_exists": (_static_dir / "assets").exists(),
         "file_count": len(files),
         "first_files": sorted(files)[:30],
     }
-
-# Route catch-all pour index.html
-@app.get("/{full_path:path}")
-async def spa_fallback(full_path: str):
-    if full_path.startswith("api/") or full_path.startswith("__debug"):
-        from fastapi import HTTPException
-        raise HTTPException(status_code=404)
-    file_path = _static_dir / full_path
-    if file_path.exists() and file_path.is_file():
-        return FileResponse(str(file_path))
-    index_file = _static_dir / "index.html"
-    if index_file.exists():
-        return FileResponse(str(index_file))
-    return {"detail": "Frontend not built yet"}
