@@ -11,6 +11,7 @@ import { Link } from 'react-router-dom';
 export default function UserProfile() {
   const [user, setUser] = useState<PiUser | null>(getCurrentUser());
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  const [joinedDate, setJoinedDate] = useState<string | null>(null);
   const [realStats, setRealStats] = useState<{proposals: number; votes: number; contributions: number} | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
@@ -32,6 +33,7 @@ export default function UserProfile() {
           if (res.ok) {
             const data = await res.json();
             const profile = data.items?.[0];
+            if (profile?.created_at) setJoinedDate(profile.created_at);
             if (profile?.avatar) {
               setAvatarUrl(profile.avatar);
               return;
@@ -168,7 +170,7 @@ export default function UserProfile() {
                 )}
               </div>
               <p className="text-sm text-indigo-300">{profile.title}</p>
-              <p className="text-xs text-gray-500 mt-1">{t('profile.member_since')} {user?.joinedDate || profile.joinedAt}</p>
+              <p className="text-xs text-gray-500 mt-1">{t('profile.member_since')} {joinedDate ? new Date(joinedDate).toLocaleDateString() : '—'}</p>
 
               {/* XP Bar */}
               <div className="mt-3 max-w-md">
