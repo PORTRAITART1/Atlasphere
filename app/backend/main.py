@@ -213,7 +213,7 @@ async def general_exception_handler(request: Request, exc: Exception):
 
 @app.get("/")
 def root():
-    index_path = Path("/app/app/backend/static/index.html")
+    index_path = Path(__file__).parent / "static" / "index.html"
     if index_path.exists():
         return FileResponse(str(index_path))
     return {"message": "Frontend not built yet"}
