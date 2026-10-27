@@ -266,7 +266,6 @@ def run_in_debug_mode(app: FastAPI):
 # ============================================
 # Servir le frontend React (SPA)
 # ============================================
-app.frontend("/", directory=str(Path(__file__).parent / "static"), fallback="index.html")
 
 if __name__ == "__main__":
     import sys
