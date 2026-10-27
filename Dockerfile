@@ -26,7 +26,13 @@ ENV ENVIRONMENT=dev
 RUN pip install --no-cache-dir -r app/backend/requirements.txt || \
     pip install --no-cache-dir -r requirements.txt
 
-# Frontend is pre-built and copied via static/ (no build needed)
+# Build frontend (React) - REQUIRED for assets to be served
+RUN apt-get update && apt-get install -y nodejs npm && rm -rf /var/lib/apt/lists/*
+WORKDIR /app/app/frontend
+RUN npm install && npm run build
+RUN cp -r dist/* /app/app/backend/static/
+WORKDIR /app
+
 
 # Expose ports
 EXPOSE 8000 3000
