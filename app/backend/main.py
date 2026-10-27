@@ -383,3 +383,46 @@ async def terms_html():
 
 
 
+
+# ============================================
+# Serve React SPA (robust: explicit mount + catch-all)
+# ============================================
+import os
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
+from pathlib import Path
+
+_static_dir = Path(__file__).parent / "static"
+_assets_dir = _static_dir / "assets"
+
+# 1. Mount /assets explicitly (serves all JS/CSS)
+if _assets_dir.exists():
+    app.mount("/assets", StaticFiles(directory=str(_assets_dir)), name="assets")
+
+# 2. Debug endpoint (to verify files are present on server)
+@app.get("/__debug_static")
+async def debug_static():
+    files = []
+    if _static_dir.exists():
+        for root, _dirs, _files in os.walk(_static_dir):
+            for f in _files:
+                rel = os.path.relpath(os.path.join(root, f), _static_dir)
+                files.append(rel)
+    return {
+        "static_dir": str(_static_dir),
+        "exists": _static_dir.exists(),
+        "assets_exists": _assets_dir.exists(),
+        "file_count": len(files),
+        "first_files": sorted(files)[:30],
+    }
+
+# 3. SPA catch-all (must be LAST - serves index.html for non-API routes)
+@app.get("/{full_path:path}")
+async def spa_fallback(full_path: str):
+    if full_path.startswith("api/") or full_path.startswith("__debug"):
+        from fastapi import HTTPException
+        raise HTTPException(status_code=404)
+    file_path = _static_dir / full_path
+    if file_path.exists() and file_path.is_file():
+        return FileResponse(str(file_path))
+    return FileResponse(str(_static_dir / "index.html"))
