@@ -366,20 +366,37 @@ async def terms_html():
     return HTMLResponse(content="<h1>Terms of Service - Page not found</h1>", status_code=404)
 
 # ============================================
-# Serve React SPA (simple, no crash)
+# Serve React SPA (unconditional mount + debug)
 # ============================================
+import os
 from pathlib import Path
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 
 _static_dir = Path(__file__).parent / "static"
-
-# Monter /assets seulement si le dossier existe (avec check_dir=False pour ne pas planter)
 _assets_dir = _static_dir / "assets"
-if _assets_dir.exists():
-    app.mount("/assets", StaticFiles(directory=str(_assets_dir), check_dir=False), name="assets")
 
-# Route catch-all pour index.html (sans vérification au démarrage)
+# Monter /assets SANS condition (si le dossier n'existe pas, StaticFiles lèvera une erreur claire)
+app.mount("/assets", StaticFiles(directory=str(_assets_dir)), name="assets")
+
+# Debug : lister les fichiers réellement présents
+@app.get("/__debug_static")
+async def debug_static():
+    files = []
+    if _static_dir.exists():
+        for root, _dirs, _files in os.walk(_static_dir):
+            for f in _files:
+                rel = os.path.relpath(os.path.join(root, f), _static_dir)
+                files.append(rel)
+    return {
+        "static_dir": str(_static_dir),
+        "exists": _static_dir.exists(),
+        "assets_exists": _assets_dir.exists(),
+        "file_count": len(files),
+        "first_files": sorted(files)[:30],
+    }
+
+# Route catch-all pour index.html
 @app.get("/{full_path:path}")
 async def spa_fallback(full_path: str):
     if full_path.startswith("api/") or full_path.startswith("__debug"):
