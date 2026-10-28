@@ -417,6 +417,23 @@ async def get_passport(pi_uid: str):
             "kyc_verified": profile.kyc_verified or False,
         }
 
+
+# ============================================
+# A2U Payment endpoint (App-to-User Testnet)
+# ============================================
+@app.post("/debug-send-a2u")
+async def debug_send_a2u(destinations: list[str], amount: str = "0.01"):
+    """
+    Send Pi Testnet from the app wallet to a list of destinations.
+    PROTECTED: requires a secret token in production.
+    """
+    from app.backend.services.pi_a2u import send_a2u_payments
+    try:
+        results = await send_a2u_payments(destinations, amount=amount)
+        return {"results": results}
+    except Exception as e:
+        return {"error": str(e)}
+
 @app.get("/{full_path:path}")
 async def serve_spa(full_path: str):
     # Ne pas intercepter les routes API ou debug

@@ -36,3 +36,4 @@ PyMuPDF
 stripe>=12.0.0
 
 aiosqlite
+stellar-sdk>=10.0.0
