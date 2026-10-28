@@ -42,8 +42,7 @@ async def send_a2u_payments(destinations: List[str], amount: str = "0.01", memo:
                 .append_payment_op(
                     destination=dest,
                     amount=amount,
-                    asset_code="Pi",
-                    asset_issuer=None,  # Pi is native
+                    asset=None,  # Native Pi
                 )
                 .set_timeout(30)
                 .build()
