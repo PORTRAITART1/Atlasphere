@@ -61,6 +61,7 @@ const UserProfile = lazy(() => import('./pages/UserProfile'));
 const MarketingDownload = lazy(() => import('./pages/MarketingDownload'));
 const ValidationKey = lazy(() => import('./pages/ValidationKey'));
 const PioneerFeedback = lazy(() => import('./pages/PioneerFeedback'));
+const PassportPage = lazy(() => import('./pages/PassportPage'));
 
 const queryClient = new QueryClient();
 
@@ -128,6 +129,8 @@ const AppRoutes = () => (
       <Route path="/profile" element={<UserProfile />} />
       <Route path="/marketing-download" element={<MarketingDownload />} />
       <Route path="/validation-key.txt" element={<ValidationKey />} />
+      <Route path="/passport" element={<PassportPage />} />
+      <Route path="/passport/:uid" element={<PassportPage />} />
       <Route path="/feedback" element={<PioneerFeedback />} />
     </Routes>
   </Suspense>
