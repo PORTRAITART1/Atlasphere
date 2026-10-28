@@ -163,7 +163,9 @@ export default function UserProfile() {
               <div className="flex items-center gap-3 mb-1">
                 <h1 className="text-2xl font-bold text-white">@{displayName}</h1>
                 {user?.uid && (
-                  <p className="text-xs text-gray-500 font-mono mt-1 select-all">UID: {user.uid}</p>
+                  <p className="text-xs text-gray-500 font-mono mt-1 select-all truncate max-w-[200px]" title={user.uid}>
+                    UID: {user.uid}
+                  </p>
                 )}
                 <span className="text-xs bg-indigo-500/20 text-indigo-300 px-2 py-0.5 rounded-full">
                   Niv. {user?.level || profile.level}
