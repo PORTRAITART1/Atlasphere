@@ -163,7 +163,7 @@ export default function UserProfile() {
               <div className="flex items-center gap-3 mb-1">
                 <h1 className="text-2xl font-bold text-white">@{displayName}</h1>
                 {user?.uid && (
-                  <p className="text-xs text-gray-500 font-mono mt-1 select-all truncate max-w-[200px]" title={user.uid}>
+                  <p className="text-xs text-gray-500 font-mono mt-1 select-all break-all max-w-[250px] leading-tight" title={user.uid}>
                     UID: {user.uid}
                   </p>
                 )}
