@@ -3,7 +3,7 @@ import os
 import logging
 import asyncio
 from typing import List, Dict, Any
-from stellar_sdk import Server, Keypair, TransactionBuilder, Network, Payment
+from stellar_sdk import Server, Keypair, TransactionBuilder, Network, Payment, Asset
 from stellar_sdk.exceptions import NotFoundError, BadResponseError
 
 logger = logging.getLogger(__name__)
@@ -42,7 +42,7 @@ async def send_a2u_payments(destinations: List[str], amount: str = "0.01", memo:
                 .append_payment_op(
                     destination=dest,
                     amount=amount,
-                    asset=None,  # Native Pi
+                    asset=Asset.native(),  # Native Pi
                 )
                 .set_timeout(30)
                 .build()
