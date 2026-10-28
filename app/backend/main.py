@@ -222,7 +222,7 @@ def pi_validation_key():
     """Serve Pi Network validation key as plain text at root path."""
     from fastapi.responses import PlainTextResponse
     return PlainTextResponse(
-        content="25dc632ee73613220f39faf97edfeda5f8b28f161a03f4bdf45db3a8de3ab6ba92a603053fbdb14118c47bc514d4a6755e1e8c0f1920871a528e9cd9c3bba7ab",
+        content="107cc949f35cbbe6c66f3b459845578443d0cecdbb564f68235fec33fff5d5c5fc5c053e76805bc9b9269437d3a0e22d86145be144db9c4e44afc3b4804350a7",
         media_type="text/plain"
     )
 
