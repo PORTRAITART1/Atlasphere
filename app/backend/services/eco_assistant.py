@@ -23,13 +23,21 @@ Always be kind, clear, and concise. Answer in the same language as the user's qu
 If a question is outside your scope (e.g., general Pi Network questions, technical bugs), politely redirect the user to the appropriate Atlasphere page or support.
 """
 
-async def get_eco_assistant_response(user_message: str) -> str:
-    """Get a response from the EcoAssistant AI."""
+LANG_NAMES = {
+    "en": "English", "fr": "French", "es": "Spanish", "de": "German",
+    "it": "Italian", "pt": "Portuguese", "ru": "Russian", "ar": "Arabic",
+    "zh": "Chinese", "ja": "Japanese"
+}
+
+async def get_eco_assistant_response(user_message: str, lang: str = "en") -> str:
+    """Get a response from the EcoAssistant AI in the specified language."""
+    lang_name = LANG_NAMES.get(lang, "English")
+    system_prompt = SYSTEM_PROMPT + f"\n\nIMPORTANT: Always respond in {lang_name}."
     try:
         response = await client.chat.completions.create(
-            model="gpt-4o-mini",  # or "gpt-3.5-turbo" for lower cost
+            model="gpt-4o-mini",
             messages=[
-                {"role": "system", "content": SYSTEM_PROMPT},
+                {"role": "system", "content": system_prompt},
                 {"role": "user", "content": user_message}
             ],
             temperature=0.7,
@@ -37,5 +45,5 @@ async def get_eco_assistant_response(user_message: str) -> str:
         )
         return response.choices[0].message.content
     except Exception as e:
-        logger.error(f"EcoAssistant API error: {e}")
+        logger.error(f"EcoAssistant API error: {type(e).__name__}: {str(e)}")
         return "I'm sorry, I encountered an error while processing your request. Please try again later."
