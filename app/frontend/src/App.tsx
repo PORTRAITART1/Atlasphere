@@ -61,6 +61,7 @@ const UserProfile = lazy(() => import('./pages/UserProfile'));
 const MarketingDownload = lazy(() => import('./pages/MarketingDownload'));
 const ValidationKey = lazy(() => import('./pages/ValidationKey'));
 const PioneerFeedback = lazy(() => import('./pages/PioneerFeedback'));
+const TestersPage = lazy(() => import('./pages/TestersPage'));
 const PassportPage = lazy(() => import('./pages/PassportPage'));
 
 const queryClient = new QueryClient();
@@ -132,6 +133,7 @@ const AppRoutes = () => (
       <Route path="/passport" element={<PassportPage />} />
       <Route path="/passport/:uid" element={<PassportPage />} />
       <Route path="/feedback" element={<PioneerFeedback />} />
+      <Route path="/testers" element={<TestersPage />} />
     </Routes>
   </Suspense>
 );
