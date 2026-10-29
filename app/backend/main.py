@@ -434,6 +434,20 @@ async def debug_send_a2u(destinations: list[str], amount: str = "0.01"):
     except Exception as e:
         return {"error": str(e)}
 
+
+# ============================================
+# EcoAssistant AI endpoint
+# ============================================
+@app.post("/api/v1/eco-assistant")
+async def eco_assistant(question: str):
+    """Receive a question and return the EcoAssistant's response."""
+    from app.backend.services.eco_assistant import get_eco_assistant_response
+    try:
+        response = await get_eco_assistant_response(question)
+        return {"response": response}
+    except Exception as e:
+        return {"error": str(e)}
+
 @app.get("/{full_path:path}")
 async def serve_spa(full_path: str):
     # Ne pas intercepter les routes API ou debug

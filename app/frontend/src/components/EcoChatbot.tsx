@@ -15,23 +15,6 @@ const SUGGESTIONS = [
   'Conseils pour économiser l\'eau',
 ];
 
-const AI_RESPONSES: Record<string, string> = {
-  'carbone': '🌍 Pour réduire votre empreinte carbone :\n\n1. **Transport** : Privilégiez le vélo ou les transports en commun (-2.6 kg CO2/trajet)\n2. **Alimentation** : Réduisez la viande rouge à 1x/semaine (-40 kg CO2/mois)\n3. **Énergie** : Baissez le chauffage de 2°C (-14% sur la facture)\n4. **Numérique** : Supprimez les emails inutiles et limitez le streaming HD\n\nVotre Lifestyle Optimizer peut vous donner des recommandations personnalisées !',
-  'score': '📊 Votre score écologique actuel est de **742/1000** (rang : Éco-Champion, top 12%).\n\nDétail par catégorie :\n- Transport : 85/100 ✅\n- Déchets : 90/100 ✅\n- Eau : 78/100 🔄\n- Énergie : 72/100 🔄\n- Alimentation : 68/100 ⚠️\n\nConseil : Améliorez votre score alimentation en achetant local et de saison !',
-  'crédit': '💚 Les **crédits carbone** permettent de compenser vos émissions résiduelles :\n\n1. Chaque crédit = 1 tonne de CO2 évitée ou absorbée\n2. Vérifiés par des organismes certifiés (Gold Standard, VCS Verra)\n3. Tokenisés sur la blockchain pour traçabilité\n4. Achetables en Pi sur notre marketplace\n\nVous avez déjà compensé 12.5 tonnes ! Continuez sur /carbon-credits.',
-  'eau': '💧 Conseils pour économiser l\'eau :\n\n1. **Douche** : Limitez à 5 min (-60L/douche)\n2. **Vaisselle** : Remplissez le lave-vaisselle avant de lancer\n3. **Jardin** : Arrosez le soir (moins d\'évaporation)\n4. **Fuites** : Vérifiez le compteur la nuit (une fuite = 100L/jour !)\n5. **Récupération** : Installez un récupérateur d\'eau de pluie\n\nVotre capteur eau a détecté une consommation de 145L/jour. L\'objectif est 120L !',
-  'default': '🌿 Je suis l\'EcoAssistant d\'Atlasphere ! Je peux vous aider avec :\n\n- Conseils pour réduire votre empreinte\n- Explication de votre score écologique\n- Informations sur les crédits carbone\n- Recommandations personnalisées\n- Questions sur les capteurs IoT\n\nQue souhaitez-vous savoir ?',
-};
-
-function getAIResponse(message: string): string {
-  const lower = message.toLowerCase();
-  if (lower.includes('carbone') && !lower.includes('crédit')) return AI_RESPONSES['carbone'];
-  if (lower.includes('score') || lower.includes('écologique')) return AI_RESPONSES['score'];
-  if (lower.includes('crédit') || lower.includes('compens')) return AI_RESPONSES['crédit'];
-  if (lower.includes('eau') || lower.includes('water')) return AI_RESPONSES['eau'];
-  return AI_RESPONSES['default'];
-}
-
 export default function EcoChatbot() {
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([
@@ -45,19 +28,27 @@ export default function EcoChatbot() {
     messagesEnd.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
-  const sendMessage = (text: string) => {
+  const sendMessage = async (text: string) => {
     if (!text.trim()) return;
     const userMsg: ChatMessage = { id: Date.now().toString(), role: 'user', content: text.trim(), timestamp: new Date() };
     setMessages((prev) => [...prev, userMsg]);
     setInput('');
     setTyping(true);
 
-    setTimeout(() => {
-      const response = getAIResponse(text);
+    try {
+      const res = await fetch(`/api/v1/eco-assistant?question=${encodeURIComponent(text.trim())}`, {
+        method: 'POST',
+      });
+      const data = await res.json();
+      const response = data.response || data.error || "Désolé, je n'ai pas pu répondre. Réessayez.";
       const aiMsg: ChatMessage = { id: (Date.now() + 1).toString(), role: 'assistant', content: response, timestamp: new Date() };
       setMessages((prev) => [...prev, aiMsg]);
+    } catch (err) {
+      const errorMsg: ChatMessage = { id: (Date.now() + 1).toString(), role: 'assistant', content: "Erreur de connexion. Réessayez plus tard.", timestamp: new Date() };
+      setMessages((prev) => [...prev, errorMsg]);
+    } finally {
       setTyping(false);
-    }, 1200);
+    }
   };
 
   return (
