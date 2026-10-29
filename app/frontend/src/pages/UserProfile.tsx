@@ -159,14 +159,10 @@ export default function UserProfile() {
               />
             </div>
 
-            <div className="flex-1">
+            <div className="flex-1 text-left">
               <div className="flex items-center gap-3 mb-1">
                 <h1 className="text-2xl font-bold text-white">@{displayName}</h1>
-                {user?.uid && (
-                  <p className="text-xs text-gray-500 font-mono mt-1 select-all break-all max-w-[250px] leading-tight" title={user.uid}>
-                    UID: {user.uid}
-                  </p>
-                )}
+
                 <span className="text-xs bg-indigo-500/20 text-indigo-300 px-2 py-0.5 rounded-full">
                   Niv. {user?.level || profile.level}
                 </span>
@@ -176,6 +172,11 @@ export default function UserProfile() {
               </div>
               <p className="text-sm text-indigo-300">{profile.title}</p>
               <p className="text-xs text-gray-500 mt-1">{t('profile.member_since')} {joinedDate ? new Date(joinedDate).toLocaleDateString() : '—'}</p>
+              {user?.uid && (
+                <p className="text-xs text-gray-500 font-mono mt-1 select-all break-all w-full" title={user.uid}>
+                  UID: {user.uid}
+                </p>
+              )}
 
               {/* XP Bar */}
               <div className="mt-3 max-w-md">
