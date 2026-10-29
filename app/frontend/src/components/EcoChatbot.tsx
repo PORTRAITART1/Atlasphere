@@ -74,7 +74,7 @@ export default function EcoChatbot() {
 
       {/* Chat Window */}
       {open && (
-        <div className="fixed bottom-20 right-6 z-50 w-[380px] h-[70vh] max-h-[520px] bg-slate-900 border border-white/10 rounded-2xl shadow-2xl flex flex-col overflow-hidden">
+        <div className="fixed bottom-20 right-6 z-50 w-[calc(100vw-3rem)] max-w-[380px] h-[70vh] max-h-[520px] bg-slate-900 border border-white/10 rounded-2xl shadow-2xl flex flex-col overflow-hidden">
           {/* Header */}
           <div className="bg-gradient-to-r from-emerald-600 to-cyan-600 p-4 flex items-center justify-between">
             <div className="flex items-center gap-2">
