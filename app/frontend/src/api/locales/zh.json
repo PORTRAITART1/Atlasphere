@@ -43,7 +43,7 @@
       "kyc_verified": "KYC 已验证",
       "wallet_connected": "钱包已连接",
       "test_payment_done": "测试付款已完成",
-      "app_approved": "应用已获 Pi Core Team 批准"
+      "app_approved": "测试版 - 等待 Pi Core Team 审核"
     },
     "env_variables": {
       "title": "环境变量",

@@ -43,7 +43,7 @@
       "kyc_verified": "KYC vérifié",
       "wallet_connected": "Portefeuille connecté",
       "test_payment_done": "Paiement test effectué",
-      "app_approved": "Application approuvée par Pi Core Team"
+      "app_approved": "Application en Beta - En attente de revue par Pi Core Team"
     },
     "env_variables": {
       "title": "Variables d'Environnement",

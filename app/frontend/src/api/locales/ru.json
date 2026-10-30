@@ -43,7 +43,7 @@
       "kyc_verified": "KYC подтверждён",
       "wallet_connected": "Кошелёк подключён",
       "test_payment_done": "Тестовый платёж выполнен",
-      "app_approved": "Приложение одобрено командой Pi Core"
+      "app_approved": "Бета-версия - Ожидает проверки Pi Core Team"
     },
     "env_variables": {
       "title": "Переменные окружения",

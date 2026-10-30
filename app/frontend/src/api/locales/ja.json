@@ -43,7 +43,7 @@
       "kyc_verified": "KYC確認済み",
       "wallet_connected": "ウォレット接続済み",
       "test_payment_done": "テスト支払い完了",
-      "app_approved": "Pi CoreチームによるアプリのApprove"
+      "app_approved": "ベータ版 - Pi Core Team レビュー待ち"
     },
     "env_variables": {
       "title": "環境変数",
