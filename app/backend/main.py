@@ -99,6 +99,29 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
+# ============================================
+# Testnet protection middleware
+# ============================================
+from fastapi import Request
+from fastapi.responses import JSONResponse
+
+@app.middleware("http")
+async def testnet_protection(request: Request, call_next):
+    if os.getenv("TESTNET", "false").lower() == "true":
+        if request.method in ("POST", "PUT", "DELETE", "PATCH"):
+            allowed_paths = [
+                "/api/v1/eco-assistant",
+                "/api/v1/pi-auth",
+                "/api/v1/pi-payments",
+            ]
+            if not any(request.url.path.startswith(p) for p in allowed_paths):
+                return JSONResponse(
+                    status_code=403,
+                    content={"detail": "Testnet: write operations are blocked to protect Mainnet data."}
+                )
+    return await call_next(request)
+
+
 
 @app.get("/docs", include_in_schema=False)
 async def custom_swagger_ui_html():
@@ -439,11 +462,11 @@ async def debug_send_a2u(destinations: list[str], amount: str = "0.01"):
 # EcoAssistant AI endpoint
 # ============================================
 @app.post("/api/v1/eco-assistant")
-async def eco_assistant(question: str):
-    """Receive a question and return the EcoAssistant's response."""
+async def eco_assistant(question: str, lang: str = "en"):
+    """Receive a question and return the EcoAssistant's response in the requested language."""
     from app.backend.services.eco_assistant import get_eco_assistant_response
     try:
-        response = await get_eco_assistant_response(question)
+        response = await get_eco_assistant_response(question, lang)
         return {"response": response}
     except Exception as e:
         return {"error": str(e)}
