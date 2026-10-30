@@ -215,12 +215,13 @@ export async function initPiSdk(): Promise<void> {
   }
 
   if (!_piInitPromise) {
+    const isSandbox = import.meta.env.VITE_PI_SANDBOX === 'true';
     _piInitPromise = window.Pi.init({
       version: '2.0',
-      sandbox: false
+      sandbox: isSandbox
     }).then(() => {
       piSdkInitialized = true;
-      console.log('[Atlasphere] Pi SDK initialized', { sandbox: false });
+      console.log('[Atlasphere] Pi SDK initialized', { sandbox: isSandbox });
     });
   }
 
