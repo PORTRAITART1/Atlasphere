@@ -215,7 +215,8 @@ export async function initPiSdk(): Promise<void> {
   }
 
   if (!_piInitPromise) {
-    const isSandbox = import.meta.env.VITE_PI_SANDBOX === 'true';
+    // Default to Pi Sandbox/Testnet; Mainnet builds must explicitly set VITE_PI_SANDBOX=false.
+    const isSandbox = import.meta.env.VITE_PI_SANDBOX !== 'false';
     _piInitPromise = window.Pi.init({
       version: '2.0',
       sandbox: isSandbox
