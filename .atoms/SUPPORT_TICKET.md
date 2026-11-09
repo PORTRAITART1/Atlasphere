@@ -1,13 +1,13 @@
-# Support Ticket — Backend Python ne démarre pas sur Atoms
+# Support Ticket — Ancien problème de démarrage du backend
 
 ## Contexte
 - **App** : Atlasphere (Pi Network governance platform)
 - **Repo** : https://github.com/PORTRAITART1/Atlasphere
-- **Domaine** : https://atlasphere.pub.atoms.world
+- **Domaine** : https://atlasphere-testnet.onrender.com
 - **Type** : FastAPI (Python) + React (Vite)
 
 ## Problème
-Le backend FastAPI **ne démarre pas** sur Atoms.
+Le backend FastAPI ne démarrait pas sur l’ancien hébergement.
 L'API renvoie systématiquement :
 {"error": "No module named 'app'", "message": "Internal server error"}
 
@@ -25,7 +25,7 @@ Atlasphere/
 │ ├── frontend/ ← React (Vite)
 │ ├── start.sh ← script de démarrage (créé)
 │ └── .mgx/
-│ └── config.yaml ← config Atoms
+│ └── config.yaml ← configuration de déploiement
 └── .atoms/
 └── ATOMS.md
 
@@ -43,11 +43,11 @@ dev: bash start.sh
 ✅ Vérifié que start.sh fonctionne en local
 
 Ce qu'on observe
-❌ Atoms ne semble pas exécuter start.sh
+❌ L’ancien hébergement ne semblait pas exécuter start.sh
 
 ❌ L'erreur No module named 'app' persiste
 
-❌ Aucun log Atoms accessible dans .atoms/
+❌ Aucun journal accessible dans le dossier de diagnostic
 
 Questions pour le support
 Comment Atoms lance-t-il un backend Python (FastAPI) ?

@@ -56,7 +56,7 @@
                         "name": "url",
                         "value": {
                             "type": "string",
-                            "value": "https://atlasphere.pub.atoms.world/api/v1/pi-pay/config"
+                            "value": "https://atlasphere-testnet.onrender.com/api/v1/pi-pay/config"
                         }
                     }
                 ],
@@ -493,6 +493,6 @@
             "enable_llm_stream": false,
             "callback_url": ""
         },
-        "url": "https://atlasphere.pub.atoms.world/api/v1/pi-pay/config"
+        "url": "https://atlasphere-testnet.onrender.com/api/v1/pi-pay/config"
     }
 }

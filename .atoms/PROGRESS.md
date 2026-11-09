@@ -33,7 +33,7 @@
 
 ## Correctif « Paiement expiré / développeur n'a pas approuvé » (2026-09-01)
 Cause racine (3 défauts cumulés dans la fenêtre d'approbation de ~10 s du wallet Pi) :
-- [x] `Pi.init({ sandbox })` était calculé sur le nom de domaine : `atlasphere.pub.atoms.world` ne contenant ni `.pi` ni `mainnet`, le SDK démarrait en **sandbox à l'intérieur de Pi Browser** → le wallet réel n'a jamais reçu d'approbation valide. Corrigé : `sandbox = !isInPiBrowser()`.
+- [x] `Pi.init({ sandbox })` était calculé sur le nom de domaine : `atlasphere-testnet.onrender.com` ne contenant ni `.pi` ni `mainnet`, le SDK démarrait en **sandbox à l'intérieur de Pi Browser** → le wallet réel n'a jamais reçu d'approbation valide. Corrigé : `sandbox = !isInPiBrowser()`.
 - [x] `/approve` exigeait une session plateforme (`get_current_user` → 401) **et** un profil Pi déjà enregistré (→ 403). Un testeur externe était donc systématiquement refusé. Corrigé : le jeton d'accès Pi est accepté comme preuve d'identité (`uid` du token comparé au `user_uid` renvoyé par l'API Pi), avec liaison de profil automatique.
 - [x] Les erreurs d'approbation/complétion étaient avalées côté frontend (`console.error` seulement) : le testeur ne voyait aucune cause. Corrigé : remontée du message serveur réel dans l'interface + enregistrement de l'annulation wallet.
 - [x] Délai Pi Platform réduit de 20 s à 6 s pour échouer vite au lieu de dépasser la fenêtre du wallet.
@@ -58,7 +58,7 @@ Cause racine (3 défauts cumulés dans la fenêtre d'approbation de ~10 s du wal
 - [x] `VITE_ADMIN_USERNAMES=portraitart` configuré dans `app/frontend/.env`
 - [x] Routes `/settings` et `/admin` réservées à ce compte Pi
 - [x] Lint + build revalidés après configuration admin
-- Note : hors Pi Browser, le nom d'utilisateur provient du compte Atoms Cloud, donc l'accès admin doit être testé connecté avec Pi.
+- Note : hors Pi Browser, le nom d'utilisateur provient du compte du fournisseur d’hébergement, donc l'accès admin doit être testé connecté avec Pi.
 
 ## Audit i18n (textes FR en dur détectés)
 34 pages + 8 composants contiennent encore des libellés FR en dur (~408 occurrences).

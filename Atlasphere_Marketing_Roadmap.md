@@ -2,7 +2,7 @@
 
 **Application :** Atlasphere  
 **Pseudo Pi officiel :** `portraitart`  
-**Domaine :** https://atlasphere.pub.atoms.world  
+**Domaine :** https://atlasphere-testnet.onrender.com
 **Slogan :** **Govern. Fund. Build.**  
 **Positionnement :** gouvernance décentralisée et financement participatif pour les Pionniers Pi  
 **Objectif immédiat :** mobiliser des testeurs réels, finaliser les transactions de test requises et préparer un lancement Mainnet crédible.
@@ -353,7 +353,7 @@ Retour au logo Atlasphere et au domaine sur un fond violet profond.
 
 ### 9–10 s
 CTA final avec impulsion dorée : **TEST NOW IN PI BROWSER**  
-**Sous-texte :** `atlasphere.pub.atoms.world`  
+**Sous-texte :** `atlasphere-testnet.onrender.com`
 **Son :** impact final puis résonance courte.
 
 ## Adaptation verticale
@@ -385,17 +385,17 @@ CTA final avec impulsion dorée : **TEST NOW IN PI BROWSER**
 
 ### EN 1 — Vision
 The future of community funding should be decided by the community. Atlasphere brings proposals, voting and Pi-powered participation into one experience. **Govern. Fund. Build.**  
-👉 Join the Beta: https://atlasphere.pub.atoms.world  
+👉 Join the Beta: https://atlasphere-testnet.onrender.com
 #PiNetwork #Atlasphere #Pioneers #Web3 #Mainnet
 
 ### EN 2 — Test
 Pioneers, Atlasphere is entering its next testing stage. Open the app in Pi Browser, explore the governance experience and share honest feedback. Every real test helps us build a safer launch.  
-👉 Test now: https://atlasphere.pub.atoms.world  
+👉 Test now: https://atlasphere-testnet.onrender.com
 #PiNetwork #Atlasphere #Pioneers #Web3 #Mainnet
 
 ### EN 3 — Paiement test
 Help us validate the Atlasphere payment flow. If you choose to participate, complete a clearly displayed test transaction in Pi Browser and report any issue you encounter. Test participation is voluntary.  
-👉 Run a test: https://atlasphere.pub.atoms.world  
+👉 Run a test: https://atlasphere-testnet.onrender.com
 #PiNetwork #Atlasphere #Pioneers #Web3 #Mainnet
 
 ### EN 4 — Gouvernance
@@ -412,17 +412,17 @@ Atlasphere is not built around invented hype. It is built with real Pioneer test
 
 ### FR 1 — Vision
 Le financement communautaire doit être guidé par la communauté. Atlasphere réunit propositions, votes et participation avec Pi dans une seule expérience. **Govern. Fund. Build.**  
-👉 Rejoins la Beta : https://atlasphere.pub.atoms.world  
+👉 Rejoins la Beta : https://atlasphere-testnet.onrender.com
 #PiNetwork #Atlasphere #Pioneers #Web3 #Mainnet
 
 ### FR 2 — Test
 Pionniers, Atlasphere entre dans une nouvelle phase de test. Ouvre l’application dans Pi Browser, explore la gouvernance et partage un avis honnête. Chaque test réel nous aide à préparer un lancement plus sûr.  
-👉 Teste maintenant : https://atlasphere.pub.atoms.world  
+👉 Teste maintenant : https://atlasphere-testnet.onrender.com
 #PiNetwork #Atlasphere #Pioneers #Web3 #Mainnet
 
 ### FR 3 — Paiement test
 Aide-nous à valider le parcours de paiement Atlasphere. Si tu souhaites participer, effectue une transaction de test clairement indiquée dans Pi Browser et signale tout problème. La participation est volontaire.  
-👉 Faire un test : https://atlasphere.pub.atoms.world  
+👉 Faire un test : https://atlasphere-testnet.onrender.com
 #PiNetwork #Atlasphere #Pioneers #Web3 #Mainnet
 
 ### FR 4 — Gouvernance
