@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { createPiPayment, getCurrentUser } from '@/lib/pi-sdk';
-import { getAPIBaseURL } from '@/lib/config';
 import { t } from '@/lib/i18n';
 
 interface PiPaymentButtonProps {
@@ -70,30 +69,12 @@ export default function PiPaymentButton({
   children,
 }: PiPaymentButtonProps) {
   const [isProcessing, setIsProcessing] = useState(false);
-  const [debugInfo, setDebugInfo] = useState<string>('');
   const [status, setStatus] = useState<'idle' | 'approving' | 'completing' | 'done' | 'error' | 'success'>('idle');
   const [message, setMessage] = useState<string>('');
 
   const handlePayment = async () => {
     setMessage('');
     const user = getCurrentUser();
-    const jwt = localStorage.getItem('atlasphere_jwt');
-    const piToken = localStorage.getItem('atlasphere_pi_token');
-    setDebugInfo(`user=${user ? 'OK(' + user.username + ')' : 'NULL'} | uid=${user?.uid || 'NULL'} | jwt=${jwt ? 'OK' : 'NULL'} | piToken=${piToken ? 'OK' : 'NULL'}`);
-    if (piToken) {
-      try {
-        const base = getAPIBaseURL();
-        const res = await fetch(`${base}/api/v1/pi-auth/exchange`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ access_token: piToken })
-        });
-        const txt = await res.text();
-        setDebugInfo(prev => prev + ` | EX=${res.status}: ${txt.substring(0, 150)}`);
-      } catch (e: any) {
-        setDebugInfo(prev => prev + ` | EX_ERR=${e.message}`);
-      }
-    }
     if (!user) {
       setStatus('error');
       setMessage(t('payment.login_required'));
@@ -161,11 +142,6 @@ export default function PiPaymentButton({
 
   return (
     <div className="w-full">
-      {debugInfo && (
-        <div className="bg-red-600 text-white p-2 text-xs rounded mb-2 font-mono">
-          DEBUG: {debugInfo}
-        </div>
-      )}
       <button
         onClick={handlePayment}
         disabled={isProcessing || status === 'done' || status === 'success'}

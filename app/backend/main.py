@@ -112,7 +112,7 @@ async def testnet_protection(request: Request, call_next):
             allowed_paths = [
                 "/api/v1/eco-assistant",
                 "/api/v1/pi-auth",
-                "/api/v1/pi-payments",
+                "/api/v1/pi-pay",
             ]
             if not any(request.url.path.startswith(p) for p in allowed_paths):
                 return JSONResponse(

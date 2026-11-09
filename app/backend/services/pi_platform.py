@@ -20,7 +20,11 @@ import httpx
 
 logger = logging.getLogger(__name__)
 
-PI_API_BASE = "https://api.minepi.com"
+PI_API_BASE = os.getenv("PI_API_BASE_URL", "").strip() or (
+    "https://api.testnet.minepi.com"
+    if os.getenv("TESTNET", "false").lower() == "true"
+    else "https://api.minepi.com"
+)
 ATLASPHERE_WALLET_ADDRESS = "GDLC46ZJ2RBHR5MDYRMY2KLZJ2QRORPVTNCIM5EZROONZRQLAPEHVD75"
 # The Pi wallet cancels a payment when the server approval takes too long
 # (~10 seconds), so every Pi Platform call must fail fast rather than hang.
