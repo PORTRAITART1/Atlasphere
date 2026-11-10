@@ -22,7 +22,7 @@ logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/api/v1/pi-auth", tags=["pi-auth"])
 
-PI_API_BASE = "https://api.minepi.com"
+PI_API_BASE = "https://api.testnet.minepi.com"
 
 
 class PiAuthRequest(BaseModel):
