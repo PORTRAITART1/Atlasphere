@@ -215,14 +215,13 @@ export async function initPiSdk(): Promise<void> {
   }
 
   if (!_piInitPromise) {
-    // Default to Pi Sandbox/Testnet; Mainnet builds must explicitly set VITE_PI_SANDBOX=false.
-    const isSandbox = import.meta.env.VITE_PI_SANDBOX !== 'false';
+    // Atlasphere Testnet build: keep Pi SDK sandbox enabled.
     _piInitPromise = window.Pi.init({
       version: '2.0',
-      sandbox: isSandbox
+      sandbox: true
     }).then(() => {
       piSdkInitialized = true;
-      console.log('[Atlasphere] Pi SDK initialized', { sandbox: isSandbox });
+      console.log('[Atlasphere] Pi SDK initialized', { sandbox: true });
     });
   }
 
