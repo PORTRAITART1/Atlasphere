@@ -5,14 +5,14 @@
 // Also reject URLs without a protocol. Fall back to the production URL if needed.
 function resolveApiBaseUrl(): string {
   const raw = import.meta.env.VITE_API_BASE_URL as string | undefined;
-  if (!raw) return 'https://atlasphere-testnet.onrender.com';
+  if (!raw) return 'https://atlasphere.pub.atoms.world';
   if (/\$\$[a-z_]+\$\$/i.test(raw)) {
-    console.warn('[api] Ignoring unresolved placeholder in VITE_API_BASE_URL:', raw, '-> falling back to https://atlasphere-testnet.onrender.com');
-    return 'https://atlasphere-testnet.onrender.com';
+    console.warn('[api] Ignoring unresolved placeholder in VITE_API_BASE_URL:', raw, '-> falling back to https://atlasphere.pub.atoms.world');
+    return 'https://atlasphere.pub.atoms.world';
   }
   if (!/^https?:\/\//i.test(raw)) {
-    console.warn('[api] VITE_API_BASE_URL missing protocol:', raw, '-> falling back to https://atlasphere-testnet.onrender.com');
-    return 'https://atlasphere-testnet.onrender.com';
+    console.warn('[api] VITE_API_BASE_URL missing protocol:', raw, '-> falling back to https://atlasphere.pub.atoms.world');
+    return 'https://atlasphere.pub.atoms.world';
   }
   return raw;
 }
