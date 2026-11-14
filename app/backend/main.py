@@ -7,7 +7,8 @@ from contextlib import asynccontextmanager
 from datetime import datetime
 
 from app.backend.core.config import settings
-from fastapi import FastAPI
+from app.backend.core.database import get_db
+from fastapi import Depends, FastAPI
 from fastapi.staticfiles import StaticFiles
 from fastapi import HTTPException, Request, status
 from fastapi.middleware.cors import CORSMiddleware
@@ -400,45 +401,125 @@ _static_dir = Path(__file__).parent / "static"
 # ============================================
 # Passport endpoint (public)
 # ============================================
-@app.get("/api/v1/pi-auth/passport/{pi_uid}")
-async def get_passport(pi_uid: str):
-    from app.backend.core.database import db_manager
-    from app.backend.models.pi_profiles import Pi_profiles
-    from app.backend.models.votes import Votes
-    from app.backend.models.contributions import Contributions
-    from app.backend.models.comments import Comments
-    from sqlalchemy import select, func
-    from app.backend.core.reputation_model import WEIGHTS, level_from_score
-    async with db_manager.async_session_maker() as db:
-        profile = (await db.execute(select(Pi_profiles).where(Pi_profiles.pi_uid == pi_uid))).scalars().first()
-        if not profile:
-            return {"detail": "Pi profile not found"}
-        votes_cast = (await db.execute(select(func.count()).select_from(Votes).where(Votes.pi_uid == pi_uid))).scalar() or 0
-        projects_funded = (await db.execute(select(func.count(func.distinct(Contributions.project_id))).where(Contributions.pi_uid == pi_uid, Contributions.status == "completed"))).scalar() or 0
-        comments_count = (await db.execute(select(func.count()).select_from(Comments).where(Comments.pi_uid == pi_uid))).scalar() or 0
-        likes_total = (await db.execute(select(func.coalesce(func.sum(Comments.likes), 0)).where(Comments.pi_uid == pi_uid))).scalar() or 0
+@app.put("/api/v1/pi-auth/passport/visibility")
+async def set_passport_visibility(request: Request, db=Depends(get_db)):
+    """Let a Pi Testnet Pioneer explicitly opt in or out of the public Passport."""
+    from fastapi import HTTPException
+    from pydantic import BaseModel
+    from app.backend.models.pi_passport_consent import Pi_passport_consent
+    from app.backend.services.pi_platform import PiPlatformError, PiPlatformService
 
-        community_trust = 95
-        breakdown = {
-            "governance": min(100, votes_cast * 10),
-            "community_trust": community_trust,
-            "contribution": min(100, projects_funded * 20),
-            "verification": 100 if profile.kyc_verified else 0,
-            "solohost_integration": 95,
-            "risk": 100 if profile.kyc_verified else 0,
-        }
-        score = sum(breakdown[k] * WEIGHTS[k] // 100 for k in WEIGHTS)
-        return {
-            "pi_uid": profile.pi_uid,
-            "username": profile.username,
-            "score": score,
-            "level": level_from_score(score),
-            "breakdown": breakdown,
-            "weights": WEIGHTS,
-            "votes_cast": votes_cast,
-            "projects_funded": projects_funded,
-            "kyc_verified": profile.kyc_verified or False,
-        }
+    if os.getenv("TESTNET", "false").lower() != "true":
+        raise HTTPException(status_code=404, detail="Testnet Passport consent endpoint is disabled")
+
+    class VisibilityRequest(BaseModel):
+        pi_uid: str
+        pi_access_token: str
+        is_public: bool
+
+    payload = VisibilityRequest.model_validate(await request.json())
+    try:
+        pi_user = await PiPlatformService().verify_access_token(payload.pi_access_token)
+    except PiPlatformError:
+        raise HTTPException(status_code=401, detail="Invalid Pi Testnet access token")
+
+    pi_uid = str(pi_user.get("uid") or "").strip()
+    requested_uid = payload.pi_uid.strip()
+    if not pi_uid or pi_uid != requested_uid:
+        raise HTTPException(status_code=403, detail="Pi identity does not match the requested Passport")
+
+    consent = await db.get(Pi_passport_consent, pi_uid)
+    if consent is None:
+        consent = Pi_passport_consent(pi_uid=pi_uid, is_public=payload.is_public)
+        db.add(consent)
+    else:
+        consent.is_public = payload.is_public
+    await db.commit()
+    return {"pi_uid": pi_uid, "is_public": consent.is_public}
+
+
+@app.get("/api/v1/pi-auth/passport/me")
+async def get_my_passport(request: Request, db=Depends(get_db)):
+    """Return the signed-in Testnet Pioneer's own reputation and visibility preference."""
+    from fastapi import HTTPException
+    from sqlalchemy import select
+    from app.backend.models.pi_passport_consent import Pi_passport_consent
+    from app.backend.models.pi_profiles import Pi_profiles
+    from app.backend.services.pi_platform import PiPlatformError, PiPlatformService
+    from app.backend.services.reputation import calculate_reputation
+
+    if os.getenv("TESTNET", "false").lower() != "true":
+        raise HTTPException(status_code=404, detail="Testnet Passport endpoint is disabled")
+
+    authorization = request.headers.get("Authorization", "")
+    access_token = authorization.removeprefix("Bearer ").strip()
+    if not access_token:
+        raise HTTPException(status_code=401, detail="Pi access token is required")
+    try:
+        pi_user = await PiPlatformService().verify_access_token(access_token)
+    except PiPlatformError:
+        raise HTTPException(status_code=401, detail="Invalid Pi Testnet access token")
+
+    pi_uid = str(pi_user.get("uid") or "").strip()
+    if not pi_uid:
+        raise HTTPException(status_code=401, detail="Pi token has no Pioneer UID")
+
+    profile = (await db.execute(select(Pi_profiles).where(Pi_profiles.pi_uid == pi_uid))).scalars().first()
+    if profile is None:
+        raise HTTPException(status_code=404, detail="Pi profile not found")
+
+    reputation = await calculate_reputation(db, profile.pi_uid, profile)
+    consent = await db.get(Pi_passport_consent, pi_uid)
+    return {
+        "pi_uid": profile.pi_uid,
+        "username": profile.username,
+        "score": reputation["reputation"],
+        "level": reputation["level"],
+        "voting_power": reputation["voting_power"],
+        "votes_cast": reputation["votes_cast"],
+        "projects_funded": reputation["projects_funded"],
+        "is_public": bool(consent and consent.is_public),
+    }
+
+
+@app.get("/api/v1/pi-auth/passport/{pi_uid}")
+async def get_passport(pi_uid: str, db=Depends(get_db)):
+    """Return only reputation aggregates for a Pioneer who opted into public visibility."""
+    from fastapi import HTTPException
+    from app.backend.models.pi_passport_consent import Pi_passport_consent
+    from app.backend.models.pi_profiles import Pi_profiles
+    from app.backend.services.reputation import calculate_reputation
+    from sqlalchemy import select
+
+    normalized_uid = pi_uid.strip()
+    if not normalized_uid or len(normalized_uid) > 200:
+        raise HTTPException(status_code=400, detail="Invalid Pi UID")
+
+    consent = await db.get(Pi_passport_consent, normalized_uid)
+    if consent is None or not consent.is_public:
+        raise HTTPException(status_code=404, detail="Public Passport not found")
+
+    profile = (
+        await db.execute(select(Pi_profiles).where(Pi_profiles.pi_uid == normalized_uid))
+    ).scalars().first()
+    if profile is None:
+        raise HTTPException(status_code=404, detail="Pi profile not found")
+
+    reputation = await calculate_reputation(db, profile.pi_uid, profile)
+    return {
+        "pi_uid": profile.pi_uid,
+        "username": profile.username,
+        "score": reputation["reputation"],
+        "level": reputation["level"],
+        "voting_power": reputation["voting_power"],
+        "votes_cast": reputation["votes_cast"],
+        "projects_funded": reputation["projects_funded"],
+        "breakdown": {},
+        "weights": {},
+        "public_fields": [
+            "username", "score", "level", "voting_power", "votes_cast", "projects_funded"
+        ],
+    }
 
 
 # ============================================

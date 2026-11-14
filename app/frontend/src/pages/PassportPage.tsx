@@ -1,92 +1,133 @@
 import { useEffect, useState } from 'react';
 import { getCurrentUser } from '@/lib/pi-sdk';
-import { fetchPassport, PassportData, LEVEL_COLORS } from '@/lib/passport';
-import { MOCK_PASSPORT } from '@/data/passport.mock';
+import { fetchMyPassport, setPassportVisibility, type MyPassportData } from '@/lib/passport';
 
 import { PassportHeader } from '@/components/passport/PassportHeader';
 import { MetricCard } from '@/components/passport/MetricCard';
-import { ScoreBreakdown } from '@/components/passport/ScoreBreakdown';
 import { RecommendationPanel } from '@/components/passport/RecommendationPanel';
 import { EvidenceList } from '@/components/passport/EvidenceList';
 import { AppAssociationList } from '@/components/passport/AppAssociationList';
 import { ActivityTimeline } from '@/components/passport/ActivityTimeline';
 
 const LEVEL_LABELS: Record<string, string> = {
-  novice: 'Novice', active: 'Active', verified: 'Verified',
-  trusted: 'Trusted', pioneer: 'Pioneer', flagship: 'Flagship',
+  novice: 'Novice',
+  active: 'Active',
+  verified: 'Verified',
+  trusted: 'Trusted',
+  pioneer: 'Pioneer',
+  flagship: 'Flagship',
+  bronze: 'Bronze',
+  silver: 'Silver',
+  gold: 'Gold',
+  diamond: 'Diamond',
+  platinum: 'Platinum',
 };
 
-const MOCK_RECOMMENDATIONS = [
-  { id: '1', title: 'Participer à un vote', description: 'Votez sur une proposition active pour gagner des points de gouvernance.', impact: '+10 pts' },
-  { id: '2', title: 'Financer un projet', description: 'Contribuez à un projet pour augmenter votre score de contribution.', impact: '+20 pts' },
-];
-
-const MOCK_EVIDENCE = [
-  { id: '1', type: 'KYC', title: 'Vérification Pi Network', date: '29/04/2026', verified: true },
-  { id: '2', type: 'Contribution', title: 'Financement de 5 projets', date: '01/10/2026', verified: true },
-];
-
-const MOCK_APPS = [
-  { id: '1', name: 'Atlasphere', role: 'Membre', since: 'Avril 2026' },
-];
-
-const MOCK_ACTIVITIES = [
-  { id: '1', type: 'Vote', description: 'A voté sur "Pi Neural Grid"', date: '25/10/2026' },
-  { id: '2', type: 'Contribution', description: 'A financé "Gaia Protocol"', date: '20/10/2026' },
-  { id: '3', type: 'Proposition', description: 'A créé "AtlasPulse"', date: '15/10/2026' },
-];
-
 export default function PassportPage() {
-  const [data, setData] = useState<PassportData | null>(null);
-  const [isMock, setIsMock] = useState(false);
+  const [data, setData] = useState<MyPassportData | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [savingVisibility, setSavingVisibility] = useState(false);
+  const [visibilityMessage, setVisibilityMessage] = useState<string | null>(null);
 
   useEffect(() => {
+    let active = true;
     const user = getCurrentUser();
-    if (!user?.uid) { setData(MOCK_PASSPORT); setIsMock(true); return; }
-    fetchPassport(user.uid).then((d) => {
-      if (d) setData(d); else { setData(MOCK_PASSPORT); setIsMock(true); }
+
+    if (!user?.uid) {
+      setError('Connectez-vous avec Pi pour consulter votre passeport.');
+      return () => { active = false; };
+    }
+
+    fetchMyPassport().then((passport) => {
+      if (!active) return;
+      if (passport && passport.pi_uid === user.uid) setData(passport);
+      else setError('Passeport indisponible. Vérifiez votre connexion Pi et réessayez.');
     });
+
+    return () => { active = false; };
   }, []);
 
-  if (!data) return <div className="min-h-screen bg-slate-950 flex items-center justify-center text-white">Chargement…</div>;
+  const handleVisibilityChange = async () => {
+    if (!data || savingVisibility) return;
+    setSavingVisibility(true);
+    setVisibilityMessage(null);
+    const nextVisibility = !data.is_public;
+    const saved = await setPassportVisibility(data.pi_uid, nextVisibility);
+    setSavingVisibility(false);
+    if (!saved) {
+      setVisibilityMessage('Impossible d’enregistrer ce choix. Réauthentifiez-vous et réessayez.');
+      return;
+    }
+    setData({ ...data, is_public: nextVisibility });
+    setVisibilityMessage(nextVisibility
+      ? 'Votre passeport public Testnet est activé.'
+      : 'Votre passeport public Testnet est désactivé.');
+  };
 
+  if (error) {
+    return (
+      <div className="min-h-screen bg-slate-950 flex items-center justify-center px-4 text-white">
+        <div className="max-w-lg text-center">
+          <h1 className="text-2xl font-bold mb-3">Passeport Atlasphere</h1>
+          <p className="text-gray-400">{error}</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!data) {
+    return (
+      <div className="min-h-screen bg-slate-950 flex items-center justify-center text-white">
+        Chargement du passeport…
+      </div>
+    );
+  }
+
+  const levelLabel = LEVEL_LABELS[data.level] || data.level;
   return (
     <div className="min-h-screen bg-slate-950 text-white">
       <div className="max-w-4xl mx-auto px-4 py-10">
-        {isMock && <div className="mb-4 p-2 bg-amber-600/30 text-amber-300 rounded text-sm text-center">Mode démo (profil non connecté)</div>}
-
         <PassportHeader
           username={data.username}
           score={data.score}
-          level={LEVEL_LABELS[data.level]}
-          kycVerified={data.kyc_verified}
+          level={levelLabel}
         />
+
+        <section className="mb-6 rounded-xl border border-slate-700 bg-slate-800/50 p-5">
+          <h2 className="font-semibold text-white">Visibilité publique du passeport (Testnet)</h2>
+          <p className="mt-2 text-sm text-gray-400">
+            Si vous activez le partage, seuls votre nom Pi, votre score, votre niveau, votre pouvoir de vote, le nombre de votes et le nombre de projets financés seront publics. Aucune donnée KYC, adresse de portefeuille ou activité détaillée n’est publiée.
+          </p>
+          <button
+            type="button"
+            onClick={handleVisibilityChange}
+            disabled={savingVisibility}
+            className="mt-4 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white disabled:opacity-50"
+          >
+            {savingVisibility ? 'Enregistrement…' : data.is_public ? 'Désactiver le partage public' : 'Activer le partage public'}
+          </button>
+          <span className="ml-3 text-sm text-gray-400">{data.is_public ? 'Actuellement public' : 'Actuellement privé'}</span>
+          {visibilityMessage && <p className="mt-3 text-sm text-gray-300">{visibilityMessage}</p>}
+        </section>
 
         <section className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8">
           <MetricCard label="Votes" value={String(data.votes_cast)} icon="🗳️" />
           <MetricCard label="Projets financés" value={String(data.projects_funded)} icon="💎" />
-          <MetricCard label="KYC" value={data.kyc_verified ? 'Vérifié' : 'Non vérifié'} icon="✅" />
-          <MetricCard label="Niveau" value={LEVEL_LABELS[data.level]} icon="🏆" />
+          <MetricCard label="Pi verrouillés" value={`${data.pi_locked} π`} icon="🔒" />
+          <MetricCard label="Niveau" value={levelLabel} icon="🏆" />
         </section>
 
         <section className="mb-8">
-          <ScoreBreakdown breakdown={data.breakdown} weights={data.weights} />
+          <RecommendationPanel recommendations={[]} />
         </section>
-
         <section className="mb-8">
-          <RecommendationPanel recommendations={MOCK_RECOMMENDATIONS} />
+          <EvidenceList evidence={[]} />
         </section>
-
         <section className="mb-8">
-          <EvidenceList evidence={MOCK_EVIDENCE} />
+          <AppAssociationList associations={[]} />
         </section>
-
         <section className="mb-8">
-          <AppAssociationList associations={MOCK_APPS} />
-        </section>
-
-        <section className="mb-8">
-          <ActivityTimeline activities={MOCK_ACTIVITIES} />
+          <ActivityTimeline activities={[]} />
         </section>
       </div>
     </div>

@@ -1,13 +1,12 @@
 import json
 import logging
-import math
 import os
 from typing import Optional
 
 import httpx
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
-from sqlalchemy import select, func
+from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.backend.core.database import get_db
@@ -17,6 +16,7 @@ from app.backend.schemas.auth import UserResponse
 from app.backend.models.pi_profiles import Pi_profiles
 from app.backend.models.votes import Votes
 from app.backend.models.contributions import Contributions
+from app.backend.services.reputation import calculate_reputation
 
 logger = logging.getLogger(__name__)
 
@@ -106,8 +106,9 @@ async def verify_pi_auth(
             await db.refresh(profile)
 
         # Calculate reputation
-        reputation = await _calculate_reputation(db, pi_uid, profile)
-        voting_power = math.log10(reputation + 10) * 10
+        reputation_data = await calculate_reputation(db, pi_uid, profile, persist=True)
+        reputation = reputation_data["reputation"]
+        voting_power = reputation_data["voting_power"]
 
         # Parse badges
         badges = []
@@ -167,8 +168,9 @@ async def get_pi_profile(
     except (json.JSONDecodeError, TypeError):
         badges = []
 
-    reputation = await _calculate_reputation(db, profile.pi_uid, profile)
-    voting_power = math.log10(reputation + 10) * 10
+    reputation_data = await calculate_reputation(db, profile.pi_uid, profile, persist=True)
+    reputation = reputation_data["reputation"]
+    voting_power = reputation_data["voting_power"]
 
     return {
         "pi_uid": profile.pi_uid,
@@ -186,49 +188,9 @@ async def get_pi_profile(
 
 
 async def _calculate_reputation(db: AsyncSession, pi_uid: str, profile: Pi_profiles) -> int:
-    """Calculate reputation based on formula: (pi_locked * 0.4) + (votes_cast * 0.3) + (projects_funded * 0.2) + (streak_days * 0.1)"""
-    # Count votes cast
-    votes_stmt = select(func.count()).select_from(Votes).where(Votes.pi_uid == pi_uid)
-    votes_result = await db.execute(votes_stmt)
-    votes_cast = votes_result.scalar() or 0
-
-    # Count projects funded
-    contrib_stmt = select(func.count(func.distinct(Contributions.project_id))).where(
-        Contributions.pi_uid == pi_uid,
-        Contributions.status == "completed"
-    )
-    contrib_result = await db.execute(contrib_stmt)
-    projects_funded = contrib_result.scalar() or 0
-
-    pi_locked = profile.pi_locked or 0
-    streak_days = profile.streak_days or 0
-
-    reputation = int(
-        (pi_locked * 0.4) +
-        (votes_cast * 30 * 0.3) +
-        (projects_funded * 50 * 0.2) +
-        (streak_days * 10 * 0.1)
-    )
-
-    # Update level based on reputation
-    level = "bronze"
-    if reputation > 1000:
-        level = "silver"
-    if reputation > 5000:
-        level = "gold"
-    if reputation > 20000:
-        level = "diamond"
-    if reputation > 100000:
-        level = "platinum"
-
-    # Update profile if level changed
-    if profile.level != level or profile.reputation != reputation:
-        profile.reputation = reputation
-        profile.level = level
-        profile.voting_power = round(math.log10(reputation + 10) * 10, 2)
-        await db.commit()
-
-    return reputation
+    """Calculate and persist the shared reputation score for a Pi profile."""
+    result = await calculate_reputation(db, pi_uid, profile, persist=True)
+    return result["reputation"]
 
 # ---------------------------------------------------------------------------
 # Exchange Pi access token for an Atlasphere JWT
