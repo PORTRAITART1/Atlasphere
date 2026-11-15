@@ -11,6 +11,26 @@ export interface PassportData {
   public_fields: string[];
 }
 
+export interface PassportActivity {
+  type: string;
+  description: string;
+  date: string;
+}
+
+export interface PassportEvidence {
+  type: string;
+  title: string;
+  date: string;
+  verified?: boolean;
+}
+
+export interface PassportRecommendation {
+  id: string;
+  title: string;
+  description: string;
+  impact: string;
+}
+
 export interface MyPassportData {
   pi_uid: string;
   username: string;
@@ -20,6 +40,9 @@ export interface MyPassportData {
   votes_cast: number;
   projects_funded: number;
   is_public: boolean;
+  activities?: PassportActivity[];
+  evidence?: PassportEvidence[];
+  recommendations?: PassportRecommendation[];
 }
 
 export async function fetchMyPassport(): Promise<MyPassportData | null> {

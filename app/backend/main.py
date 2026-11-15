@@ -470,6 +470,49 @@ async def get_my_passport(request: Request, db=Depends(get_db)):
 
     reputation = await calculate_reputation(db, profile.pi_uid, profile)
     consent = await db.get(Pi_passport_consent, pi_uid)
+
+    # Activités récentes (votes, contributions, propositions)
+    from app.backend.models.votes import Votes
+    from app.backend.models.contributions import Contributions
+    from app.backend.models.projects import Projects
+    from sqlalchemy import desc
+
+    recent_votes = (await db.execute(
+        select(Votes).where(Votes.pi_uid == pi_uid).order_by(desc(Votes.created_at)).limit(5)
+    )).scalars().all()
+    recent_contributions = (await db.execute(
+        select(Contributions).where(Contributions.pi_uid == pi_uid).order_by(desc(Contributions.created_at)).limit(5)
+    )).scalars().all()
+    recent_projects = (await db.execute(
+        select(Projects).where(Projects.user_id == pi_uid).order_by(desc(Projects.created_at)).limit(5)
+    )).scalars().all()
+
+    activities = []
+    for v in recent_votes:
+        activities.append({"type": "Vote", "description": f"Voted on project #{v.project_id}", "date": v.created_at.isoformat() if v.created_at else ""})
+    for c in recent_contributions:
+        activities.append({"type": "Contribution", "description": f"Contributed to project #{c.project_id}", "date": c.created_at.isoformat() if c.created_at else ""})
+    for p in recent_projects:
+        activities.append({"type": "Proposal", "description": f"Created proposal '{p.title}'", "date": p.created_at.isoformat() if p.created_at else ""})
+
+    activities.sort(key=lambda x: x["date"], reverse=True)
+
+    # Preuves (KYC, date de création du profil)
+    evidence = []
+    if profile.kyc_verified:
+        evidence.append({"type": "KYC", "title": "Verified Pi Network", "date": profile.created_at.isoformat() if profile.created_at else "", "verified": True})
+    if profile.created_at:
+        evidence.append({"type": "Profile", "title": "Atlasphere member", "date": profile.created_at.isoformat(), "verified": True})
+
+    # Recommandations basées sur le score
+    recommendations = []
+    if reputation["reputation"] < 50:
+        recommendations.append({"id": "1", "title": "Vote on a proposal", "description": "Votez sur une proposition active pour gagner des points de gouvernance.", "impact": "+10 pts"})
+    if reputation["votes_cast"] < 10:
+        recommendations.append({"id": "2", "title": "Fund a project", "description": "Contribuez à un projet pour augmenter votre score de contribution.", "impact": "+20 pts"})
+    if not profile.kyc_verified:
+        recommendations.append({"id": "3", "title": "Verify your KYC", "description": "Complétez votre KYC Pi pour débloquer votre score de vérification.", "impact": "+30 pts"})
+
     return {
         "pi_uid": profile.pi_uid,
         "username": profile.username,
@@ -479,6 +522,9 @@ async def get_my_passport(request: Request, db=Depends(get_db)):
         "votes_cast": reputation["votes_cast"],
         "projects_funded": reputation["projects_funded"],
         "is_public": bool(consent and consent.is_public),
+        "activities": activities[:10],
+        "evidence": evidence,
+        "recommendations": recommendations,
     }
 
 

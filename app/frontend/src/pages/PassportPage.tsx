@@ -118,16 +118,16 @@ export default function PassportPage() {
         </section>
 
         <section className="mb-8">
-          <RecommendationPanel recommendations={[]} />
+          <RecommendationPanel recommendations={data.recommendations || []} />
         </section>
         <section className="mb-8">
-          <EvidenceList evidence={[]} />
+          <EvidenceList evidence={data.evidence || []} />
         </section>
         <section className="mb-8">
           <AppAssociationList associations={[]} />
         </section>
         <section className="mb-8">
-          <ActivityTimeline activities={[]} />
+          <ActivityTimeline activities={data.activities || []} />
         </section>
       </div>
     </div>
