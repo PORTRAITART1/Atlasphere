@@ -1,7 +1,7 @@
 #!/bin/bash
-# Simple start script for Atoms deployment
+# Simple start script for Atlasphere local deployment
 # Author: portraitart
-# Purpose: Launch backend + frontend on Atoms
+# Purpose: Launch Atlasphere backend + frontend locally
 
 set -e
 
@@ -47,6 +47,10 @@ fi
 echo "[INFO] Building frontend..."
 cd "$FRONTEND_DIR"
 npm run build || pnpm build
+
+# Publish the generated frontend bundle where FastAPI serves the SPA.
+mkdir -p "$BACKEND_DIR/static"
+cp -a "$FRONTEND_DIR/dist/." "$BACKEND_DIR/static/"
 
 # Start backend on port 8000 (in background)
 echo "[INFO] Starting backend on port 8000..."
