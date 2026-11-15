@@ -1,3 +1,27 @@
+// Gestionnaire d'erreur global pour afficher les crashs à l'écran
+window.addEventListener('error', (event) => {
+  const root = document.getElementById('root');
+  if (root) {
+    root.innerHTML = `<div style="padding:20px;background:#1a1a2e;color:#ff6b6b;font-family:monospace;white-space:pre-wrap;font-size:14px;">
+      <h2>🚨 Erreur JavaScript</h2>
+      <p><strong>Message:</strong> ${event.message}</p>
+      <p><strong>Fichier:</strong> ${event.filename}:${event.lineno}:${event.colno}</p>
+      <p><strong>Stack:</strong> ${event.error ? event.error.stack : 'N/A'}</p>
+    </div>`;
+  }
+});
+
+window.addEventListener('unhandledrejection', (event) => {
+  const root = document.getElementById('root');
+  if (root) {
+    root.innerHTML = `<div style="padding:20px;background:#1a1a2e;color:#ff6b6b;font-family:monospace;white-space:pre-wrap;font-size:14px;">
+      <h2>🚨 Erreur de promesse non gérée</h2>
+      <p><strong>Raison:</strong> ${event.reason}</p>
+      <p><strong>Stack:</strong> ${event.reason && event.reason.stack ? event.reason.stack : 'N/A'}</p>
+    </div>`;
+  }
+});
+
 import { createRoot } from 'react-dom/client';
 import App from './App.tsx';
 import './index.css';
