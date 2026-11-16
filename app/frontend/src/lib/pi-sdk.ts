@@ -559,7 +559,7 @@ export async function createPiPayment(
             body: JSON.stringify({
               payment_id: paymentId,
               reason: 'Cancelled by the Pioneer in Pi Wallet',
-            },
+            }),
           }).catch((error) => {
             console.warn('[Atlasphere] Could not record payment cancellation:', error);
           });
