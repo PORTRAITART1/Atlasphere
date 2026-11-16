@@ -1,7 +1,7 @@
+import { createClient } from '@metagptx/web-sdk';
 // Pi Network SDK v2.0 Integration for Atlasphere
 // Aligned with @pinetwork-js/sdk and Pi Develop platform standards
 // Reference: https://github.com/pi-apps/pi-platform-docs/blob/master/SDK_reference.md
-import { createClient } from '@metagptx/web-sdk';
 import { getAPIBaseURL } from './config';
 
 // --- Pi SDK Types (aligned with @pinetwork-js/api-typing) ---
@@ -151,7 +151,6 @@ declare global {
 }
 
 let currentUser: PiUser | null = null;
-const client = createClient();
 const listeners: Set<() => void> = new Set();
 let piSdkInitialized = false;
 
@@ -531,14 +530,14 @@ export async function createPiPayment(
 
         onReadyForServerCompletion: async (paymentId: string, txid: string) => {
           try {
-            await client.apiCall.invoke({
-              url: '/api/v1/pi-pay/complete',
+            await fetch('/api/v1/pi-pay/complete', {
               method: 'POST',
-              data: {
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
                 payment_id: paymentId,
                 txid,
                 pi_access_token: auth.accessToken,
-              },
+              }),
             });
 
             console.log('[Atlasphere] Payment completed:', paymentId, txid);
@@ -554,10 +553,10 @@ export async function createPiPayment(
 
         onCancel: (paymentId: string) => {
           console.log('[Atlasphere] Payment cancelled:', paymentId);
-          void client.apiCall.invoke({
-            url: '/api/v1/pi-pay/cancel',
+          void fetch('/api/v1/pi-pay/cancel', {
             method: 'POST',
-            data: {
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
               payment_id: paymentId,
               reason: 'Cancelled by the Pioneer in Pi Wallet',
             },
