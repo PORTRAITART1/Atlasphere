@@ -1,0 +1,45 @@
+options:
+  - name: ATLASPHERE_PORT
+    label: "Atlasphere Port"
+    description: "The port on which Atlasphere will be accessible (default: 8000)"
+    type: number
+    default: 8000
+    required: false
+
+  - name: PI_API_KEY
+    label: "Pi API Key"
+    description: "Your Pi Network API key (Testnet). Get it from the Pi Developer Portal."
+    type: string
+    default: ""
+    required: true
+    secret: true
+
+  - name: PI_WALLET_SECRET
+    label: "Pi Wallet Secret"
+    description: "The secret key of your Pi Testnet wallet (starts with 'S...'). Keep it secret."
+    type: string
+    default: ""
+    required: true
+    secret: true
+
+  - name: JWT_SECRET_KEY
+    label: "JWT Secret Key"
+    description: "A random string used to sign session tokens."
+    type: string
+    default: ""
+    required: false
+    secret: true
+
+  - name: ADMIN_USER_ID
+    label: "Admin User ID"
+    description: "The Pi UID of the Atlasphere admin (optional)."
+    type: string
+    default: ""
+    required: false
+
+  - name: ADMIN_USER_EMAIL
+    label: "Admin User Email"
+    description: "The email of the Atlasphere admin (optional)."
+    type: string
+    default: ""
+    required: false
