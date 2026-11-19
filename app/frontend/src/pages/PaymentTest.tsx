@@ -4,6 +4,7 @@ import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import PiPaymentButton from '@/components/PiPaymentButton';
 import { getCurrentUser, subscribe, isInPiBrowser, type PiUser } from '@/lib/pi-sdk';
+import { getAPIBaseURL } from '@/lib/config';
 import { t, useI18nRerender } from '@/lib/i18n';
 
 let _client: ReturnType<typeof createClient> | null = null;
@@ -62,27 +63,27 @@ export default function PaymentTest() {
 
   const loadConfig = useCallback(async () => {
     try {
-      const res = await getClient().apiCall.invoke({
-        url: '/api/v1/pi-pay/config',
-        method: 'GET',
-      });
-      const data = unwrap<{ server_ready: boolean }>(res);
-      setServerReady(Boolean(data?.server_ready));
-    } catch {
+      const response = await fetch(`${getAPIBaseURL()}/api/v1/pi-pay/config`);
+      if (!response.ok) {
+        throw new Error(`Payment configuration request failed: HTTP ${response.status}`);
+      }
+      const data = (await response.json()) as { server_ready: boolean };
+      setServerReady(data.server_ready);
+    } catch (error) {
       setServerReady(null);
+      setError(error instanceof Error ? error.message : String(error));
     }
   }, []);
 
   const loadStats = useCallback(async () => {
     try {
-      const res = await getClient().apiCall.invoke({
-        url: '/api/v1/pi-pay/test-stats',
-        method: 'GET',
-      });
-      const data = unwrap<TestStats>(res);
-      if (data) setStats(data);
-    } catch {
-      /* stats are informational only */
+      const response = await fetch(`${getAPIBaseURL()}/api/v1/pi-pay/test-stats`);
+      if (!response.ok) {
+        throw new Error(`Payment test stats request failed: HTTP ${response.status}`);
+      }
+      setStats((await response.json()) as TestStats);
+    } catch (error) {
+      console.warn('[PaymentTest] Could not load payment test stats:', error);
     }
   }, []);
 
@@ -98,7 +99,8 @@ export default function PaymentTest() {
       });
       const data = unwrap<{ items: PaymentRow[] }>(res);
       setPayments(data?.items ?? []);
-    } catch {
+    } catch (error) {
+      console.warn('[PaymentTest] Could not load payment history:', error);
       setPayments([]);
     }
   }, []);

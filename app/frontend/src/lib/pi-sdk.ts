@@ -1,7 +1,6 @@
 // Pi Network SDK v2.0 Integration for Atlasphere
 // Aligned with @pinetwork-js/sdk and Pi Develop platform standards
 // Reference: https://github.com/pi-apps/pi-platform-docs/blob/master/SDK_reference.md
-import { createClient } from '@metagptx/web-sdk';
 import { getAPIBaseURL } from './config';
 
 // --- Pi SDK Types (aligned with @pinetwork-js/api-typing) ---
@@ -151,7 +150,6 @@ declare global {
 }
 
 let currentUser: PiUser | null = null;
-const client = createClient();
 const listeners: Set<() => void> = new Set();
 let piSdkInitialized = false;
 
@@ -531,15 +529,19 @@ export async function createPiPayment(
 
         onReadyForServerCompletion: async (paymentId: string, txid: string) => {
           try {
-            await client.apiCall.invoke({
-              url: '/api/v1/pi-pay/complete',
+            const response = await fetch(`${getAPIBaseURL()}/api/v1/pi-pay/complete`, {
               method: 'POST',
-              data: {
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
                 payment_id: paymentId,
                 txid,
                 pi_access_token: auth.accessToken,
-              },
+              }),
             });
+
+            if (!response.ok) {
+              throw new Error(`HTTP ${response.status}: ${await response.text()}`);
+            }
 
             console.log('[Atlasphere] Payment completed:', paymentId, txid);
             if (onComplete) await onComplete(paymentId, txid);
@@ -554,16 +556,22 @@ export async function createPiPayment(
 
         onCancel: (paymentId: string) => {
           console.log('[Atlasphere] Payment cancelled:', paymentId);
-          void client.apiCall.invoke({
-            url: '/api/v1/pi-pay/cancel',
+          void fetch(`${getAPIBaseURL()}/api/v1/pi-pay/cancel`, {
             method: 'POST',
-            data: {
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
               payment_id: paymentId,
               reason: 'Cancelled by the Pioneer in Pi Wallet',
-            },
-          }).catch((error) => {
-            console.warn('[Atlasphere] Could not record payment cancellation:', error);
-          });
+            }),
+          })
+            .then(async (response) => {
+              if (!response.ok) {
+                throw new Error(`HTTP ${response.status}: ${await response.text()}`);
+              }
+            })
+            .catch((error) => {
+              console.warn('[Atlasphere] Could not record payment cancellation:', error);
+            });
           rejectLifecycle(new Error('Paiement annulé dans Pi Wallet.'));
         },
 
@@ -765,7 +773,7 @@ export async function autoAuthenticate(): Promise<PiUser | null> {
   await initPiSdk();
 
   try {
-    const scopes: APIScopes = ['payments', 'username', 'wallet_address'];
+    const scopes: APIScopes = ['username', 'payments'];
     const auth = await window.Pi!.authenticate(scopes, onIncompletePaymentFound);
 
     localStorage.setItem('atlasphere_pi_token', auth.accessToken);
