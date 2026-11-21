@@ -207,20 +207,32 @@ export async function ensureAtlasphereJwt(): Promise<string> {
 export async function initPiSdk(): Promise<void> {
   if (piSdkInitialized) return;
 
-  if (!window.Pi) {
-    console.error('[Atlasphere] Pi SDK not available');
-    throw new Error('Pi SDK not available');
-  }
-
   if (!_piInitPromise) {
-    // Atlasphere Testnet build: keep Pi SDK sandbox enabled.
-    _piInitPromise = window.Pi.init({
-      version: '2.0',
-      sandbox: true
-    }).then(() => {
+    _piInitPromise = (async () => {
+      const timeoutMs = 5000;
+      const pollIntervalMs = 100;
+      const deadline = Date.now() + timeoutMs;
+
+      while (!window.Pi && Date.now() < deadline) {
+        await new Promise((resolve) =>
+          setTimeout(resolve, Math.min(pollIntervalMs, deadline - Date.now()))
+        );
+      }
+
+      const pi = window.Pi;
+      if (!pi) {
+        console.error('[Atlasphere] Pi SDK not available after waiting 5 seconds');
+        throw new Error('Pi SDK not available after 5 seconds');
+      }
+
+      // Atlasphere Testnet build: keep Pi SDK sandbox enabled.
+      await pi.init({
+        version: '2.0',
+        sandbox: true
+      });
       piSdkInitialized = true;
       console.log('[Atlasphere] Pi SDK initialized', { sandbox: true });
-    });
+    })();
   }
 
   await _piInitPromise;
