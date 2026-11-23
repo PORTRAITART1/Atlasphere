@@ -7,34 +7,21 @@ from fastapi import Depends, HTTPException, status
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.backend.core.auth import AccessTokenError, decode_access_token
 from app.backend.core.database import get_db
 from app.backend.dependencies.auth import get_bearer_token
 from app.backend.models.pi_profiles import Pi_profiles
 from app.backend.schemas.auth import UserResponse
+from app.backend.services.pi_platform import PI_API_BASE
 
 logger = logging.getLogger(__name__)
-PI_API_ME_URL = "https://api.minepi.com/v2/me"
+PI_API_ME_URL = f"{PI_API_BASE}/v2/me"
 
 
 async def get_pi_browser_user(
     token: str = Depends(get_bearer_token),
     db: AsyncSession = Depends(get_db),
 ) -> UserResponse:
-    """Accept an Atlasphere JWT or verify a Pi access token on Mainnet."""
-    try:
-        payload = decode_access_token(token)
-        user_id = payload.get("sub")
-        if user_id:
-            return UserResponse(
-                id=str(user_id),
-                email=payload.get("email", ""),
-                name=payload.get("name"),
-                role=payload.get("role", "user"),
-            )
-    except AccessTokenError:
-        pass
-
+    """Require a Pi access token verified by Pi's /v2/me endpoint."""
     try:
         async with httpx.AsyncClient(timeout=10.0) as client:
             response = await client.get(
@@ -51,7 +38,7 @@ async def get_pi_browser_user(
     if response.status_code != 200:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid Pi or Atlasphere authentication token",
+            detail="Invalid Pi access token",
         )
 
     pi_data = response.json()

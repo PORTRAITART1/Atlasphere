@@ -2,14 +2,15 @@ import logging
 import os
 from typing import Any
 
+from pydantic import Field, field_validator
 from pydantic_settings import BaseSettings
 
 logger = logging.getLogger(__name__)
 
 
 class Settings(BaseSettings):
-    # JWT Configuration (with defaults to avoid AttributeError)
-    jwt_secret_key: str = "change-me-in-production"
+    # JWT Configuration
+    jwt_secret_key: str = Field(default="", validate_default=True)
     jwt_algorithm: str = "HS256"
     jwt_expire_minutes: int = 1440
 
@@ -26,6 +27,13 @@ class Settings(BaseSettings):
     is_lambda: bool = False
     lambda_function_name: str = "atlasphere-backend"
     aws_region: str = "us-east-1"
+
+    @field_validator("jwt_secret_key")
+    @classmethod
+    def require_nonempty_jwt_secret_key(cls, value: str) -> str:
+        if not value.strip():
+            raise ValueError("JWT_SECRET_KEY must be set to a non-empty value")
+        return value
 
     @property
     def backend_url(self) -> str:

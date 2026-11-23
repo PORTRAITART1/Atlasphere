@@ -3,6 +3,8 @@
 // Reference: https://github.com/pi-apps/pi-platform-docs/blob/master/SDK_reference.md
 import { getAPIBaseURL } from './config';
 
+const PI_SANDBOX = import.meta.env.VITE_PI_SANDBOX !== 'false';
+
 // --- Pi SDK Types (aligned with @pinetwork-js/api-typing) ---
 
 /** Pi Network user object returned by authenticate() */
@@ -170,6 +172,12 @@ function authHeaders(): Record<string, string> {
   };
 }
 
+export function getPiAccessToken(): string {
+  const token = localStorage.getItem('atlasphere_pi_token') || '';
+  if (!token) throw new Error('Pi authentication is required');
+  return token;
+}
+
 let _piInitPromise: Promise<void> | null = null;
 let _atlasphereExchangePromise: Promise<string> | null = null;
 
@@ -225,13 +233,12 @@ export async function initPiSdk(): Promise<void> {
         throw new Error('Pi SDK not available after 5 seconds');
       }
 
-      // Atlasphere Testnet build: keep Pi SDK sandbox enabled.
       await pi.init({
         version: '2.0',
-        sandbox: true
+        sandbox: PI_SANDBOX
       });
       piSdkInitialized = true;
-      console.log('[Atlasphere] Pi SDK initialized', { sandbox: true });
+      console.log('[Atlasphere] Pi SDK initialized', { sandbox: PI_SANDBOX });
     })();
   }
 
@@ -616,13 +623,13 @@ export async function submitGovernanceVote(projectId: number, voteType: 'for' | 
   }
 
   try {
-    const atlasphereJwt = await ensureAtlasphereJwt();
+    const piAccessToken = getPiAccessToken();
     const apiBase = getAPIBaseURL();
     const response = await fetch(`${apiBase}/api/v1/governance/vote`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        ...(atlasphereJwt ? { Authorization: `Bearer ${atlasphereJwt}` } : {}),
+        Authorization: `Bearer ${piAccessToken}`,
       },
       body: JSON.stringify({
         project_id: projectId,
