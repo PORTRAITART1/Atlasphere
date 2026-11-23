@@ -1,0 +1,16 @@
+title: Atlasphere Configuration
+description: Configure the secrets required by Atlasphere.
+output_file: .env
+fields:
+  - name: JWT_SECRET_KEY
+    label: JWT secret key
+    type: password
+    required: true
+    preserve_if_blank: true
+    help: Secret used to sign authentication tokens.
+  - name: PI_API_KEY
+    label: Pi API key
+    type: password
+    required: true
+    preserve_if_blank: true
+    help: Server-side API key from the Pi Developer portal.
