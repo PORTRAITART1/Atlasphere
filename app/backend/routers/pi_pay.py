@@ -28,6 +28,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.backend.core.database import get_db
 from app.backend.dependencies.auth import get_current_user, get_optional_user
 from app.backend.models.pi_profiles import Pi_profiles
+from app.backend.models.projects import Projects
 from app.backend.schemas.auth import UserResponse
 from app.backend.services import pi_platform
 from app.backend.services.pi_payment_ledger import PiPaymentLedger
@@ -290,8 +291,14 @@ async def approve_payment(
     ledger = PiPaymentLedger(db)
 
     try:
-        # FASTEST POSSIBLE HANDSHAKE: call Pi Network approval directly.
-        # All security checks (identity, amount, project, ledger) happen in /complete.
+        info = await _load_authoritative_payment(service, data.payment_id)
+        if info["purpose"] in pi_platform.PROJECT_PURPOSES:
+            project_result = await db.execute(
+                select(Projects).where(Projects.id == info["project_id"])
+            )
+            if project_result.scalar_one_or_none() is None:
+                raise PiPlatformError(404, "The project for this Pi payment does not exist.")
+
         await service.approve_payment(data.payment_id)
 
         return PaymentResult(
