@@ -24,6 +24,8 @@ class ProjectsData(BaseModel):
     """Entity data schema (for create/update)"""
     title: str
     description: str
+    title_en: Optional[str] = None
+    description_en: Optional[str] = None
     category: str
     budget: float
     raised: float = None
@@ -44,6 +46,8 @@ class ProjectsUpdateData(BaseModel):
     """Update entity data (partial updates allowed)"""
     title: Optional[str] = None
     description: Optional[str] = None
+    title_en: Optional[str] = None
+    description_en: Optional[str] = None
     category: Optional[str] = None
     budget: Optional[float] = None
     raised: Optional[float] = None
@@ -65,6 +69,8 @@ class ProjectsResponse(BaseModel):
     id: int
     title: str
     description: str
+    title_en: Optional[str] = None
+    description_en: Optional[str] = None
     category: str
     budget: float
     raised: Optional[float] = None

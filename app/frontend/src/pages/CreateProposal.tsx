@@ -18,6 +18,8 @@ export default function CreateProposal() {
     title: '',
     description: '',
     fullDescription: '',
+    title_en: '',
+    description_en: '',
     category: 'technology' as Category,
     fundingGoal: '',
     deadline: '',
@@ -59,6 +61,8 @@ export default function CreateProposal() {
       await createProject({
         title: formData.title,
         description: formData.fullDescription || formData.description,
+        title_en: formData.title_en || undefined,
+        description_en: formData.description_en || undefined,
         category: formData.category,
         budget: parseFloat(formData.fundingGoal) || 0,
         deadline: formData.deadline || undefined,
@@ -187,6 +191,28 @@ export default function CreateProposal() {
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                   className="w-full px-4 py-2.5 rounded-lg bg-slate-900/50 border border-slate-700 text-white placeholder-gray-500 focus:outline-none focus:border-indigo-500 transition-colors"
                   placeholder={t('create.placeholder_summary')}
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-1.5">English Title (for international visibility)</label>
+                <input
+                  type="text"
+                  value={formData.title_en || ''}
+                  onChange={(e) => setFormData({ ...formData, title_en: e.target.value })}
+                  className="w-full px-4 py-2.5 rounded-lg bg-slate-900/50 border border-slate-700 text-white placeholder-gray-500 focus:outline-none focus:border-indigo-500 transition-colors"
+                  placeholder="English title of your project"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-1.5">English Description (for international visibility)</label>
+                <textarea
+                  rows={3}
+                  value={formData.description_en || ''}
+                  onChange={(e) => setFormData({ ...formData, description_en: e.target.value })}
+                  className="w-full px-4 py-2.5 rounded-lg bg-slate-900/50 border border-slate-700 text-white placeholder-gray-500 focus:outline-none focus:border-indigo-500 transition-colors"
+                  placeholder="English description of your project"
                 />
               </div>
 
