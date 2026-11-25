@@ -6,17 +6,17 @@ options:
     default: 8000
     required: false
 
-  - name: PI_API_KEY
-    label: "Pi API Key"
-    description: "Your Pi Network API key (Testnet). Get it from the Pi Developer Portal."
+  - name: DATABASE_URL
+    label: "Database URL"
+    description: "Optional database URL. Leave empty to use SQLite in the persistent /data volume."
     type: string
-    default: ""
-    required: true
+    default: "sqlite+aiosqlite:////data/atlasphere.db"
+    required: false
     secret: true
 
-  - name: PI_WALLET_SECRET
-    label: "Pi Wallet Secret"
-    description: "The secret key of your Pi Testnet wallet (starts with 'S...'). Keep it secret."
+  - name: PI_API_KEY
+    label: "Pi API Key"
+    description: "Server-side Pi Platform API key for the Atlasphere Mainnet app."
     type: string
     default: ""
     required: true
@@ -24,10 +24,10 @@ options:
 
   - name: JWT_SECRET_KEY
     label: "JWT Secret Key"
-    description: "A random string used to sign session tokens."
+    description: "A unique random secret used to sign Atlasphere session tokens."
     type: string
     default: ""
-    required: false
+    required: true
     secret: true
 
   - name: ADMIN_USER_ID

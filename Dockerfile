@@ -6,8 +6,8 @@ WORKDIR /src/app/frontend
 COPY app/frontend/package.json app/frontend/package-lock.json ./
 RUN npm ci --no-audit --no-fund
 COPY app/frontend/ ./
-ARG VITE_API_BASE_URL=https://atlasphere-testnet.onrender.com
-ARG VITE_PI_SANDBOX=true
+ARG VITE_API_BASE_URL=
+ARG VITE_PI_SANDBOX=false
 ENV VITE_API_BASE_URL=${VITE_API_BASE_URL}
 ENV VITE_PI_SANDBOX=${VITE_PI_SANDBOX}
 RUN npm run build
@@ -20,8 +20,8 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     IS_LAMBDA=false \
     ENVIRONMENT=prod \
     PORT=8000 \
-    TESTNET=true \
-    PI_API_BASE_URL=https://api.testnet.minepi.com \
+    TESTNET=false \
+    PI_API_BASE_URL=https://api.minepi.com \
     DATABASE_URL=sqlite+aiosqlite:////data/atlasphere.db
 WORKDIR /app
 
